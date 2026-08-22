@@ -1,4 +1,4 @@
-package logica;
+package logica.DataTypes;
 
 public class DTUsuarioMin {
     private String nickname;
@@ -10,3 +10,4 @@ public class DTUsuarioMin {
     public String getNickname() {
         return nickname;
     }
+}

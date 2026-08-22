@@ -1,4 +1,4 @@
-package logica;
+package logica.DataTypes;
 
 public class DTUsuarioAsist {
     private String apellido;

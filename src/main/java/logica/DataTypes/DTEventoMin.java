@@ -1,4 +1,4 @@
-package logica;
+package logica.DataTypes;
 
 public class DTEventoMin {
     private String nombre;
@@ -10,3 +10,4 @@ public class DTEventoMin {
     public String getNickname() {
         return nombre;
     }
+}

@@ -1,4 +1,4 @@
-package logica;
+package logica.Clases;
 
 import java.time.LocalDate;
 
@@ -6,8 +6,8 @@ public class Asistente extends Usuario {
     private String apellido;
     private LocalDate fechaNacimiento;
 
-    public Asistente(String nombre, String nickname, String correo, TipoUsuario tipoUsuario, String apellido, LocalDate fechaNacimiento) {
-        super(nombre, nickname, correo, tipoUsuario);
+    public Asistente(String nombre, String nickname, String correo, String apellido, LocalDate fechaNacimiento) {
+        super(nombre, nickname, correo);
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
     }

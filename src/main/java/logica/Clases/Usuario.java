@@ -1,16 +1,15 @@
-package logica;
+package logica.Clases;
 
 public abstract class Usuario {
     private String nombre;
     private String nickname;
     private String correo;
-    private TipoUsuario tipoUsuario;
+    //private TipoUsuario tipoUsuario;
 
-    public Usuario(String nombre, String nickname, String correo, TipoUsuario tipoUsuario) {
+    public Usuario(String nombre, String nickname, String correo) {
         this.nombre = nombre;
         this.nickname = nickname;
         this.correo = correo;
-        this.tipoUsuario = tipoUsuario;
     }
 
     public String getNombre() {
@@ -25,9 +24,6 @@ public abstract class Usuario {
         return correo;
     }
 
-    public TipoUsuario getTipoUsuario() {
-        return tipoUsuario;
-    }
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
@@ -39,9 +35,5 @@ public abstract class Usuario {
 
     public void setCorreo(String correo) {
         this.correo = correo;
-    }
-
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
     }
 }

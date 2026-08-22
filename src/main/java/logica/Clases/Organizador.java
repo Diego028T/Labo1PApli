@@ -1,12 +1,12 @@
-package logica;
+package logica.Clases;
 
 public class Organizador extends Usuario {
     private String descripcion;
     private String enlace;
 
-    public Organizador(String nombre, String apellido, String correo, TipoUsuario tipoUsuario,
+    public Organizador(String nombre, String apellido, String correo,
                        String descripcion, String enlace) {
-        super(nombre, apellido, correo, tipoUsuario);
+        super(nombre, apellido, correo);
         this.descripcion = descripcion;
         this.enlace = enlace;
     }

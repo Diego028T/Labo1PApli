@@ -1,4 +1,4 @@
-package logica;
+package logica.DataTypes;
 
 public class DTUsuarioOrg {
     private String descripcion;
@@ -17,3 +17,4 @@ public class DTUsuarioOrg {
     public String getEnlace() {
         return enlace;
     }
+}

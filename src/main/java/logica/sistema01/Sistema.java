@@ -1,4 +1,6 @@
-package logica;
+package logica.sistema01;
+
+import logica.Clases.Institucion;
 
 import java.util.ArrayList;
 import java.util.HashMap;

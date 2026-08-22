@@ -1,4 +1,4 @@
-package logica;
+package logica.DataTypes;
 
 public class DTEdicion {
     private String nombre;
@@ -21,11 +21,11 @@ public class DTEdicion {
         return descripcion;
     }
 
-    public String getCorreo() {
+    public String getSigla() {
         return sigla;
     }
 
     public DTFecha getFechaAlta() {
-        return sigla;
+        return fechaAlta;
     }
 }
