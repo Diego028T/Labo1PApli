@@ -1,4 +1,4 @@
-package logica
+package logica;
 
 public class DTEvento {
     private String nombre;

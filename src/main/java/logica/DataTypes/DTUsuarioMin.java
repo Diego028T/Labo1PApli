@@ -1,4 +1,4 @@
-package logica
+package logica;
 
 public class DTUsuarioMin {
     private String nickname;

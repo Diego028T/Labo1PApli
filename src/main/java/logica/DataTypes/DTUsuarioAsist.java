@@ -1,4 +1,4 @@
-package logica
+package logica;
 
 public class DTUsuarioAsist {
     private String apellido;
