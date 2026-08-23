@@ -1,12 +1,22 @@
 package logica.Clases;
 
+import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTUsuarioOrg;
+
 public class Organizador extends Usuario {
+
     private String descripcion;
     private String enlace;
 
-    public Organizador(String nombre, String apellido, String correo,
-                       String descripcion, String enlace) {
-        super(nombre, apellido, correo);
+    public Organizador(
+            String nombre,
+            String nickname,
+            String correo,
+            String descripcion,
+            String enlace) {
+
+        super(nombre, nickname, correo);
+
         this.descripcion = descripcion;
         this.enlace = enlace;
     }
@@ -25,5 +35,17 @@ public class Organizador extends Usuario {
 
     public void setEnlace(String enlace) {
         this.enlace = enlace;
+    }
+
+    @Override
+    public DTDatosUsuario getDTUsuarioDetallado() {
+
+        return new DTUsuarioOrg(
+                getNickname(),
+                getNombre(),
+                getCorreo(),
+                descripcion,
+                enlace
+        );
     }
 }

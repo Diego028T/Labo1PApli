@@ -1,6 +1,10 @@
 package logica.sistema01;
 
+import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTUsuario;
+
 import java.util.List;
+import java.util.Set;
 
 public interface ISistema {
 
@@ -11,4 +15,10 @@ public interface ISistema {
     );
 
     List<String> listarNombresInstituciones();
+
+    Set<DTUsuario> listarUsuarios();
+
+    DTDatosUsuario mostrarDatosUsuario(String nickname);
+
+    void modificarDatosUsuario(DTDatosUsuario datos);
 }

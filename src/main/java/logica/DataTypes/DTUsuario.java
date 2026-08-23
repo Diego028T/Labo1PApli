@@ -1,5 +1,11 @@
 package logica.DataTypes;
 
+/*el record en java es similar a reemplazar el datatype con todo los campos, record hace solo todo, los getters y etc*/
+public record DTUsuario(String nickname, String nombre) {
+}
+
+/*package logica.DataTypes;
+
 public class DTUsuario {
     private String nickname;
     private String nombre;
@@ -22,4 +28,4 @@ public class DTUsuario {
     public String getCorreo() {
         return correo;
     }
-}
+}*/

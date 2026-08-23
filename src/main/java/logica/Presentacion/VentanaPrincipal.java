@@ -2,8 +2,11 @@ package logica.Presentacion;
 
 import logica.sistema01.ISistema;
 
-import javax.swing.JFrame;
 import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -19,9 +22,28 @@ public class VentanaPrincipal extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        add(escritorio);
+        setJMenuBar(crearMenu());
 
-        mostrarAltaInstitucion();
+        add(escritorio);
+    }
+
+    private JMenuBar crearMenu() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu menuInstituciones = new JMenu("Instituciones");
+        JMenuItem itemAltaInstitucion = new JMenuItem("Alta institución");
+        itemAltaInstitucion.addActionListener(e -> mostrarAltaInstitucion());
+        menuInstituciones.add(itemAltaInstitucion);
+
+        JMenu menuUsuarios = new JMenu("Usuarios");
+        JMenuItem itemModificarUsuario = new JMenuItem("Modificar usuario");
+        itemModificarUsuario.addActionListener(e -> mostrarModificarUsuario());
+        menuUsuarios.add(itemModificarUsuario);
+
+        menuBar.add(menuInstituciones);
+        menuBar.add(menuUsuarios);
+
+        return menuBar;
     }
 
     private void mostrarAltaInstitucion() {
@@ -30,5 +52,13 @@ public class VentanaPrincipal extends JFrame {
 
         escritorio.add(alta);
         alta.setVisible(true);
+    }
+
+    private void mostrarModificarUsuario() {
+        ModificarUsuarioInternalFrame modificar =
+                new ModificarUsuarioInternalFrame(sistema);
+
+        escritorio.add(modificar);
+        modificar.setVisible(true);
     }
 }
