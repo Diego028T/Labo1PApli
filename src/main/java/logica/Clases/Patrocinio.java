@@ -1,6 +1,5 @@
-package logica;
-
-public enum NivelPatrocinio {PLATINO, ORO, PLATA, BRONCE}
+package logica.Clases;
+import logica.DataTypes.DTFecha;
 
 public class Patrocinio {
     private String codigo;
@@ -9,7 +8,8 @@ public class Patrocinio {
     private int cantRegistros;
     private NivelPatrocinio nivelPatrocinio;
 
-    public Patrocinio(String codigo, DTFecha fecha, float montoAportado, int cantRegistros, NivelPatrocinio nivelPatrocinio) {
+    public Patrocinio(String codigo, DTFecha fecha, float montoAportado,
+                      int cantRegistros, NivelPatrocinio nivelPatrocinio) {
         this.codigo = codigo;
         this.fecha = fecha;
         this.montoAportado = montoAportado;

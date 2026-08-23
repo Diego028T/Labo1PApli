@@ -1,4 +1,4 @@
-package logica
+package logica.DataTypes;
 
 public class DTFecha {
     private int anio;

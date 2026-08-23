@@ -1,9 +1,9 @@
-package logica;
+package logica.Clases;
 
 public class Evento {
     private String nombre;
     private String descripcion;
-    private Sring sigla;
+    private String sigla;
 
     public Evento(String nombre, String descripcion, String sigla) {
         this.nombre = nombre;

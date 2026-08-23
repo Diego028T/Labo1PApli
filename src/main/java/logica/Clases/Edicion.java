@@ -1,4 +1,6 @@
-package logica;
+package logica.Clases;
+import logica.DataTypes.DTFecha;
+
 
 public class Edicion{
     private String nombre;

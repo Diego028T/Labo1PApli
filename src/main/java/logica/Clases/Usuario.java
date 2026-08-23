@@ -1,16 +1,18 @@
-package logica;
+package logica.Clases;
+
+import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTUsuario;
 
 public abstract class Usuario {
+
     private String nombre;
     private String nickname;
     private String correo;
-    private TipoUsuario tipoUsuario;
 
-    public Usuario(String nombre, String nickname, String correo, TipoUsuario tipoUsuario) {
+    public Usuario(String nombre, String nickname, String correo) {
         this.nombre = nombre;
         this.nickname = nickname;
         this.correo = correo;
-        this.tipoUsuario = tipoUsuario;
     }
 
     public String getNombre() {
@@ -25,10 +27,6 @@ public abstract class Usuario {
         return correo;
     }
 
-    public TipoUsuario getTipoUsuario() {
-        return tipoUsuario;
-    }
-
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -41,7 +39,11 @@ public abstract class Usuario {
         this.correo = correo;
     }
 
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
+    // Para listar usuarios: nickname + nombre
+    public DTUsuario getDTUsuario() {
+        return new DTUsuario(nickname, nombre);
     }
+
+    // Cada subtipo arma su propio DT detallado
+    public abstract DTDatosUsuario getDTUsuarioDetallado();
 }
