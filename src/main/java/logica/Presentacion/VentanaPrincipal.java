@@ -40,6 +40,12 @@ public class VentanaPrincipal extends JFrame {
         itemModificarUsuario.addActionListener(e -> mostrarModificarUsuario());
         menuUsuarios.add(itemModificarUsuario);
 
+        JMenu Ediciones = new JMenu("Ediciones");
+        JMenuItem nuevaEdicion = new JMenuItem("Alta edicion");
+        nuevaEdicion.addActionListener(e -> mostrarAltaEdicion());
+        Ediciones.add(nuevaEdicion);
+
+        menuBar.add(Ediciones);
         menuBar.add(menuInstituciones);
         menuBar.add(menuUsuarios);
 
@@ -60,5 +66,12 @@ public class VentanaPrincipal extends JFrame {
 
         escritorio.add(modificar);
         modificar.setVisible(true);
+    }
+
+    private void mostrarAltaEdicion() {
+        AltaEdicionInternalFrame altaEdicion = new AltaEdicionInternalFrame(sistema);
+
+        escritorio.add(altaEdicion);
+        altaEdicion.setVisible(true);
     }
 }

@@ -21,6 +21,10 @@ public class Organizador extends Usuario {
         this.enlace = enlace;
     }
 
+    public String getNombre() {
+        return super.getNombre();
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
@@ -35,6 +39,11 @@ public class Organizador extends Usuario {
 
     public void setEnlace(String enlace) {
         this.enlace = enlace;
+    }
+
+    @Override
+    public String toString() {
+        return super.getNombre();
     }
 
     @Override

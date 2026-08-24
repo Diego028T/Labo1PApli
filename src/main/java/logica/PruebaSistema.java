@@ -1,7 +1,11 @@
 package logica;
 
+import logica.Clases.Evento;
 import logica.sistema01.ISistema;
 import logica.sistema01.Sistema;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PruebaSistema {
 
@@ -35,5 +39,6 @@ public class PruebaSistema {
         } catch (IllegalArgumentException e) {
             System.out.println("Error esperado: " + e.getMessage());
         }
+
     }
 }
