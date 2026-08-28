@@ -19,6 +19,9 @@ public class Edicion{
         this.pais = pais;
     }
 
+    public String obtenerDetalles(){
+        return "Nombre: " + nombre + "\nSigla: " + sigla + "\nFecha de alta: " + fechaAlta + "\nFecha de fin: " + fechaFin + "\nCiudad: " + ciudad + "\nPais: " + pais;
+    }
     public String getNombre() {
         return nombre;
     }
@@ -56,5 +59,10 @@ public class Edicion{
     }
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    @Override
+    public String toString() {
+        return nombre;
     }
 }

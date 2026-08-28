@@ -1,5 +1,6 @@
 package logica.sistema01;
 
+import logica.Clases.Edicion;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuario;
 import logica.Clases.Evento;
@@ -17,6 +18,8 @@ public interface ISistema {
     );
 
     List<String> listarNombresInstituciones();
+
+    List<Edicion> listarEdiciones(Evento evento);
 
     Set<DTUsuario> listarUsuarios();
 

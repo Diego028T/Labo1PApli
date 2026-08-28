@@ -78,6 +78,8 @@ public class VentanaPrincipal extends JFrame {
     }
 
     private void mostrarEdiciones(){
-
+        ConsultaEdiciones consulta = new ConsultaEdiciones(sistema);
+        escritorio.add(consulta);
+        consulta.setVisible(true);
     }
 }

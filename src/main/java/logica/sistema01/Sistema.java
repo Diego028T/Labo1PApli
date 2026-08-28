@@ -1,12 +1,8 @@
 package logica.sistema01;
 
-import logica.Clases.Institucion;
-import logica.Clases.Evento;
-import logica.Clases.Usuario;
+import logica.Clases.*;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuario;
-import logica.Clases.Asistente;
-import logica.Clases.Organizador;
 import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 
@@ -122,6 +118,11 @@ public class Sistema implements ISistema {
     @Override
     public List<Evento> listarEventos() {
         return new ArrayList<>(eventos);
+    }
+
+    public List<Edicion> listarEdiciones(Evento evento){
+        for (Edicion edicion : evento.getEdiciones()) {}
+        return new ArrayList<>(evento.getEdiciones());
     }
 
     @Override

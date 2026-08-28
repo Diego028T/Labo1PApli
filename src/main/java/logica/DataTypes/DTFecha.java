@@ -22,4 +22,9 @@ public class DTFecha {
     public int getDia() {
         return dia;
     }
+
+    @Override
+    public String toString() {
+        return dia + "-" + mes + "-" + anio;
+    }
 }
