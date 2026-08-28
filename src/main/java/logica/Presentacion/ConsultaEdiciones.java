@@ -14,10 +14,12 @@ public class ConsultaEdiciones extends JInternalFrame {
     private JPanel consultaEdiciones;
     private JPanel FormularioDetalles;
     private JList<Edicion> listaEdiciones;
-    private JLabel txtEdiciones;
+    private JLabel TituloFormularioDetalles;
     private JButton btnListarDetalles;
     private JPanel detallesEdicion;
     private JTextArea txtDetalles;
+    private JLabel TituloConsultarEdiciones;
+    private JLabel TituloDetallesEdicion;
     private ISistema sistema;
     private Evento evento;
     private Edicion edicionSeleccionada;
