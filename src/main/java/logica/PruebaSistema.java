@@ -1,11 +1,7 @@
 package logica;
 
-import logica.Clases.Evento;
 import logica.sistema01.ISistema;
 import logica.sistema01.Sistema;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PruebaSistema {
 
@@ -14,6 +10,11 @@ public class PruebaSistema {
 
         System.out.println("Instituciones iniciales:");
         System.out.println(sistema.listarNombresInstituciones());
+
+        System.out.println("Eventos iniciales:");
+        System.out.println(sistema.listarEventos());
+        System.out.println("Organizadores iniciales:");
+        System.out.println(sistema.listarOrganizadores());
 
         try {
             sistema.altaInstitucion(

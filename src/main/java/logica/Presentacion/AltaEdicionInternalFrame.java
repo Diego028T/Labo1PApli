@@ -1,11 +1,16 @@
 package logica.Presentacion;
 
+import logica.Clases.Edicion;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
+import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class AltaEdicionInternalFrame extends JInternalFrame {
     private final ISistema sistema;
@@ -17,22 +22,12 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JList<Organizador> listaOrganizadores;
     private JTextField txtNombreEdicion;
     private JTextField txtSiglaEdicion;
-    private JTextField txtFechaAlta;
-    private JTextField txtFechaFin;
+    private JSpinner txtFechaAlta;
+    private JSpinner txtFechaFin;
     private JTextField txtCiudad;
     private JTextField txtPais;
     private Evento eventoSeleccionado;
     private Organizador organizadorSeleccionado;
-
-    private final Evento[] eventos = {
-            new Evento("Conferencia Java", "Conferencia sobre java", "JV2026"),
-            new Evento("Conferencia Python", "Conferencia sobre python", "PY2026")
-    };
-
-    private final Organizador[] organizadores = {
-            new Organizador("Juancito", "juanchi", "", "Organizador de conferencias", ""),
-            new Organizador("Pepe","Pepote", "", "Organizador de eventos", "")
-    };
 
     public AltaEdicionInternalFrame(ISistema sistema){
         super("Alta de eventos", true, true, true, true);
@@ -51,6 +46,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
     private void cargarEventos() {
         DefaultListModel<Evento> modelo = new DefaultListModel<>();
+        List<Evento> eventos = sistema.listarEventos();
         for (Evento e : eventos) {
             modelo.addElement(e);
         }
@@ -59,6 +55,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
     private void cargarOrganizadores() {
         DefaultListModel<Organizador> modelo = new DefaultListModel<>();
+        List<Organizador> organizadores = sistema.listarOrganizadores();
         for (Organizador o : organizadores) {
             modelo.addElement(o);
         }
@@ -83,8 +80,8 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private void mostrarFormularioEdicion() {
         txtNombreEdicion = new JTextField();
         txtSiglaEdicion = new JTextField();
-        txtFechaAlta = new JTextField();
-        txtFechaFin = new JTextField();
+        txtFechaAlta = crearSelectorFecha();
+        txtFechaFin = crearSelectorFecha();
         txtCiudad = new JTextField();
         txtPais = new JTextField();
 
@@ -175,15 +172,26 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
         String nombreEdicion = txtNombreEdicion.getText().trim();
         String siglaEdicion = txtSiglaEdicion.getText().trim();
-        String fechaAlta = txtFechaAlta.getText().trim();
-        String fechaFin = txtFechaFin.getText().trim();
         String ciudad = txtCiudad.getText().trim();
         String pais = txtPais.getText().trim();
 
-        if (nombreEdicion.isBlank() || siglaEdicion.isBlank() || fechaAlta.isBlank() || fechaFin.isBlank() || ciudad.isBlank() || pais.isBlank()) {
+        DTFecha fechaAlta = convertirAFecha(txtFechaAlta);
+        DTFecha fechaFin = convertirAFecha(txtFechaFin);
+        if (nombreEdicion.isBlank() || siglaEdicion.isBlank()
+                || fechaAlta == null || fechaFin == null
+                || ciudad.isBlank() || pais.isBlank()) {
             JOptionPane.showMessageDialog(this, "Debe completar todos los campos.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        if (esAnterior(fechaFin, fechaAlta)) {
+            JOptionPane.showMessageDialog(this, "La fecha fin no puede ser anterior a la fecha alta.",
+                    "Fechas inválidas", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Edicion nuevaEdicion = new Edicion(nombreEdicion, siglaEdicion, fechaAlta, fechaFin, ciudad, pais);
+        eventoSeleccionado.setEdiciones(nuevaEdicion);
         JOptionPane.showMessageDialog(
                 this, "Se crearía la edición '" + nombreEdicion + "' para el evento '" + eventoSeleccionado.getNombre() + "'. Con el organizador: " + organizadorSeleccionado);
         dispose();
@@ -191,6 +199,35 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
+    }
+
+    private JSpinner crearSelectorFecha() {
+        JSpinner selector = new JSpinner(new SpinnerDateModel());
+        selector.setEditor(new JSpinner.DateEditor(selector, "dd/MM/yyyy"));
+        return selector;
+    }
+
+    private DTFecha convertirAFecha(JSpinner selector) {
+        Date fechaSeleccionada = (Date) selector.getValue();
+        if (fechaSeleccionada == null) {
+            return null;
+        }
+        Calendar fecha = Calendar.getInstance();
+        fecha.setTime(fechaSeleccionada);
+        return new DTFecha(
+                fecha.get(Calendar.YEAR),
+                fecha.get(Calendar.MONTH) + 1,
+                fecha.get(Calendar.DAY_OF_MONTH));
+    }
+
+    private boolean esAnterior(DTFecha primera, DTFecha segunda) {
+        if (primera.getAnio() != segunda.getAnio()) {
+            return primera.getAnio() < segunda.getAnio();
+        }
+        if (primera.getMes() != segunda.getMes()) {
+            return primera.getMes() < segunda.getMes();
+        }
+        return primera.getDia() < segunda.getDia();
     }
 
 }

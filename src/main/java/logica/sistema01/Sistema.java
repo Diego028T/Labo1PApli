@@ -1,6 +1,7 @@
 package logica.sistema01;
 
 import logica.Clases.Institucion;
+import logica.Clases.Evento;
 import logica.Clases.Usuario;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuario;
@@ -23,10 +24,12 @@ public class Sistema implements ISistema {
 
     private final Map<String, Institucion> instituciones;
     private final List<Usuario> usuarios;
+    private final List<Evento> eventos;
 
     private Sistema() {
         instituciones = new HashMap<>();
         usuarios = new ArrayList<>();
+        eventos = new ArrayList<>();
 
         cargarDatosIniciales();
     }
@@ -116,6 +119,22 @@ public class Sistema implements ISistema {
         }
     }
 
+    @Override
+    public List<Evento> listarEventos() {
+        return new ArrayList<>(eventos);
+    }
+
+    @Override
+    public List<Organizador> listarOrganizadores() {
+        List<Organizador> resultado = new ArrayList<>();
+        for (Usuario usuario : usuarios) {
+            if (usuario instanceof Organizador organizador) {
+                resultado.add(organizador);
+            }
+        }
+        return resultado;
+    }
+
     private void cargarDatosIniciales() {
         altaInstitucion(
                 "UTEC",
@@ -145,6 +164,9 @@ public class Sistema implements ISistema {
                 "Organizador de conferencias",
                 "https://orgconf.com"
         ));
+
+        eventos.add(new Evento("Conferencia Java", "Conferencia sobre Java", "JV2026"));
+        eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
     }
 
     private Usuario buscarPorNickname(String nickname) {

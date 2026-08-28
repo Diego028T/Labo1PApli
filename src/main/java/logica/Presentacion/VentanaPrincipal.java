@@ -42,8 +42,11 @@ public class VentanaPrincipal extends JFrame {
 
         JMenu Ediciones = new JMenu("Ediciones");
         JMenuItem nuevaEdicion = new JMenuItem("Alta edicion");
+        JMenuItem consultarEdicion = new JMenuItem("Consultar edicion");
         nuevaEdicion.addActionListener(e -> mostrarAltaEdicion());
+        consultarEdicion.addActionListener(e -> mostrarEdiciones());
         Ediciones.add(nuevaEdicion);
+        Ediciones.add(consultarEdicion);
 
         menuBar.add(Ediciones);
         menuBar.add(menuInstituciones);
@@ -70,8 +73,11 @@ public class VentanaPrincipal extends JFrame {
 
     private void mostrarAltaEdicion() {
         AltaEdicionInternalFrame altaEdicion = new AltaEdicionInternalFrame(sistema);
-
         escritorio.add(altaEdicion);
         altaEdicion.setVisible(true);
+    }
+
+    private void mostrarEdiciones(){
+
     }
 }
