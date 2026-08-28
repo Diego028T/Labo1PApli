@@ -48,9 +48,15 @@ public class VentanaPrincipal extends JFrame {
         Ediciones.add(nuevaEdicion);
         Ediciones.add(consultarEdicion);
 
+        JMenu Patrocinios = new JMenu("Patrocinios");
+        JMenuItem altaPatrocinio = new JMenuItem("Alta patrocinio");
+        altaPatrocinio.addActionListener(e -> mostrarAltaPatrocinio());
+        Patrocinios.add(altaPatrocinio);
+
         menuBar.add(Ediciones);
         menuBar.add(menuInstituciones);
         menuBar.add(menuUsuarios);
+        menuBar.add(Patrocinios);
 
         return menuBar;
     }
@@ -81,5 +87,11 @@ public class VentanaPrincipal extends JFrame {
         ConsultaEdiciones consulta = new ConsultaEdiciones(sistema);
         escritorio.add(consulta);
         consulta.setVisible(true);
+    }
+
+    private void mostrarAltaPatrocinio(){
+        AltaPatrocinio altaPatrocinio = new AltaPatrocinio(sistema);
+        escritorio.add(altaPatrocinio);
+        altaPatrocinio.setVisible(true);
     }
 }

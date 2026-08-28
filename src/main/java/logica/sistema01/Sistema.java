@@ -5,6 +5,7 @@ import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
+import logica.DataTypes.DTFecha;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -166,7 +167,23 @@ public class Sistema implements ISistema {
                 "https://orgconf.com"
         ));
 
-        eventos.add(new Evento("Conferencia Java", "Conferencia sobre Java", "JV2026"));
+        Evento conferenciaJava = new Evento(
+                "Conferencia Java",
+                "Conferencia sobre Java",
+                "JV2026"
+        );
+
+        conferenciaJava.setEdiciones(new Edicion(
+                "Java 2026",
+                "JV26",
+                new DTFecha(2026, 1, 15),
+                new DTFecha(2026, 11, 12),
+                "Montevideo",
+                "Uruguay"
+        ));
+
+        eventos.add(conferenciaJava);
+
         eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
     }
 
