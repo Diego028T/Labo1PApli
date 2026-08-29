@@ -21,6 +21,8 @@ public class AltaEvento extends JInternalFrame {
         this.sistema = sistema;
         FormularioEvento.setVisible(true);
         setContentPane(FormularioEvento);
+        pack();
+        setLocation(100, 80);
     }
     private void createUIComponents() {
         // TODO: place custom component creation code here

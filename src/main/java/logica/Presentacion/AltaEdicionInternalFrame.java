@@ -20,6 +20,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JButton altaEdicionButton;
     private JPanel panelFormularioEdicion;
     private JList<Organizador> listaOrganizadores;
+    private JSpinner spinner1;
     private JTextField txtNombreEdicion;
     private JTextField txtSiglaEdicion;
     private JSpinner txtFechaAlta;

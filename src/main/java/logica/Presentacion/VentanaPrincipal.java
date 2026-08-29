@@ -55,7 +55,7 @@ public class VentanaPrincipal extends JFrame {
 
         JMenu Eventos = new JMenu("Eventos");
         JMenuItem altaEvento = new JMenuItem("Alta evento");
-        altaEvento.addActionListener(e -> mostarAltaEvento());
+        altaEvento.addActionListener(e -> mostrarAltaEvento());
         Eventos.add(altaEvento);
 
 
@@ -102,7 +102,7 @@ public class VentanaPrincipal extends JFrame {
         altaPatrocinio.setVisible(true);
     }
 
-    private void mostarAltaEvento(){
+    private void mostrarAltaEvento(){
         AltaEvento altaEvento = new AltaEvento(sistema);
         escritorio.add(altaEvento);
         altaEvento.setVisible(true);
