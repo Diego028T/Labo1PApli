@@ -6,6 +6,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.EstadoAltaUsuario;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,14 @@ public class Sistema implements ISistema {
     private static final Sistema instancia = new Sistema();
 
     private final Map<String, Institucion> instituciones;
-    private final List<Usuario> usuarios;
+    private final Map<String, Usuario> usuariosPorNickname;
+    private final Map<String, Usuario> usuariosPorCorreo;
     private final List<Evento> eventos;
 
     private Sistema() {
         instituciones = new HashMap<>();
-        usuarios = new ArrayList<>();
+        usuariosPorNickname = new HashMap<>();
+        usuariosPorCorreo = new HashMap<>();
         eventos = new ArrayList<>();
 
         cargarDatosIniciales();
@@ -33,6 +36,103 @@ public class Sistema implements ISistema {
 
     public static Sistema getInstancia() {
         return instancia;
+    }
+
+    @Override
+    public EstadoAltaUsuario chequearUsuario(String nickname, String correo) {
+        boolean nicknameRepetido = usuariosPorNickname.containsKey(nickname);
+        boolean correoRepetido = usuariosPorCorreo.containsKey(correo);
+
+        if (nicknameRepetido && correoRepetido) {
+            return EstadoAltaUsuario.NICKNAME_Y_CORREO_REPETIDOS;
+        }
+
+        if (nicknameRepetido) {
+            return EstadoAltaUsuario.NICKNAME_REPETIDO;
+        }
+
+        if (correoRepetido) {
+            return EstadoAltaUsuario.CORREO_REPETIDO;
+        }
+
+        return EstadoAltaUsuario.OK;
+    }
+
+    private Institucion buscarInstitucion(String nombreInstitucion) {
+        String clave = nombreInstitucion.trim().toLowerCase();
+        Institucion institucion = instituciones.get(clave);
+
+        if (institucion == null) {
+            throw new RuntimeException(
+                    "No existe una institución con el nombre: " + nombreInstitucion
+            );
+        }
+
+        return institucion;
+    }
+
+    private void asignarInstitucion(Asistente asistente, String nombreInstitucion) {
+        if (nombreInstitucion == null || nombreInstitucion.isBlank()) {
+            return;
+        }
+
+        Institucion institucion = buscarInstitucion(nombreInstitucion);
+        asistente.setInstitucion(institucion);
+    }
+
+    @Override
+    public void altaAsistente(
+            String nickname,
+            String nombre,
+            String correo,
+            String apellido,
+            LocalDate fechaNacimiento,
+            String nombreInstitucion) {
+
+        EstadoAltaUsuario estado = chequearUsuario(nickname, correo);
+
+        if (estado != EstadoAltaUsuario.OK) {
+            throw new IllegalArgumentException("El nickname o correo ya están en uso.");
+        }
+
+        Asistente asistente = new Asistente(
+                nombre,
+                nickname,
+                correo,
+                apellido,
+                fechaNacimiento
+        );
+
+        asignarInstitucion(asistente, nombreInstitucion);
+
+        usuariosPorNickname.put(nickname, asistente);
+        usuariosPorCorreo.put(correo, asistente);
+    }
+
+    @Override
+    public void altaOrganizador(
+            String nickname,
+            String nombre,
+            String correo,
+            String descripcion,
+            String enlace) {
+
+        EstadoAltaUsuario estado = chequearUsuario(nickname, correo);
+
+        if (estado != EstadoAltaUsuario.OK) {
+            throw new IllegalArgumentException("El nickname o correo ya están en uso.");
+        }
+
+        Organizador organizador = new Organizador(
+                nombre,
+                nickname,
+                correo,
+                descripcion,
+                enlace
+        );
+
+        usuariosPorNickname.put(nickname, organizador);
+        usuariosPorCorreo.put(correo, organizador);
     }
 
     @Override
@@ -79,7 +179,7 @@ public class Sistema implements ISistema {
     public Set<DTUsuario> listarUsuarios() {
         Set<DTUsuario> resultado = new HashSet<>();
 
-        for (Usuario u : usuarios) {
+        for (Usuario u : usuariosPorNickname.values()) {
             DTUsuario dt = u.getDTUsuario();
             resultado.add(dt);
         }
@@ -129,7 +229,7 @@ public class Sistema implements ISistema {
     @Override
     public List<Organizador> listarOrganizadores() {
         List<Organizador> resultado = new ArrayList<>();
-        for (Usuario usuario : usuarios) {
+        for (Usuario usuario : usuariosPorNickname.values()) {
             if (usuario instanceof Organizador organizador) {
                 resultado.add(organizador);
             }
@@ -151,21 +251,22 @@ public class Sistema implements ISistema {
         );
 
         //datos para probar
-        usuarios.add(new Asistente(
-                "Matias",
+        altaAsistente(
                 "MatiB",
+                "Matias",
                 "matiasbragiotorres@gmail.com",
                 "Bragio",
-                LocalDate.of(2000, 5, 10)
-        ));
+                LocalDate.of(2000, 5, 10),
+                ""
+        );
 
-        usuarios.add(new Organizador(
-                "Juancito",
+        altaOrganizador(
                 "juanchi",
+                "Juancito",
                 "juancito@gmail.com",
                 "Organizador de conferencias",
                 "https://orgconf.com"
-        ));
+        );
 
         Evento conferenciaJava = new Evento(
                 "Conferencia Java",
@@ -188,14 +289,14 @@ public class Sistema implements ISistema {
     }
 
     private Usuario buscarPorNickname(String nickname) {
-        for (Usuario u : usuarios) {
-            if (u.getNickname().equals(nickname)) {
-                return u;
-            }
+        Usuario usuario = usuariosPorNickname.get(nickname);
+
+        if (usuario == null) {
+            throw new RuntimeException(
+                    "No existe un usuario con el nickname: " + nickname
+            );
         }
 
-        throw new RuntimeException(
-                "No existe un usuario con el nickname: " + nickname
-        );
+        return usuario;
     }
 }
