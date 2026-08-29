@@ -9,6 +9,7 @@ public class Asistente extends Usuario {
 
     private String apellido;
     private LocalDate fechaNacimiento;
+    private Institucion institucion; // se usa en caso de que ese asistente tenga vinculo con una institucion
 
     public Asistente(
             String nombre,
@@ -31,12 +32,20 @@ public class Asistente extends Usuario {
         return fechaNacimiento;
     }
 
+    public Institucion getInstitucion() {
+        return institucion;
+    }
+
     public void setApellido(String apellido) {
         this.apellido = apellido;
     }
 
     public void setFechaNacimiento(LocalDate fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public void setInstitucion(Institucion institucion) {
+        this.institucion = institucion;
     }
 
     @Override
