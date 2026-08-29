@@ -36,6 +36,10 @@ public class VentanaPrincipal extends JFrame {
         menuInstituciones.add(itemAltaInstitucion);
 
         JMenu menuUsuarios = new JMenu("Usuarios");
+        JMenuItem itemAltaUsuario = new JMenuItem("Alta usuario");
+        itemAltaUsuario.addActionListener(e -> mostrarAltaUsuario());
+        menuUsuarios.add(itemAltaUsuario);
+
         JMenuItem itemModificarUsuario = new JMenuItem("Modificar usuario");
         itemModificarUsuario.addActionListener(e -> mostrarModificarUsuario());
         menuUsuarios.add(itemModificarUsuario);
@@ -71,6 +75,14 @@ public class VentanaPrincipal extends JFrame {
     private void mostrarAltaInstitucion() {
         AltaInstitucionInternalFrame alta =
                 new AltaInstitucionInternalFrame(sistema);
+
+        escritorio.add(alta);
+        alta.setVisible(true);
+    }
+
+    private void mostrarAltaUsuario() {
+        AltaUsuarioInternalFrame alta =
+                new AltaUsuarioInternalFrame(sistema);
 
         escritorio.add(alta);
         alta.setVisible(true);

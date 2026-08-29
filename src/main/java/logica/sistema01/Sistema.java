@@ -63,7 +63,7 @@ public class Sistema implements ISistema {
         Institucion institucion = instituciones.get(clave);
 
         if (institucion == null) {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     "No existe una institución con el nombre: " + nombreInstitucion
             );
         }
