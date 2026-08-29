@@ -1,6 +1,9 @@
 package logica.Clases;
 import logica.DataTypes.DTFecha;
 
+import java.util.List;
+import java.util.ArrayList;
+
 
 public class Edicion{
     private String nombre;
@@ -9,6 +12,7 @@ public class Edicion{
     private DTFecha fechaFin;
     private String ciudad;
     private String pais;
+    private List<TipoRegistro> tiposRegistro;
 
     public Edicion(String nombre, String sigla, DTFecha fechaAlta, DTFecha fechaFin, String ciudad, String pais){
         this.nombre = nombre;
@@ -17,6 +21,7 @@ public class Edicion{
         this.fechaFin = fechaFin;
         this.ciudad = ciudad;
         this.pais = pais;
+        this.tiposRegistro = new ArrayList<>();
     }
 
     public String obtenerDetalles(){
@@ -59,6 +64,17 @@ public class Edicion{
     }
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    public List<TipoRegistro> getTiposRegistro() {
+        return new ArrayList<>(tiposRegistro);
+    }
+
+    public void agregarTipoRegistro(TipoRegistro tipoRegistro) {
+        if (tipoRegistro == null) {
+            throw new IllegalArgumentException("El tipo de registro no puede ser null");
+        }
+        tiposRegistro.add(tipoRegistro);
     }
 
     @Override

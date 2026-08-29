@@ -16,7 +16,7 @@
           <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <text value="Seleccione un evento y un organizador. Luego Apriete el boton &quot;Alta Edicion&quot;"/>
+          <text value="Seleccione un evento y un organizador. Luego apriete &quot;Alta Edicion&quot;. Al guardar, podra cargar sus tipos de registro."/>
         </properties>
       </component>
       <component id="64180" class="javax.swing.JButton" binding="altaEdicionButton" default-binding="true">
