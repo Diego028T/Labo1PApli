@@ -53,10 +53,17 @@ public class VentanaPrincipal extends JFrame {
         altaPatrocinio.addActionListener(e -> mostrarAltaPatrocinio());
         Patrocinios.add(altaPatrocinio);
 
+        JMenu Eventos = new JMenu("Eventos");
+        JMenuItem altaEvento = new JMenuItem("Alta evento");
+        altaEvento.addActionListener(e -> mostarAltaEvento());
+        Eventos.add(altaEvento);
+
+
         menuBar.add(Ediciones);
         menuBar.add(menuInstituciones);
         menuBar.add(menuUsuarios);
         menuBar.add(Patrocinios);
+        menuBar.add(Eventos);
 
         return menuBar;
     }
@@ -93,5 +100,11 @@ public class VentanaPrincipal extends JFrame {
         AltaPatrocinio altaPatrocinio = new AltaPatrocinio(sistema);
         escritorio.add(altaPatrocinio);
         altaPatrocinio.setVisible(true);
+    }
+
+    private void mostarAltaEvento(){
+        AltaEvento altaEvento = new AltaEvento(sistema);
+        escritorio.add(altaEvento);
+        altaEvento.setVisible(true);
     }
 }
