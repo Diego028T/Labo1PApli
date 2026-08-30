@@ -1,10 +1,11 @@
 package logica.Presentacion;
 
 import logica.Clases.Edicion;
-import logica.Clases.TipoRegistro;
+import logica.Clases.Evento;
+import logica.sistema01.ISistema;
 
 import javax.swing.*;
-import java.awt.*;
+import java.util.List;
 
 public class AltaTipoRegistroInternalFrame extends JInternalFrame {
     private JPanel principalPanel;
@@ -12,25 +13,33 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
     private JTextField txtNombre;
     private JTextField txtDescripcion;
     private JTextField txtCosto;
-    private JPanel panelCupos;
     private JButton btnGuardar;
     private JButton btnLimpiar;
     private JTextField txtCupo;
-    private JTextField txtCantCupos;
+    private final ISistema sistema;
+    private Edicion edicionSeleccionada;
 
-    private final Edicion edicion;
-
-    public AltaTipoRegistroInternalFrame(Edicion edicion) {
+    public AltaTipoRegistroInternalFrame(ISistema sistema) {
         super("Alta de tipos de registro", true, true, true, true);
-        this.edicion = edicion;
+
+        if (sistema == null) {
+            throw new IllegalArgumentException("El sistema no puede ser null");
+        }
+
+        this.sistema = sistema;
         setContentPane(principalPanel);
 
-        lblEdicion.setText("Tipos de registro para la edicion: " + edicion.getNombre());
-        txtCupo = new JTextField();
-        txtCantCupos = new JTextField();
-        panelCupos.setLayout(new GridLayout(1, 2, 5, 0));
-        panelCupos.add(txtCupo);
-        panelCupos.add(txtCantCupos);
+        edicionSeleccionada = seleccionarEdicion();
+        if (edicionSeleccionada == null) {
+            // El llamador agrega y hace visible el InternalFrame después
+            // de construirlo; por eso se cierra en el siguiente evento.
+            SwingUtilities.invokeLater(this::dispose);
+            return;
+        }
+
+        lblEdicion.setText(
+                "Tipos de registro para la edición: "
+                        + edicionSeleccionada.getNombre());
 
         btnGuardar.addActionListener(e -> guardarTipoRegistro());
         btnLimpiar.addActionListener(e -> limpiarCampos());
@@ -39,6 +48,56 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
         setLocation(140, 100);
     }
 
+    private Edicion seleccionarEdicion() {
+        List<Evento> eventos = sistema.listarEventos();
+        if (eventos.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No hay eventos registrados.",
+                    "Alta de tipo de registro",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return null;
+        }
+
+        Evento evento = (Evento) JOptionPane.showInputDialog(
+                this,
+                "Seleccione un evento:",
+                "Evento",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                eventos.toArray(),
+                eventos.get(0)
+        );
+
+        if (evento == null) {
+            return null;
+        }
+
+        List<Edicion> ediciones = sistema.listarEdiciones(evento);
+        if (ediciones.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El evento seleccionado no tiene ediciones.",
+                    "Alta de tipo de registro",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+            return null;
+        }
+
+        return (Edicion) JOptionPane.showInputDialog(
+                this,
+                "Seleccione una edición:",
+                "Edición",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                ediciones.toArray(),
+                ediciones.get(0)
+        );
+    }
+
+
+
     private void guardarTipoRegistro() {
         String nombre = txtNombre.getText().trim();
         String descripcion = txtDescripcion.getText().trim();
@@ -46,18 +105,26 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
         try {
             float costo = Float.parseFloat(txtCosto.getText().trim());
             int cupo = Integer.parseInt(txtCupo.getText().trim());
-            int cantCupos = Integer.parseInt(txtCantCupos.getText().trim());
 
-            if (nombre.isBlank() || descripcion.isBlank() || costo < 0 || cupo <= 0 || cantCupos < 0) {
+            if (nombre.isBlank() || descripcion.isBlank() || costo < 0 || cupo <= 0) {
                 throw new IllegalArgumentException();
             }
 
-            edicion.agregarTipoRegistro(new TipoRegistro(nombre, descripcion, costo, cupo, cantCupos));
+            sistema.altaTipoRegistro(
+                    edicionSeleccionada,
+                    nombre,
+                    descripcion,
+                    costo,
+                    cupo
+            );
+
             JOptionPane.showMessageDialog(this, "Tipo de registro guardado. Puede cargar otro.");
             limpiarCampos();
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this,
-                    "Complete los campos con datos validos. El costo no puede ser negativo y el cupo debe ser mayor que cero.",
+                    ex.getMessage() == null
+                            ? "Complete los campos con datos válidos."
+                            : ex.getMessage(),
                     "Datos invalidos", JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -67,7 +134,6 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
         txtDescripcion.setText("");
         txtCosto.setText("");
         txtCupo.setText("");
-        txtCantCupos.setText("");
         txtNombre.requestFocusInWindow();
     }
 }

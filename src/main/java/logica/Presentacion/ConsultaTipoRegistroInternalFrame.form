@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="logica.Presentacion.ConsultaTipoRegistroInternalFrame">
+  <grid id="1" binding="principalPanel" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="8" vgap="8">
+    <margin top="10" left="10" bottom="10" right="10"/>
+    <constraints><xy x="20" y="20" width="560" height="400"/></constraints>
+    <border type="none"/>
+    <children>
+      <grid id="2" binding="panelEventos" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="8" vgap="8">
+        <margin top="10" left="10" bottom="10" right="10"/>
+        <constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints>
+        <border type="none"/>
+        <children>
+          <component id="3" class="javax.swing.JLabel"><constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints><properties><text value="Seleccione un evento"/></properties></component>
+          <component id="4" class="javax.swing.JList" binding="listaEventos"><constraints><grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints><properties/></component>
+          <component id="5" class="javax.swing.JButton" binding="btnSeleccionarEvento"><constraints><grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Seleccionar evento"/></properties></component>
+        </children>
+      </grid>
+      <grid id="6" binding="panelEdiciones" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="8" vgap="8">
+        <margin top="10" left="10" bottom="10" right="10"/>
+        <constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints>
+        <border type="none"/>
+        <children>
+          <component id="7" class="javax.swing.JLabel" binding="lblEventoSeleccionado"><constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints><properties><text value="Evento seleccionado"/></properties></component>
+          <component id="8" class="javax.swing.JList" binding="listaEdiciones"><constraints><grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints><properties/></component>
+          <component id="9" class="javax.swing.JButton" binding="btnSeleccionarEdicion"><constraints><grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Seleccionar edición"/></properties></component>
+          <component id="10" class="javax.swing.JButton" binding="btnVolverEvento"><constraints><grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Volver a eventos"/></properties></component>
+        </children>
+      </grid>
+      <grid id="11" binding="panelTiposRegistro" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="8" vgap="8">
+        <margin top="10" left="10" bottom="10" right="10"/>
+        <constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints>
+        <border type="none"/>
+        <children>
+          <component id="12" class="javax.swing.JLabel" binding="lblEdicionSeleccionada"><constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints><properties><text value="Edición seleccionada"/></properties></component>
+          <component id="13" class="javax.swing.JList" binding="listaTiposRegistro"><constraints><grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints><properties/></component>
+          <component id="14" class="javax.swing.JButton" binding="btnSeleccionarTipo"><constraints><grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Consultar tipo de registro"/></properties></component>
+          <component id="15" class="javax.swing.JButton" binding="btnVolverEdicion"><constraints><grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Volver a ediciones"/></properties></component>
+        </children>
+      </grid>
+      <grid id="16" binding="panelDetalles" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="8" vgap="8">
+        <margin top="10" left="10" bottom="10" right="10"/>
+        <constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints>
+        <border type="none"/>
+        <children>
+          <component id="17" class="javax.swing.JLabel"><constraints><grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/></constraints><properties><text value="Datos del tipo de registro"/></properties></component>
+          <component id="18" class="javax.swing.JTextArea" binding="txtDetalles"><constraints><grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/></constraints><properties><editable value="false"/><lineWrap value="true"/><wrapStyleWord value="true"/></properties></component>
+          <component id="19" class="javax.swing.JButton" binding="btnCerrar"><constraints><grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/></constraints><properties><text value="Cerrar"/></properties></component>
+        </children>
+      </grid>
+    </children>
+  </grid>
+</form>

@@ -28,4 +28,5 @@ public class DTEdicion {
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
+
 }

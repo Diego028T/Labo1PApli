@@ -299,4 +299,43 @@ public class Sistema implements ISistema {
 
         return usuario;
     }
+
+    @Override
+    public void altaTipoRegistro(
+            Edicion edicion,
+            String nombre,
+            String descripcion,
+            float costo,
+            int cupo) {
+
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición");
+        }
+
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+
+        if (descripcion == null || descripcion.isBlank()) {
+            throw new IllegalArgumentException("La descripción es obligatoria");
+        }
+
+        if (costo < 0) {
+            throw new IllegalArgumentException("El costo no puede ser negativo");
+        }
+
+        if (cupo <= 0) {
+            throw new IllegalArgumentException("El cupo debe ser mayor que cero");
+        }
+
+        TipoRegistro tipo = new TipoRegistro(
+                nombre.trim(),
+                descripcion.trim(),
+                costo,
+                cupo
+        );
+
+        edicion.agregarTipoRegistro(tipo);
+
+    }
 }

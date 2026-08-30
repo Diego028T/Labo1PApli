@@ -74,6 +74,21 @@ public class Edicion{
         if (tipoRegistro == null) {
             throw new IllegalArgumentException("El tipo de registro no puede ser null");
         }
+
+        String nombreNuevo = tipoRegistro.getNombre();
+        if (nombreNuevo == null || nombreNuevo.isBlank()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
+
+        boolean yaExiste = tiposRegistro.stream()
+                .anyMatch(tipo -> tipo.getNombre().equalsIgnoreCase(nombreNuevo.trim()));
+
+        if (yaExiste) {
+            throw new IllegalArgumentException(
+                    "Ya existe un tipo de registro con ese nombre para esta edición"
+            );
+        }
+
         tiposRegistro.add(tipoRegistro);
     }
 

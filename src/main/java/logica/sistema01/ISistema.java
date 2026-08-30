@@ -40,6 +40,14 @@ public interface ISistema {
             String enlace
     );
 
+    void altaTipoRegistro(
+            Edicion edicion,
+            String nombre,
+            String descripcion,
+            float costo,
+            int cupo
+    );
+
     List<Edicion> listarEdiciones(Evento evento);
 
     Set<DTUsuario> listarUsuarios();

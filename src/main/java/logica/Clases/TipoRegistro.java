@@ -5,15 +5,18 @@ public class TipoRegistro {
     private String descripcion;
     private float costo;
     private int cupo;
-    private int cantCupos;
 
-    public TipoRegistro(String nombre, String descripcion, float costo, int cupo, int cantCupos) {
+    public TipoRegistro (
+            String nombre,
+            String descripcion,
+            float costo,
+            int cupo) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.costo = costo;
         this.cupo = cupo;
-        this.cantCupos = cantCupos;
     }
+
     public String getNombre() {
         return nombre;
     }
@@ -38,10 +41,15 @@ public class TipoRegistro {
     public void setCupo(int cupo) {
         this.cupo = cupo;
     }
-    public int getCantCupos() {
-        return cantCupos;
+
+    @Override
+    public String toString() {
+        return nombre;
     }
-    public void setCantCupos(int cantCupos) {
-        this.cantCupos = cantCupos;
-    }
+//    public int getCantCupos() {
+//        return cantCupos;
+//    }
+//    public void setCantCupos(int cantCupos) {
+//        this.cantCupos = cantCupos;
+//    }
 }

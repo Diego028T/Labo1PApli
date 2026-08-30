@@ -20,7 +20,6 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JButton altaEdicionButton;
     private JPanel panelFormularioEdicion;
     private JList<Organizador> listaOrganizadores;
-    private JSpinner spinner1;
     private JTextField txtNombreEdicion;
     private JTextField txtSiglaEdicion;
     private JSpinner txtFechaAlta;
@@ -195,13 +194,6 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         eventoSeleccionado.setEdiciones(nuevaEdicion);
         JOptionPane.showMessageDialog(
                 this, "Se crearía la edición '" + nombreEdicion + "' para el evento '" + eventoSeleccionado.getNombre() + "'. Con el organizador: " + organizadorSeleccionado);
-        JDesktopPane escritorio = (JDesktopPane) SwingUtilities.getAncestorOfClass(JDesktopPane.class, this);
-        if (escritorio != null) {
-            AltaTipoRegistroInternalFrame altaTipoRegistro =
-                    new AltaTipoRegistroInternalFrame(nuevaEdicion);
-            escritorio.add(altaTipoRegistro);
-            altaTipoRegistro.setVisible(true);
-        }
         dispose();
     }
 
