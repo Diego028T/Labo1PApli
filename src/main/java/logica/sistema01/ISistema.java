@@ -2,6 +2,8 @@ package logica.sistema01;
 
 import logica.Clases.Edicion;
 import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTRegistro;
+import logica.DataTypes.DTRegistroMin;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Clases.Evento;
@@ -52,9 +54,15 @@ public interface ISistema {
 
     Set<DTUsuario> listarUsuarios();
 
+    Set<DTUsuario> listarAsistentes();
+
     DTDatosUsuario mostrarDatosUsuario(String nickname);
 
     void modificarDatosUsuario(DTDatosUsuario datos);
+
+    List<DTRegistroMin> listarRegistrosAsistente(String nickname);
+
+    DTRegistro mostrarDatosRegistro(String nickname, int idRegistro);
 
     List<Evento> listarEventos();
 
