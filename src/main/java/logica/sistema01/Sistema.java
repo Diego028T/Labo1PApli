@@ -2,6 +2,8 @@ package logica.sistema01;
 
 import logica.Clases.*;
 import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTRegistro;
+import logica.DataTypes.DTRegistroMin;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
@@ -24,12 +26,14 @@ public class Sistema implements ISistema {
     private final Map<String, Usuario> usuariosPorNickname;
     private final Map<String, Usuario> usuariosPorCorreo;
     private final List<Evento> eventos;
+    private int siguienteIdRegistro;
 
     private Sistema() {
         instituciones = new HashMap<>();
         usuariosPorNickname = new HashMap<>();
         usuariosPorCorreo = new HashMap<>();
         eventos = new ArrayList<>();
+        siguienteIdRegistro = 1;
 
         cargarDatosIniciales();
     }
@@ -188,6 +192,19 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public Set<DTUsuario> listarAsistentes() {
+        Set<DTUsuario> resultado = new HashSet<>();
+
+        for (Usuario usuario : usuariosPorNickname.values()) {
+            if (usuario instanceof Asistente) {
+                resultado.add(usuario.getDTUsuario());
+            }
+        }
+
+        return resultado;
+    }
+
+    @Override
     public DTDatosUsuario mostrarDatosUsuario(String nickname) {
         Usuario usuario = buscarPorNickname(nickname);
 
@@ -214,6 +231,45 @@ public class Sistema implements ISistema {
             organizador.setDescripcion(datosOrganizador.getDescripcion());
             organizador.setEnlace(datosOrganizador.getEnlace());
         }
+    }
+
+    @Override
+    public List<DTRegistroMin> listarRegistrosAsistente(String nickname) {
+        Asistente asistente = buscarAsistentePorNickname(nickname);
+        List<DTRegistroMin> resultado = new ArrayList<>();
+
+        for (Registro registro : asistente.getRegistros()) {
+            resultado.add(new DTRegistroMin(
+                    registro.getId(),
+                    registro.getFecha(),
+                    registro.getEdicion().getNombre(),
+                    registro.getTipoRegistro().getNombre()
+            ));
+        }
+
+        return resultado;
+    }
+
+    @Override
+    public DTRegistro mostrarDatosRegistro(String nickname, int idRegistro) {
+        Asistente asistente = buscarAsistentePorNickname(nickname);
+
+        for (Registro registro : asistente.getRegistros()) {
+            if (registro.getId() == idRegistro) {
+                return new DTRegistro(
+                        registro.getFecha(),
+                        registro.getCosto(),
+                        registro.isPatrocinado(),
+                        registro.getTipoRegistro().getNombre(),
+                        registro.getTipoRegistro().getDescripcion(),
+                        registro.getEdicion().getNombre()
+                );
+            }
+        }
+
+        throw new IllegalArgumentException(
+                "No existe un registro con id: " + idRegistro
+        );
     }
 
     @Override
@@ -286,6 +342,26 @@ public class Sistema implements ISistema {
         eventos.add(conferenciaJava);
 
         eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
+
+        Edicion edicionJava = conferenciaJava.getEdiciones().get(0);
+        TipoRegistro tipoGeneral = new TipoRegistro(
+                "General",
+                "Entrada general",
+                1000,
+                50
+        );
+
+        edicionJava.agregarTipoRegistro(tipoGeneral);
+
+        Asistente asistente = buscarAsistentePorNickname("MatiB");
+        asistente.agregarRegistro(new Registro(
+                siguienteIdRegistro++,
+                new DTFecha(2026, 9, 1),
+                tipoGeneral.getCosto(),
+                false,
+                tipoGeneral,
+                edicionJava
+        ));
     }
 
     private Usuario buscarPorNickname(String nickname) {
@@ -298,6 +374,18 @@ public class Sistema implements ISistema {
         }
 
         return usuario;
+    }
+
+    private Asistente buscarAsistentePorNickname(String nickname) {
+        Usuario usuario = buscarPorNickname(nickname);
+
+        if (!(usuario instanceof Asistente asistente)) {
+            throw new IllegalArgumentException(
+                    "El usuario seleccionado no es un asistente."
+            );
+        }
+
+        return asistente;
     }
 
     @Override
