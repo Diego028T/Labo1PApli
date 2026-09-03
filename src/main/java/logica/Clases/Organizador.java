@@ -1,12 +1,23 @@
 package logica.Clases;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuarioOrg;
 
+@Entity
+@Table(name = "organizador")
 public class Organizador extends Usuario {
 
+    @Column(nullable = false, length = 500)
     private String descripcion;
+
+    @Column(length = 200)
     private String enlace;
+
+    protected Organizador() {
+    }
 
     public Organizador(
             String nombre,
@@ -16,7 +27,6 @@ public class Organizador extends Usuario {
             String enlace) {
 
         super(nombre, nickname, correo);
-
         this.descripcion = descripcion;
         this.enlace = enlace;
     }
@@ -48,7 +58,6 @@ public class Organizador extends Usuario {
 
     @Override
     public DTDatosUsuario getDTUsuarioDetallado() {
-
         return new DTUsuarioOrg(
                 getNickname(),
                 getNombre(),
