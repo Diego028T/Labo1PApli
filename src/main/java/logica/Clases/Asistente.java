@@ -1,5 +1,9 @@
 package logica.Clases;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuarioAsist;
 
@@ -7,12 +11,26 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@Table(name = "asistente")
 public class Asistente extends Usuario {
 
+    @Column(nullable = false, length = 100)
     private String apellido;
+
+    @Column(nullable = false)
     private LocalDate fechaNacimiento;
-    private Institucion institucion; // se usa en caso de que ese asistente tenga vinculo con una institucion
-    private List<Registro> registros;
+
+    // Provisorio: no se persiste hasta terminar el mapeo de Institucion.
+    @Transient
+    private Institucion institucion;
+
+    // Provisorio: no se persiste hasta terminar el mapeo de Registro.
+    @Transient
+    private List<Registro> registros = new ArrayList<>();
+
+    protected Asistente() {
+    }
 
     public Asistente(
             String nombre,
@@ -22,7 +40,6 @@ public class Asistente extends Usuario {
             LocalDate fechaNacimiento) {
 
         super(nombre, nickname, correo);
-
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
         this.registros = new ArrayList<>();
@@ -66,7 +83,6 @@ public class Asistente extends Usuario {
 
     @Override
     public DTDatosUsuario getDTUsuarioDetallado() {
-
         return new DTUsuarioAsist(
                 getNickname(),
                 getNombre(),

@@ -9,6 +9,8 @@ import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.EstadoAltaUsuario;
+import logica.Persistencia.JPAUtil;
+import logica.Persistencia.UsuarioDAO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +28,7 @@ public class Sistema implements ISistema {
     private final Map<String, Usuario> usuariosPorNickname;
     private final Map<String, Usuario> usuariosPorCorreo;
     private final List<Evento> eventos;
+    private final UsuarioDAO usuarioDAO;
     private int siguienteIdRegistro;
 
     private Sistema() {
@@ -33,8 +36,10 @@ public class Sistema implements ISistema {
         usuariosPorNickname = new HashMap<>();
         usuariosPorCorreo = new HashMap<>();
         eventos = new ArrayList<>();
+        usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
 
+        cargarUsuariosPersistidos();
         cargarDatosIniciales();
     }
 
@@ -44,8 +49,10 @@ public class Sistema implements ISistema {
 
     @Override
     public EstadoAltaUsuario chequearUsuario(String nickname, String correo) {
-        boolean nicknameRepetido = usuariosPorNickname.containsKey(nickname);
-        boolean correoRepetido = usuariosPorCorreo.containsKey(correo);
+        boolean nicknameRepetido = usuarioDAO.existeNickname(nickname)
+                || usuariosPorNickname.containsKey(nickname);
+        boolean correoRepetido = usuarioDAO.existeCorreo(correo)
+                || usuariosPorCorreo.containsKey(correo);
 
         if (nicknameRepetido && correoRepetido) {
             return EstadoAltaUsuario.NICKNAME_Y_CORREO_REPETIDOS;
@@ -109,6 +116,7 @@ public class Sistema implements ISistema {
 
         asignarInstitucion(asistente, nombreInstitucion);
 
+        usuarioDAO.guardar(asistente);
         usuariosPorNickname.put(nickname, asistente);
         usuariosPorCorreo.put(correo, asistente);
     }
@@ -135,6 +143,7 @@ public class Sistema implements ISistema {
                 enlace
         );
 
+        usuarioDAO.guardar(organizador);
         usuariosPorNickname.put(nickname, organizador);
         usuariosPorCorreo.put(correo, organizador);
     }
@@ -183,7 +192,7 @@ public class Sistema implements ISistema {
     public Set<DTUsuario> listarUsuarios() {
         Set<DTUsuario> resultado = new HashSet<>();
 
-        for (Usuario u : usuariosPorNickname.values()) {
+        for (Usuario u : usuarioDAO.listarUsuarios()) {
             DTUsuario dt = u.getDTUsuario();
             resultado.add(dt);
         }
@@ -195,7 +204,7 @@ public class Sistema implements ISistema {
     public Set<DTUsuario> listarAsistentes() {
         Set<DTUsuario> resultado = new HashSet<>();
 
-        for (Usuario usuario : usuariosPorNickname.values()) {
+        for (Usuario usuario : usuarioDAO.listarUsuarios()) {
             if (usuario instanceof Asistente) {
                 resultado.add(usuario.getDTUsuario());
             }
@@ -222,6 +231,8 @@ public class Sistema implements ISistema {
             asistente.setApellido(datosAsistente.getApellido());
             asistente.setFechaNacimiento(datosAsistente.getFechaNacimiento());
 
+            usuarioDAO.modificar(usuario);
+
         } else if (datos instanceof DTUsuarioOrg datosOrganizador) {
             Usuario usuario = buscarPorNickname(datosOrganizador.getNickname());
 
@@ -230,6 +241,8 @@ public class Sistema implements ISistema {
             Organizador organizador = (Organizador) usuario;
             organizador.setDescripcion(datosOrganizador.getDescripcion());
             organizador.setEnlace(datosOrganizador.getEnlace());
+
+            usuarioDAO.modificar(usuario);
         }
     }
 
@@ -307,22 +320,26 @@ public class Sistema implements ISistema {
         );
 
         //datos para probar
-        altaAsistente(
-                "MatiB",
-                "Matias",
-                "matiasbragiotorres@gmail.com",
-                "Bragio",
-                LocalDate.of(2000, 5, 10),
-                ""
-        );
+        if (!usuariosPorNickname.containsKey("MatiB")) {
+            altaAsistente(
+                    "MatiB",
+                    "Matias",
+                    "matiasbragiotorres@gmail.com",
+                    "Bragio",
+                    LocalDate.of(2000, 5, 10),
+                    ""
+            );
+        }
 
-        altaOrganizador(
-                "juanchi",
-                "Juancito",
-                "juancito@gmail.com",
-                "Organizador de conferencias",
-                "https://orgconf.com"
-        );
+        if (!usuariosPorNickname.containsKey("juanchi")) {
+            altaOrganizador(
+                    "juanchi",
+                    "Juancito",
+                    "juancito@gmail.com",
+                    "Organizador de conferencias",
+                    "https://orgconf.com"
+            );
+        }
 
         Evento conferenciaJava = new Evento(
                 "Conferencia Java",
@@ -364,14 +381,28 @@ public class Sistema implements ISistema {
         ));
     }
 
+    private void cargarUsuariosPersistidos() {
+        for (Usuario usuario : usuarioDAO.listarUsuarios()) {
+            usuariosPorNickname.put(usuario.getNickname(), usuario);
+            usuariosPorCorreo.put(usuario.getCorreo(), usuario);
+        }
+    }
+
     private Usuario buscarPorNickname(String nickname) {
         Usuario usuario = usuariosPorNickname.get(nickname);
+
+        if (usuario == null) {
+            usuario = usuarioDAO.buscarPorNickname(nickname);
+        }
 
         if (usuario == null) {
             throw new RuntimeException(
                     "No existe un usuario con el nickname: " + nickname
             );
         }
+
+        usuariosPorNickname.put(usuario.getNickname(), usuario);
+        usuariosPorCorreo.put(usuario.getCorreo(), usuario);
 
         return usuario;
     }
