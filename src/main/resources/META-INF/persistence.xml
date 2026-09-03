@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             version="3.0">
+
+    <persistence-unit name="eventosuy" transaction-type="RESOURCE_LOCAL">
+
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Clases del dominio que vamos a persistir con JPA -->
+        <class>logica.Clases.Usuario</class>
+        <class>logica.Clases.Asistente</class>
+        <class>logica.Clases.Organizador</class>
+        <class>logica.Clases.Institucion</class>
+        <class>logica.Clases.Evento</class>
+        <class>logica.Clases.Edicion</class>
+        <class>logica.Clases.TipoRegistro</class>
+        <class>logica.Clases.Registro</class>
+        <class>logica.Clases.Patrocinio</class>
+        <class>logica.Clases.Categoria</class>
+
+        <properties>
+
+            <!-- Conexion a PostgreSQL local -->
+            <property name="jakarta.persistence.jdbc.driver"
+                      value="org.postgresql.Driver"/>
+
+            <property name="jakarta.persistence.jdbc.url"
+                      value="jdbc:postgresql://localhost:5432/eventosuy"/>
+
+            <property name="jakarta.persistence.jdbc.user"
+                      value="eventosuy"/>
+
+            <property name="jakarta.persistence.jdbc.password"
+                      value="eventosuy"/>
+
+            <!-- Hibernate crea o actualiza tablas segun las entidades -->
+            <property name="hibernate.hbm2ddl.auto"
+                      value="update"/>
+
+            <!-- Muestra las consultas SQL en consola. Util al principio -->
+            <property name="hibernate.show_sql"
+                      value="true"/>
+
+            <property name="hibernate.format_sql"
+                      value="true"/>
+
+            <!-- Dialecto SQL que Hibernate usa para PostgreSQL -->
+            <property name="hibernate.dialect"
+                      value="org.hibernate.dialect.PostgreSQLDialect"/>
+
+        </properties>
+
+    </persistence-unit>
+
+</persistence>
