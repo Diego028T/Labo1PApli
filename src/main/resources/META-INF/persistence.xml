@@ -10,6 +10,7 @@
         <class>logica.Clases.Usuario</class>
         <class>logica.Clases.Asistente</class>
         <class>logica.Clases.Organizador</class>
+        <class>logica.Clases.Institucion</class>
 
         <properties>
 

@@ -11,6 +11,7 @@ import logica.DataTypes.DTFecha;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Persistencia.JPAUtil;
 import logica.Persistencia.UsuarioDAO;
+import logica.Persistencia.InstitucionDAO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ public class Sistema implements ISistema {
     private final Map<String, Usuario> usuariosPorCorreo;
     private final List<Evento> eventos;
     private final UsuarioDAO usuarioDAO;
+    private final InstitucionDAO institucionDAO;
     private int siguienteIdRegistro;
 
     private Sistema() {
@@ -37,9 +39,11 @@ public class Sistema implements ISistema {
         usuariosPorCorreo = new HashMap<>();
         eventos = new ArrayList<>();
         usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
+        institucionDAO = new InstitucionDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
 
         cargarUsuariosPersistidos();
+        cargarInstitucionesPersistidas();
         cargarDatosIniciales();
     }
 
@@ -74,10 +78,16 @@ public class Sistema implements ISistema {
         Institucion institucion = instituciones.get(clave);
 
         if (institucion == null) {
+            institucion = institucionDAO.buscarPorNombre(nombreInstitucion);
+        }
+
+        if (institucion == null) {
             throw new IllegalArgumentException(
                     "No existe una institución con el nombre: " + nombreInstitucion
             );
         }
+
+        instituciones.put(clave, institucion);
 
         return institucion;
     }
@@ -149,11 +159,7 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public void altaInstitucion(
-            String nombre,
-            String descripcion,
-            String sitioWeb) {
-
+    public void altaInstitucion(String nombre, String descripcion, String sitioWeb) {
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException(
                     "El nombre de la institución es obligatorio."
@@ -162,7 +168,7 @@ public class Sistema implements ISistema {
 
         String clave = nombre.trim().toLowerCase();
 
-        if (instituciones.containsKey(clave)) {
+        if (institucionDAO.existeNombre(nombre) || instituciones.containsKey(clave)) {
             throw new IllegalArgumentException(
                     "Ya existe una institución con ese nombre."
             );
@@ -174,18 +180,13 @@ public class Sistema implements ISistema {
                 sitioWeb
         );
 
+        institucionDAO.guardar(nuevaInstitucion);
         instituciones.put(clave, nuevaInstitucion);
     }
 
     @Override
     public List<String> listarNombresInstituciones() {
-        List<String> nombres = new ArrayList<>();
-
-        for (Institucion institucion : instituciones.values()) {
-            nombres.add(institucion.getNombre());
-        }
-
-        return nombres;
+        return institucionDAO.listarNombres();
     }
 
     @Override
@@ -307,17 +308,21 @@ public class Sistema implements ISistema {
     }
 
     private void cargarDatosIniciales() {
-        altaInstitucion(
-                "UTEC",
-                "Universidad Tecnológica del Uruguay",
-                "https://utec.edu.uy"
-        );
+        if (!instituciones.containsKey("utec")) {
+            altaInstitucion(
+                    "UTEC",
+                    "Universidad Tecnológica del Uruguay",
+                    "https://utec.edu.uy"
+            );
+        }
 
-        altaInstitucion(
-                "ANTEL",
-                "Empresa nacional de telecomunicaciones",
-                "https://www.antel.com.uy"
-        );
+        if (!instituciones.containsKey("antel")) {
+            altaInstitucion(
+                    "ANTEL",
+                    "Empresa nacional de telecomunicaciones",
+                    "https://www.antel.com.uy"
+            );
+        }
 
         //datos para probar
         if (!usuariosPorNickname.containsKey("MatiB")) {
@@ -385,6 +390,13 @@ public class Sistema implements ISistema {
         for (Usuario usuario : usuarioDAO.listarUsuarios()) {
             usuariosPorNickname.put(usuario.getNickname(), usuario);
             usuariosPorCorreo.put(usuario.getCorreo(), usuario);
+        }
+    }
+
+    private void cargarInstitucionesPersistidas() {
+        for (Institucion institucion : institucionDAO.listarInstituciones()) {
+            String clave = institucion.getNombre().trim().toLowerCase();
+            instituciones.put(clave, institucion);
         }
     }
 

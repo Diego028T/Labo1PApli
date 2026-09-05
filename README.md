@@ -296,3 +296,25 @@ Durante esta etapa se hizo lo siguiente:
 - Se conecto `Sistema` con `UsuarioDAO` para persistir usuarios.
 - Se verifico que Hibernate cree las tablas `usuario`, `asistente` y `organizador`.
 - Se verifico que los usuarios persistan al cerrar y volver a abrir la aplicacion.
+
+---
+
+## Actualizacion
+sabado 5... 
+Se avanzo con el mapeo de `Institucion` como entidad JPA simple.
+
+Se agrego:
+
+- `@Entity` y `@Table(name = "institucion")` en `Institucion`.
+- `id` autogenerado como clave primaria.
+- `nombre` unico y obligatorio.
+- `Institucion` al `persistence.xml`.
+- `InstitucionDAO` para guardar, buscar y listar instituciones desde PostgreSQL.
+- Conexion de `Sistema` con `InstitucionDAO`.
+
+Ahora `altaInstitucion()` y `listarNombresInstituciones()` trabajan contra PostgreSQL.
+
+Pendiente:
+
+- Enganchar la relacion real entre `Asistente` e `Institucion`.
+- Actualmente `Asistente.institucion` sigue marcado como `@Transient`, por lo que la institucion se asigna en memoria pero no se guarda todavia como relacion en la base.
