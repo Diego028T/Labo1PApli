@@ -1,6 +1,5 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
 import logica.DataTypes.DTFecha;
@@ -23,6 +22,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JTextField txtNombreEdicion;
     private JTextField txtSiglaEdicion;
     private JSpinner txtFechaAlta;
+    private JSpinner txtFechaInicio;
     private JSpinner txtFechaFin;
     private JTextField txtCiudad;
     private JTextField txtPais;
@@ -30,7 +30,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private Organizador organizadorSeleccionado;
 
     public AltaEdicionInternalFrame(ISistema sistema){
-        super("Alta de eventos", true, true, true, true);
+        super("Alta de edición de evento", true, true, true, true);
         this.sistema = sistema;
 
         setContentPane(eventosListados);
@@ -80,12 +80,13 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private void mostrarFormularioEdicion() {
         txtNombreEdicion = new JTextField();
         txtSiglaEdicion = new JTextField();
-        txtFechaAlta = crearSelectorFecha();
+        txtFechaInicio = crearSelectorFecha();
         txtFechaFin = crearSelectorFecha();
+        txtFechaAlta = crearSelectorFecha();
         txtCiudad = new JTextField();
         txtPais = new JTextField();
 
-        JPanel datos = new JPanel(new GridLayout(6, 2, 10, 10));
+        JPanel datos = new JPanel(new GridLayout(7, 2, 10, 10));
 
         datos.add(new JLabel("Nombre edición:"));
         datos.add(txtNombreEdicion);
@@ -93,11 +94,14 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         datos.add(new JLabel("Sigla edición:"));
         datos.add(txtSiglaEdicion);
 
-        datos.add(new JLabel("Fecha alta:"));
-        datos.add(txtFechaAlta);
+        datos.add(new JLabel("Fecha de inicio:"));
+        datos.add(txtFechaInicio);
 
         datos.add(new JLabel("Fecha fin:"));
         datos.add(txtFechaFin);
+
+        datos.add(new JLabel("Fecha de alta:"));
+        datos.add(txtFechaAlta);
 
         datos.add(new JLabel("Ciudad:"));
         datos.add(txtCiudad);
@@ -115,15 +119,8 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         botones.add(btnAceptar);
         botones.add(btnCancelar);
 
-        panelFormularioEdicion.setLayout(new BorderLayout(10, 10));
-        panelFormularioEdicion.add(
-                new JLabel("Alta de edición para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.getNombre()),
-                BorderLayout.NORTH
-        );
-        panelFormularioEdicion.add(datos, BorderLayout.CENTER);
-        panelFormularioEdicion.add(botones, BorderLayout.SOUTH);
-
         panelFormularioEdicion.removeAll();
+        panelFormularioEdicion.setLayout(new BorderLayout(10, 10));
         panelFormularioEdicion.add(
                 new JLabel("Alta de edicion para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.getNombre()),
                 BorderLayout.NORTH
@@ -175,26 +172,32 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         String ciudad = txtCiudad.getText().trim();
         String pais = txtPais.getText().trim();
 
-        DTFecha fechaAlta = convertirAFecha(txtFechaAlta);
+        DTFecha fechaInicio = convertirAFecha(txtFechaInicio);
         DTFecha fechaFin = convertirAFecha(txtFechaFin);
+        DTFecha fechaAlta = convertirAFecha(txtFechaAlta);
         if (nombreEdicion.isBlank() || siglaEdicion.isBlank()
-                || fechaAlta == null || fechaFin == null
+                || fechaInicio == null || fechaFin == null || fechaAlta == null
                 || ciudad.isBlank() || pais.isBlank()) {
             JOptionPane.showMessageDialog(this, "Debe completar todos los campos.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        if (esAnterior(fechaFin, fechaAlta)) {
-            JOptionPane.showMessageDialog(this, "La fecha fin no puede ser anterior a la fecha alta.",
+        if (esAnterior(fechaFin, fechaInicio)) {
+            JOptionPane.showMessageDialog(this, "La fecha de fin no puede ser anterior a la fecha de inicio.",
                     "Fechas inválidas", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        Edicion nuevaEdicion = new Edicion(nombreEdicion, siglaEdicion, fechaAlta, fechaFin, ciudad, pais);
-        eventoSeleccionado.agregarEdicion(nuevaEdicion);
-        JOptionPane.showMessageDialog(
-                this, "Se crearía la edición '" + nombreEdicion + "' para el evento '" + eventoSeleccionado.getNombre() + "'. Con el organizador: " + organizadorSeleccionado);
-        dispose();
+        try {
+            sistema.altaEdicion(
+                    eventoSeleccionado, organizadorSeleccionado, nombreEdicion,
+                    siglaEdicion, fechaInicio, fechaFin, fechaAlta, ciudad, pais);
+            JOptionPane.showMessageDialog(this, "Edición dada de alta correctamente.");
+            dispose();
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error en el alta de edición",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void createUIComponents() {

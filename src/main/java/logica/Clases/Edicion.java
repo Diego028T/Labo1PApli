@@ -20,10 +20,17 @@ public class Edicion {
     private String sigla;
 
     @Column(nullable = false)
-    private  DTFecha fechaAlta;
+    private DTFecha fechaInicio;
 
     @Column(nullable = false)
-    private  DTFecha fechaFin;
+    private DTFecha fechaFin;
+
+    @Column(nullable = false)
+    private DTFecha fechaAlta;
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "organizador_id", nullable = false)
+    private Organizador organizador;
 
     @Column(nullable = false, length = 50)
     private String ciudad;
@@ -34,27 +41,47 @@ public class Edicion {
     @OneToMany(mappedBy = "edicion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TipoRegistro> tiposRegistro;
 
-    public  Edicion(){
+    public Edicion() {
         this.tiposRegistro = new ArrayList<>();
     }
 
-    public Edicion(String nombre, String sigla, DTFecha fechaAlta, DTFecha fechaFin, String ciudad, String pais){
+    public Edicion(
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais,
+            Organizador organizador
+    ) {
         this.nombre = nombre;
         this.sigla = sigla;
-        this.fechaAlta = fechaAlta;
+        this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.fechaAlta = fechaAlta;
         this.ciudad = ciudad;
         this.pais = pais;
+        this.organizador = organizador;
         this.tiposRegistro = new ArrayList<>();
     }
 
-    public Long getId() {
-        return id;
-    }
+        public Long getId() {
+            return id;
+        }
 
-    public String obtenerDetalles(){
-        return "Nombre: " + nombre + "\nSigla: " + sigla + "\nFecha de alta: " + fechaAlta + "\nFecha de fin: " + fechaFin + "\nCiudad: " + ciudad + "\nPais: " + pais;
-    }
+        public String obtenerDetalles() {
+            return "Nombre: " + nombre
+                    + "\nSigla: " + sigla
+                    + "\nFecha de inicio: " + fechaInicio
+                    + "\nFecha de fin: " + fechaFin
+                    + "\nFecha de alta: " + fechaAlta
+                    + "\nCiudad: " + ciudad
+                    + "\nPaís: " + pais
+                    + "\nOrganizador: "
+                    + (organizador == null ? "Sin asignar" : organizador.getNombre());
+        }
+
     public String getNombre() {
         return nombre;
     }
@@ -92,6 +119,14 @@ public class Edicion {
     }
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    public DTFecha getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public Organizador getOrganizador() {
+        return organizador;
     }
 
     public List<TipoRegistro> getTiposRegistro() {

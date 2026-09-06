@@ -60,6 +60,18 @@ public interface ISistema {
             List<String> nombresCategorias
     );
 
+    void altaEdicion(
+            Evento evento,
+            Organizador organizador,
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais
+    );
+
     List<Edicion> listarEdiciones(Evento evento);
 
     List<TipoRegistro> listarTiposRegistro(Edicion edicion);

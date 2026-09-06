@@ -400,7 +400,83 @@ public class Sistema implements ISistema {
         return new ArrayList<>(eventos);
     }
 
+    @Override
+    public void altaEdicion(
+            Evento evento,
+            Organizador organizador,
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais
+    ) {
+        if (evento == null) {
+            throw new IllegalArgumentException("Debe seleccionar un evento.");
+        }
+        if (organizador == null) {
+            throw new IllegalArgumentException("Debe seleccionar un organizador.");
+        }
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre de la edición es obligatorio.");
+        }
+        if (sigla == null || sigla.isBlank()) {
+            throw new IllegalArgumentException("La sigla de la edición es obligatoria.");
+        }
+        if (ciudad == null || ciudad.isBlank()
+                || pais == null || pais.isBlank()) {
+            throw new IllegalArgumentException(
+                    "La ciudad y el país son obligatorios.");
+        }
+        if (fechaInicio == null || fechaFin == null || fechaAlta == null) {
+            throw new IllegalArgumentException(
+                    "Las fechas de la edición son obligatorias.");
+        }
+        if (compararFechas(fechaFin, fechaInicio) < 0) {
+            throw new IllegalArgumentException(
+                    "La fecha de fin no puede ser anterior a la fecha de inicio.");
+        }
+
+        boolean nombreRepetido = eventos.stream()
+                .flatMap(eventoExistente ->
+                        eventoExistente.getEdiciones().stream())
+                .anyMatch(edicion -> edicion.getNombre()
+                        .equalsIgnoreCase(nombre.trim()));
+
+        if (nombreRepetido) {
+            throw new IllegalArgumentException(
+                    "Ya existe una edición con ese nombre.");
+        }
+
+        evento.agregarEdicion(new Edicion(
+                nombre.trim(),
+                sigla.trim(),
+                fechaInicio,
+                fechaFin,
+                fechaAlta,
+                ciudad.trim(),
+                pais.trim(),
+                organizador
+        ));
+    }
+
+    private int compararFechas(DTFecha primera, DTFecha segunda) {
+        if (primera.getAnio() != segunda.getAnio()) {
+            return Integer.compare(primera.getAnio(), segunda.getAnio());
+        }
+        if (primera.getMes() != segunda.getMes()) {
+            return Integer.compare(primera.getMes(), segunda.getMes());
+        }
+        return Integer.compare(primera.getDia(), segunda.getDia());
+    }
+
+    @Override
     public List<Edicion> listarEdiciones(Evento evento) {
+        if (evento == null) {
+            throw new IllegalArgumentException("Debe seleccionar un evento.");
+        }
+
         return new ArrayList<>(evento.getEdiciones());
     }
 
@@ -480,7 +556,11 @@ public class Sistema implements ISistema {
             );
         }
 
-        if (eventos.stream().noneMatch(evento -> evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
+        Organizador organizadorInicial =
+                (Organizador) buscarPorNickname("juanchi");
+
+        if (eventos.stream().noneMatch(evento ->
+                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
             Evento conferenciaJava = new Evento(
                     "Conferencia Java",
                     "Conferencia sobre Java",
@@ -495,14 +575,17 @@ public class Sistema implements ISistema {
                     "JV26",
                     new DTFecha(2026, 1, 15),
                     new DTFecha(2026, 11, 12),
+                    new DTFecha(2026, 1, 10),
                     "Montevideo",
-                    "Uruguay"
+                    "Uruguay",
+                    organizadorInicial
             ));
 
             eventos.add(conferenciaJava);
         }
 
-        if (eventos.stream().noneMatch(evento -> evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
+        if (eventos.stream().noneMatch(evento ->
+                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
             Evento conferenciaPython = new Evento(
                     "Conferencia Python",
                     "Conferencia sobre Python",
