@@ -154,4 +154,6 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
                 JOptionPane.WARNING_MESSAGE
         );
     }
+
+
 }

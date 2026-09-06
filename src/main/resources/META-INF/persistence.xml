@@ -11,6 +11,8 @@
         <class>logica.Clases.Asistente</class>
         <class>logica.Clases.Organizador</class>
         <class>logica.Clases.Institucion</class>
+        <class>logica.Clases.TipoRegistro</class>
+        <class>logica.Persistencia.DTFechaConverter</class>
 
         <properties>
 
@@ -29,7 +31,7 @@
 
             <!-- Hibernate crea o actualiza tablas segun las entidades -->
             <property name="hibernate.hbm2ddl.auto"
-                      value="update"/>
+                      value="create-drop"/>
 
             <!-- Muestra las consultas SQL en consola. Util al principio -->
             <property name="hibernate.show_sql"

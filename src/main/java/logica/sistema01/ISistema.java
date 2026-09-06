@@ -8,6 +8,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
+import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 
 import java.time.LocalDate;
@@ -60,6 +61,8 @@ public interface ISistema {
     );
 
     List<Edicion> listarEdiciones(Evento evento);
+
+    List<TipoRegistro> listarTiposRegistro(Edicion edicion);
 
     Set<DTUsuario> listarUsuarios();
 

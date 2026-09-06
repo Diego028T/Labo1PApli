@@ -99,16 +99,12 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
 
 
     private void guardarTipoRegistro() {
-        String nombre = txtNombre.getText().trim();
-        String descripcion = txtDescripcion.getText().trim();
-
         try {
+            String nombre = txtNombre.getText().trim();
+            String descripcion = txtDescripcion.getText().trim();
+
             float costo = Float.parseFloat(txtCosto.getText().trim());
             int cupo = Integer.parseInt(txtCupo.getText().trim());
-
-            if (nombre.isBlank() || descripcion.isBlank() || costo < 0 || cupo <= 0) {
-                throw new IllegalArgumentException();
-            }
 
             sistema.altaTipoRegistro(
                     edicionSeleccionada,
@@ -118,14 +114,30 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
                     cupo
             );
 
-            JOptionPane.showMessageDialog(this, "Tipo de registro guardado. Puede cargar otro.");
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Tipo de registro guardado correctamente. Puede cargar otro.",
+                    "Alta de tipo de registro",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+
             limpiarCampos();
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this,
-                    ex.getMessage() == null
-                            ? "Complete los campos con datos válidos."
-                            : ex.getMessage(),
-                    "Datos invalidos", JOptionPane.WARNING_MESSAGE);
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "El costo y el cupo deben ser valores numéricos válidos.",
+                    "Datos inválidos",
+                    JOptionPane.WARNING_MESSAGE
+            );
+
+        } catch (RuntimeException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    ex.getMessage(),
+                    "Datos inválidos",
+                    JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 

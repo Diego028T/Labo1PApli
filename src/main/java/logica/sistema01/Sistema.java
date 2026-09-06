@@ -12,6 +12,7 @@ import logica.DataTypes.EstadoAltaUsuario;
 import logica.Persistencia.JPAUtil;
 import logica.Persistencia.UsuarioDAO;
 import logica.Persistencia.InstitucionDAO;
+import logica.Persistencia.tipoRegistroDAO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,12 +55,32 @@ public class Sistema implements ISistema {
         return instancia;
     }
 
+    private String claveNormalizada(String valor) {
+        if (valor == null) {
+            return "";
+        }
+
+        return valor.trim().toLowerCase();
+    }
+
+    private String textoObligatorio(String valor, String nombreCampo) {
+        if (valor == null || valor.isBlank()) {
+            throw new IllegalArgumentException("El campo " + nombreCampo + " es obligatorio.");
+        }
+
+        return valor.trim();
+    }
+
     @Override
     public EstadoAltaUsuario chequearUsuario(String nickname, String correo) {
-        boolean nicknameRepetido = usuarioDAO.existeNickname(nickname)
-                || usuariosPorNickname.containsKey(nickname);
-        boolean correoRepetido = usuarioDAO.existeCorreo(correo)
-                || usuariosPorCorreo.containsKey(correo);
+        String nicknameNormalizado = claveNormalizada(nickname);
+        String correoNormalizado = claveNormalizada(correo);
+
+        boolean nicknameRepetido = usuariosPorNickname.containsKey(nicknameNormalizado)
+                || usuarioDAO.existeNickname(nickname);
+
+        boolean correoRepetido = usuariosPorCorreo.containsKey(correoNormalizado)
+                || usuarioDAO.existeCorreo(correo);
 
         if (nicknameRepetido && correoRepetido) {
             return EstadoAltaUsuario.NICKNAME_Y_CORREO_REPETIDOS;
@@ -77,7 +98,7 @@ public class Sistema implements ISistema {
     }
 
     private Institucion buscarInstitucion(String nombreInstitucion) {
-        String clave = nombreInstitucion.trim().toLowerCase();
+        String clave = claveNormalizada(nombreInstitucion);
         Institucion institucion = instituciones.get(clave);
 
         if (institucion == null) {
@@ -113,25 +134,34 @@ public class Sistema implements ISistema {
             LocalDate fechaNacimiento,
             String nombreInstitucion) {
 
-        EstadoAltaUsuario estado = chequearUsuario(nickname, correo);
+        String nicknameLimpio = textoObligatorio(nickname, "nickname");
+        String nombreLimpio = textoObligatorio(nombre, "nombre");
+        String correoLimpio = textoObligatorio(correo, "correo");
+        String apellidoLimpio = textoObligatorio(apellido, "apellido");
+
+        if (fechaNacimiento == null) {
+            throw new IllegalArgumentException("La fecha de nacimiento es obligatoria.");
+        }
+
+        EstadoAltaUsuario estado = chequearUsuario(nicknameLimpio, correoLimpio);
 
         if (estado != EstadoAltaUsuario.OK) {
             throw new IllegalArgumentException("El nickname o correo ya están en uso.");
         }
 
         Asistente asistente = new Asistente(
-                nombre,
-                nickname,
-                correo,
-                apellido,
+                nombreLimpio,
+                nicknameLimpio,
+                correoLimpio,
+                apellidoLimpio,
                 fechaNacimiento
         );
 
         asignarInstitucion(asistente, nombreInstitucion);
 
         usuarioDAO.guardar(asistente);
-        usuariosPorNickname.put(nickname, asistente);
-        usuariosPorCorreo.put(correo, asistente);
+        usuariosPorNickname.put(claveNormalizada(nicknameLimpio), asistente);
+        usuariosPorCorreo.put(claveNormalizada(correoLimpio), asistente);
     }
 
     @Override
@@ -142,43 +172,43 @@ public class Sistema implements ISistema {
             String descripcion,
             String enlace) {
 
-        EstadoAltaUsuario estado = chequearUsuario(nickname, correo);
+        String nicknameLimpio = textoObligatorio(nickname, "nickname");
+        String nombreLimpio = textoObligatorio(nombre, "nombre");
+        String correoLimpio = textoObligatorio(correo, "correo");
+        String descripcionLimpia = textoObligatorio(descripcion, "descripción");
+
+        EstadoAltaUsuario estado = chequearUsuario(nicknameLimpio, correoLimpio);
 
         if (estado != EstadoAltaUsuario.OK) {
             throw new IllegalArgumentException("El nickname o correo ya están en uso.");
         }
 
         Organizador organizador = new Organizador(
-                nombre,
-                nickname,
-                correo,
-                descripcion,
-                enlace
+                nombreLimpio,
+                nicknameLimpio,
+                correoLimpio,
+                descripcionLimpia,
+                enlace == null ? null : enlace.trim()
         );
 
         usuarioDAO.guardar(organizador);
-        usuariosPorNickname.put(nickname, organizador);
-        usuariosPorCorreo.put(correo, organizador);
+        usuariosPorNickname.put(claveNormalizada(nicknameLimpio), organizador);
+        usuariosPorCorreo.put(claveNormalizada(correoLimpio), organizador);
     }
 
     @Override
     public void altaInstitucion(String nombre, String descripcion, String sitioWeb) {
-        if (nombre == null || nombre.isBlank()) {
-            throw new IllegalArgumentException(
-                    "El nombre de la institución es obligatorio."
-            );
-        }
+        String nombreLimpio = textoObligatorio(nombre, "nombre de la institución");
+        String clave = claveNormalizada(nombreLimpio);
 
-        String clave = nombre.trim().toLowerCase();
-
-        if (institucionDAO.existeNombre(nombre) || instituciones.containsKey(clave)) {
+        if (instituciones.containsKey(clave) || institucionDAO.existeNombre(nombreLimpio)) {
             throw new IllegalArgumentException(
                     "Ya existe una institución con ese nombre."
             );
         }
 
         Institucion nuevaInstitucion = new Institucion(
-                nombre.trim(),
+                nombreLimpio,
                 descripcion,
                 sitioWeb
         );
@@ -244,7 +274,7 @@ public class Sistema implements ISistema {
 
         for (String nombreCategoria : nombresCategorias) {
             Categoria categoria = categorias.get(
-                    nombreCategoria.trim().toLowerCase()
+                    claveNormalizada(nombreCategoria)
             );
 
             if (categoria == null) {
@@ -301,9 +331,11 @@ public class Sistema implements ISistema {
         if (datos instanceof DTUsuarioAsist datosAsistente) {
             Usuario usuario = buscarPorNickname(datosAsistente.getNickname());
 
-            usuario.setNombre(datosAsistente.getNombre());
+            if (!(usuario instanceof Asistente asistente)) {
+                throw new IllegalArgumentException("El usuario seleccionado no es un asistente.");
+            }
 
-            Asistente asistente = (Asistente) usuario;
+            usuario.setNombre(datosAsistente.getNombre());
             asistente.setApellido(datosAsistente.getApellido());
             asistente.setFechaNacimiento(datosAsistente.getFechaNacimiento());
 
@@ -312,9 +344,11 @@ public class Sistema implements ISistema {
         } else if (datos instanceof DTUsuarioOrg datosOrganizador) {
             Usuario usuario = buscarPorNickname(datosOrganizador.getNickname());
 
-            usuario.setNombre(datosOrganizador.getNombre());
+            if (!(usuario instanceof Organizador organizador)) {
+                throw new IllegalArgumentException("El usuario seleccionado no es un organizador.");
+            }
 
-            Organizador organizador = (Organizador) usuario;
+            usuario.setNombre(datosOrganizador.getNombre());
             organizador.setDescripcion(datosOrganizador.getDescripcion());
             organizador.setEnlace(datosOrganizador.getEnlace());
 
@@ -366,19 +400,33 @@ public class Sistema implements ISistema {
         return new ArrayList<>(eventos);
     }
 
-    public List<Edicion> listarEdiciones(Evento evento){
-        for (Edicion edicion : evento.getEdiciones()) {}
+    public List<Edicion> listarEdiciones(Evento evento) {
         return new ArrayList<>(evento.getEdiciones());
+    }
+
+    @Override
+    public List<TipoRegistro> listarTiposRegistro(Edicion edicion) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (edicion.getId() == null) {
+            return edicion.getTiposRegistro();
+        }
+
+        return tipoRegistroDAO.listarPorEdicion(edicion);
     }
 
     @Override
     public List<Organizador> listarOrganizadores() {
         List<Organizador> resultado = new ArrayList<>();
-        for (Usuario usuario : usuariosPorNickname.values()) {
+
+        for (Usuario usuario : usuarioDAO.listarUsuarios()) {
             if (usuario instanceof Organizador organizador) {
                 resultado.add(organizador);
             }
         }
+
         return resultado;
     }
 
@@ -388,12 +436,11 @@ public class Sistema implements ISistema {
         categorias.put("negocios", new Categoria("Negocios"));
     }
 
-
     private void cargarDatosIniciales() {
-
         cargarCategoriasIniciales();
 
-        if (!instituciones.containsKey("utec")) {
+        if (!instituciones.containsKey(claveNormalizada("UTEC"))
+                && !institucionDAO.existeNombre("UTEC")) {
             altaInstitucion(
                     "UTEC",
                     "Universidad Tecnológica del Uruguay",
@@ -401,7 +448,8 @@ public class Sistema implements ISistema {
             );
         }
 
-        if (!instituciones.containsKey("antel")) {
+        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
+                && !institucionDAO.existeNombre("ANTEL")) {
             altaInstitucion(
                     "ANTEL",
                     "Empresa nacional de telecomunicaciones",
@@ -409,8 +457,8 @@ public class Sistema implements ISistema {
             );
         }
 
-        //datos para probar
-        if (!usuariosPorNickname.containsKey("MatiB")) {
+        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
+                && !usuarioDAO.existeNickname("MatiB")) {
             altaAsistente(
                     "MatiB",
                     "Matias",
@@ -421,7 +469,8 @@ public class Sistema implements ISistema {
             );
         }
 
-        if (!usuariosPorNickname.containsKey("juanchi")) {
+        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
+                && !usuarioDAO.existeNickname("juanchi")) {
             altaOrganizador(
                     "juanchi",
                     "Juancito",
@@ -431,80 +480,58 @@ public class Sistema implements ISistema {
             );
         }
 
+        if (eventos.stream().noneMatch(evento -> evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
+            Evento conferenciaJava = new Evento(
+                    "Conferencia Java",
+                    "Conferencia sobre Java",
+                    "JV2026",
+                    new DTFecha(2026, 1, 15)
+            );
 
+            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
 
-        Evento conferenciaJava = new Evento(
-                "Conferencia Java",
-                "Conferencia sobre Java",
-                "JV2026",
-                new DTFecha(2026, 1, 15)
-        );
+            conferenciaJava.agregarEdicion(new Edicion(
+                    "Java 2026",
+                    "JV26",
+                    new DTFecha(2026, 1, 15),
+                    new DTFecha(2026, 11, 12),
+                    "Montevideo",
+                    "Uruguay"
+            ));
 
-        conferenciaJava.agregarCategoria(categorias.get("tecnología"));
+            eventos.add(conferenciaJava);
+        }
 
-        conferenciaJava.agregarEdicion(new Edicion(
-                "Java 2026",
-                "JV26",
-                new DTFecha(2026, 1, 15),
-                new DTFecha(2026, 11, 12),
-                "Montevideo",
-                "Uruguay"
-        ));
+        if (eventos.stream().noneMatch(evento -> evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
+            Evento conferenciaPython = new Evento(
+                    "Conferencia Python",
+                    "Conferencia sobre Python",
+                    "PY2026",
+                    new DTFecha(2026, 2, 1)
+            );
 
-        eventos.add(conferenciaJava);
+            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
 
-        Evento conferenciaPython = new Evento(
-                "Conferencia Python",
-                "Conferencia sobre Python",
-                "PY2026",
-                new DTFecha(2026, 2, 1)
-        );
-
-        conferenciaPython.agregarCategoria(categorias.get("tecnología"));
-
-        eventos.add(conferenciaPython);
-
-        //eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
-
-
-
-        Edicion edicionJava = conferenciaJava.getEdiciones().get(0);
-        TipoRegistro tipoGeneral = new TipoRegistro(
-                "General",
-                "Entrada general",
-                1000,
-                50
-        );
-
-        edicionJava.agregarTipoRegistro(tipoGeneral);
-
-        Asistente asistente = buscarAsistentePorNickname("MatiB");
-        asistente.agregarRegistro(new Registro(
-                siguienteIdRegistro++,
-                new DTFecha(2026, 9, 1),
-                tipoGeneral.getCosto(),
-                false,
-                tipoGeneral,
-                edicionJava
-        ));
+            eventos.add(conferenciaPython);
+        }
     }
 
     private void cargarUsuariosPersistidos() {
         for (Usuario usuario : usuarioDAO.listarUsuarios()) {
-            usuariosPorNickname.put(usuario.getNickname(), usuario);
-            usuariosPorCorreo.put(usuario.getCorreo(), usuario);
+            usuariosPorNickname.put(claveNormalizada(usuario.getNickname()), usuario);
+            usuariosPorCorreo.put(claveNormalizada(usuario.getCorreo()), usuario);
         }
     }
 
     private void cargarInstitucionesPersistidas() {
         for (Institucion institucion : institucionDAO.listarInstituciones()) {
-            String clave = institucion.getNombre().trim().toLowerCase();
-            instituciones.put(clave, institucion);
+            instituciones.put(claveNormalizada(institucion.getNombre()), institucion);
         }
     }
 
     private Usuario buscarPorNickname(String nickname) {
-        Usuario usuario = usuariosPorNickname.get(nickname);
+        String clave = claveNormalizada(nickname);
+        Usuario usuario = usuariosPorNickname.get(clave);
 
         if (usuario == null) {
             usuario = usuarioDAO.buscarPorNickname(nickname);
@@ -516,8 +543,8 @@ public class Sistema implements ISistema {
             );
         }
 
-        usuariosPorNickname.put(usuario.getNickname(), usuario);
-        usuariosPorCorreo.put(usuario.getCorreo(), usuario);
+        usuariosPorNickname.put(claveNormalizada(usuario.getNickname()), usuario);
+        usuariosPorCorreo.put(claveNormalizada(usuario.getCorreo()), usuario);
 
         return usuario;
     }
@@ -562,14 +589,15 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("El cupo debe ser mayor que cero");
         }
 
-        TipoRegistro tipo = new TipoRegistro(
+        TipoRegistro tipoRegistro = new TipoRegistro(
                 nombre.trim(),
                 descripcion.trim(),
                 costo,
                 cupo
         );
 
-        edicion.agregarTipoRegistro(tipo);
+        edicion.agregarTipoRegistro(tipoRegistro);
 
+        tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
     }
 }
