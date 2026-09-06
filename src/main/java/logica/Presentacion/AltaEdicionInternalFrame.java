@@ -191,7 +191,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         }
 
         Edicion nuevaEdicion = new Edicion(nombreEdicion, siglaEdicion, fechaAlta, fechaFin, ciudad, pais);
-        eventoSeleccionado.setEdiciones(nuevaEdicion);
+        eventoSeleccionado.agregarEdicion(nuevaEdicion);
         JOptionPane.showMessageDialog(
                 this, "Se crearía la edición '" + nombreEdicion + "' para el evento '" + eventoSeleccionado.getNombre() + "'. Con el organizador: " + organizadorSeleccionado);
         dispose();

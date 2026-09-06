@@ -8,6 +8,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
+import logica.DataTypes.DTFecha;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,6 +51,14 @@ public interface ISistema {
             int cupo
     );
 
+    void altaEvento(
+            String nombre,
+            String descripcion,
+            String sigla,
+            DTFecha fechaAlta,
+            List<String> nombresCategorias
+    );
+
     List<Edicion> listarEdiciones(Evento evento);
 
     Set<DTUsuario> listarUsuarios();
@@ -67,4 +76,6 @@ public interface ISistema {
     List<Evento> listarEventos();
 
     List<Organizador> listarOrganizadores();
+
+    List<String> listarNombresCategorias();
 }

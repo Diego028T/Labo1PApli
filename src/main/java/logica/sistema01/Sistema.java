@@ -29,8 +29,10 @@ public class Sistema implements ISistema {
     private final Map<String, Usuario> usuariosPorNickname;
     private final Map<String, Usuario> usuariosPorCorreo;
     private final List<Evento> eventos;
+    private final Map<String, Categoria> categorias;
     private final UsuarioDAO usuarioDAO;
     private final InstitucionDAO institucionDAO;
+
     private int siguienteIdRegistro;
 
     private Sistema() {
@@ -38,6 +40,7 @@ public class Sistema implements ISistema {
         usuariosPorNickname = new HashMap<>();
         usuariosPorCorreo = new HashMap<>();
         eventos = new ArrayList<>();
+        categorias = new HashMap<>();
         usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
         institucionDAO = new InstitucionDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
@@ -185,6 +188,78 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public List<String> listarNombresCategorias() {
+        return categorias.values().stream()
+                .map(Categoria::getNombre)
+                .sorted()
+                .toList();
+    }
+
+    @Override
+    public void altaEvento(
+            String nombre,
+            String descripcion,
+            String sigla,
+            DTFecha fechaAlta,
+            List<String> nombresCategorias
+    ) {
+        if (nombre == null || nombre.isBlank()) {
+            throw new IllegalArgumentException("El nombre del evento es obligatorio.");
+        }
+
+        if (descripcion == null || descripcion.isBlank()) {
+            throw new IllegalArgumentException("La descripción del evento es obligatoria.");
+        }
+
+        if (sigla == null || sigla.isBlank()) {
+            throw new IllegalArgumentException("La sigla del evento es obligatoria.");
+        }
+
+        if (fechaAlta == null) {
+            throw new IllegalArgumentException("La fecha de alta es obligatoria.");
+        }
+
+        if (nombresCategorias == null || nombresCategorias.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar al menos una categoría."
+            );
+        }
+
+        boolean nombreRepetido = eventos.stream()
+                .anyMatch(evento -> evento.getNombre()
+                        .equalsIgnoreCase(nombre.trim()));
+
+        if (nombreRepetido) {
+            throw new IllegalArgumentException(
+                    "Ya existe un evento con ese nombre."
+            );
+        }
+
+        Evento evento = new Evento(
+                nombre.trim(),
+                descripcion.trim(),
+                sigla.trim(),
+                fechaAlta
+        );
+
+        for (String nombreCategoria : nombresCategorias) {
+            Categoria categoria = categorias.get(
+                    nombreCategoria.trim().toLowerCase()
+            );
+
+            if (categoria == null) {
+                throw new IllegalArgumentException(
+                        "La categoría seleccionada no existe: " + nombreCategoria
+                );
+            }
+
+            evento.agregarCategoria(categoria);
+        }
+
+        eventos.add(evento);
+    }
+
+    @Override
     public List<String> listarNombresInstituciones() {
         return institucionDAO.listarNombres();
     }
@@ -307,7 +382,17 @@ public class Sistema implements ISistema {
         return resultado;
     }
 
+    private void cargarCategoriasIniciales() {
+        categorias.put("tecnología", new Categoria("Tecnología"));
+        categorias.put("educación", new Categoria("Educación"));
+        categorias.put("negocios", new Categoria("Negocios"));
+    }
+
+
     private void cargarDatosIniciales() {
+
+        cargarCategoriasIniciales();
+
         if (!instituciones.containsKey("utec")) {
             altaInstitucion(
                     "UTEC",
@@ -346,13 +431,18 @@ public class Sistema implements ISistema {
             );
         }
 
+
+
         Evento conferenciaJava = new Evento(
                 "Conferencia Java",
                 "Conferencia sobre Java",
-                "JV2026"
+                "JV2026",
+                new DTFecha(2026, 1, 15)
         );
 
-        conferenciaJava.setEdiciones(new Edicion(
+        conferenciaJava.agregarCategoria(categorias.get("tecnología"));
+
+        conferenciaJava.agregarEdicion(new Edicion(
                 "Java 2026",
                 "JV26",
                 new DTFecha(2026, 1, 15),
@@ -363,7 +453,20 @@ public class Sistema implements ISistema {
 
         eventos.add(conferenciaJava);
 
-        eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
+        Evento conferenciaPython = new Evento(
+                "Conferencia Python",
+                "Conferencia sobre Python",
+                "PY2026",
+                new DTFecha(2026, 2, 1)
+        );
+
+        conferenciaPython.agregarCategoria(categorias.get("tecnología"));
+
+        eventos.add(conferenciaPython);
+
+        //eventos.add(new Evento("Conferencia Python", "Conferencia sobre Python", "PY2026"));
+
+
 
         Edicion edicionJava = conferenciaJava.getEdiciones().get(0);
         TipoRegistro tipoGeneral = new TipoRegistro(
