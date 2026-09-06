@@ -8,25 +8,46 @@ import java.util.ArrayList;
 public class Edicion{
     private String nombre;
     private String sigla;
-    private DTFecha fechaAlta;
+    private DTFecha fechaInicio;
     private DTFecha fechaFin;
+    private DTFecha fechaAlta;
+    private Organizador organizador;
     private String ciudad;
     private String pais;
     private List<TipoRegistro> tiposRegistro;
 
-    public Edicion(String nombre, String sigla, DTFecha fechaAlta, DTFecha fechaFin, String ciudad, String pais){
+    public Edicion(
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais,
+            Organizador organizador
+    ) {
         this.nombre = nombre;
         this.sigla = sigla;
-        this.fechaAlta = fechaAlta;
+        this.fechaInicio = fechaInicio;
         this.fechaFin = fechaFin;
+        this.fechaAlta = fechaAlta;
         this.ciudad = ciudad;
         this.pais = pais;
+        this.organizador = organizador;
         this.tiposRegistro = new ArrayList<>();
     }
 
-    public String obtenerDetalles(){
-        return "Nombre: " + nombre + "\nSigla: " + sigla + "\nFecha de alta: " + fechaAlta + "\nFecha de fin: " + fechaFin + "\nCiudad: " + ciudad + "\nPais: " + pais;
+    public String obtenerDetalles() {
+        return "Nombre: " + nombre
+                + "\nSigla: " + sigla
+                + "\nFecha de inicio: " + fechaInicio
+                + "\nFecha de fin: " + fechaFin
+                + "\nFecha de alta: " + fechaAlta
+                + "\nCiudad: " + ciudad
+                + "\nPaís: " + pais
+                + "\nOrganizador: " + organizador.getNombre();
     }
+
     public String getNombre() {
         return nombre;
     }
@@ -64,6 +85,14 @@ public class Edicion{
     }
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    public DTFecha getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public Organizador getOrganizador() {
+        return organizador;
     }
 
     public List<TipoRegistro> getTiposRegistro() {
