@@ -7,6 +7,8 @@ import logica.sistema01.ISistema;
 import javax.swing.*;
 import java.util.List;
 
+import java.awt.*;
+
 public class AltaTipoRegistroInternalFrame extends JInternalFrame {
     private JPanel principalPanel;
     private JLabel lblEdicion;
@@ -27,6 +29,8 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
         }
 
         this.sistema = sistema;
+
+        crearFormulario();
         setContentPane(principalPanel);
 
         edicionSeleccionada = seleccionarEdicion();
@@ -46,6 +50,41 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
 
         pack();
         setLocation(140, 100);
+    }
+
+    private void crearFormulario() {
+        principalPanel = new JPanel(new BorderLayout(10, 10));
+
+        JPanel formulario = new JPanel(new GridLayout(6, 2, 10, 10));
+
+        lblEdicion = new JLabel("Tipos de registro");
+        txtNombre = new JTextField(20);
+        txtDescripcion = new JTextField(20);
+        txtCosto = new JTextField(20);
+        txtCupo = new JTextField(20);
+
+        btnGuardar = new JButton("Guardar");
+        btnLimpiar = new JButton("Limpiar");
+
+        formulario.add(lblEdicion);
+        formulario.add(new JLabel());
+
+        formulario.add(new JLabel("Nombre:"));
+        formulario.add(txtNombre);
+
+        formulario.add(new JLabel("Descripción:"));
+        formulario.add(txtDescripcion);
+
+        formulario.add(new JLabel("Costo:"));
+        formulario.add(txtCosto);
+
+        formulario.add(new JLabel("Cupo:"));
+        formulario.add(txtCupo);
+
+        formulario.add(btnGuardar);
+        formulario.add(btnLimpiar);
+
+        principalPanel.add(formulario, BorderLayout.CENTER);
     }
 
     private Edicion seleccionarEdicion() {
