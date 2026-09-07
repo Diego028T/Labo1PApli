@@ -1,0 +1,335 @@
+[1mdiff --git a/src/main/java/logica/Clases/Edicion.java b/src/main/java/logica/Clases/Edicion.java[m
+[1mindex f3884dc..f3f9cc2 100644[m
+[1m--- a/src/main/java/logica/Clases/Edicion.java[m
+[1m+++ b/src/main/java/logica/Clases/Edicion.java[m
+[36m@@ -8,25 +8,46 @@[m [mimport java.util.ArrayList;[m
+ public class Edicion{[m
+     private String nombre;[m
+     private String sigla;[m
+[31m-    private DTFecha fechaAlta;[m
+[32m+[m[32m    private DTFecha fechaInicio;[m
+     private DTFecha fechaFin;[m
+[32m+[m[32m    private DTFecha fechaAlta;[m
+[32m+[m[32m    private Organizador organizador;[m
+     private String ciudad;[m
+     private String pais;[m
+     private List<TipoRegistro> tiposRegistro;[m
+ [m
+[31m-    public Edicion(String nombre, String sigla, DTFecha fechaAlta, DTFecha fechaFin, String ciudad, String pais){[m
+[32m+[m[32m    public Edicion([m
+[32m+[m[32m            String nombre,[m
+[32m+[m[32m            String sigla,[m
+[32m+[m[32m            DTFecha fechaInicio,[m
+[32m+[m[32m            DTFecha fechaFin,[m
+[32m+[m[32m            DTFecha fechaAlta,[m
+[32m+[m[32m            String ciudad,[m
+[32m+[m[32m            String pais,[m
+[32m+[m[32m            Organizador organizador[m
+[32m+[m[32m    ) {[m
+         this.nombre = nombre;[m
+         this.sigla = sigla;[m
+[31m-        this.fechaAlta = fechaAlta;[m
+[32m+[m[32m        this.fechaInicio = fechaInicio;[m
+         this.fechaFin = fechaFin;[m
+[32m+[m[32m        this.fechaAlta = fechaAlta;[m
+         this.ciudad = ciudad;[m
+         this.pais = pais;[m
+[32m+[m[32m        this.organizador = organizador;[m
+         this.tiposRegistro = new ArrayList<>();[m
+     }[m
+ [m
+[31m-    public String obtenerDetalles(){[m
+[31m-        return "Nombre: " + nombre + "\nSigla: " + sigla + "\nFecha de alta: " + fechaAlta + "\nFecha de fin: " + fechaFin + "\nCiudad: " + ciudad + "\nPais: " + pais;[m
+[32m+[m[32m    public String obtenerDetalles() {[m
+[32m+[m[32m        return "Nombre: " + nombre[m
+[32m+[m[32m                + "\nSigla: " + sigla[m
+[32m+[m[32m                + "\nFecha de inicio: " + fechaInicio[m
+[32m+[m[32m                + "\nFecha de fin: " + fechaFin[m
+[32m+[m[32m                + "\nFecha de alta: " + fechaAlta[m
+[32m+[m[32m                + "\nCiudad: " + ciudad[m
+[32m+[m[32m                + "\nPaís: " + pais[m
+[32m+[m[32m                + "\nOrganizador: " + organizador.getNombre();[m
+     }[m
+[32m+[m
+     public String getNombre() {[m
+         return nombre;[m
+     }[m
+[36m@@ -66,6 +87,14 @@[m [mpublic class Edicion{[m
+         this.pais = pais;[m
+     }[m
+ [m
+[32m+[m[32m    public DTFecha getFechaInicio() {[m
+[32m+[m[32m        return fechaInicio;[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    public Organizador getOrganizador() {[m
+[32m+[m[32m        return organizador;[m
+[32m+[m[32m    }[m
+[32m+[m
+     public List<TipoRegistro> getTiposRegistro() {[m
+         return new ArrayList<>(tiposRegistro);[m
+     }[m
+[1mdiff --git a/src/main/java/logica/Presentacion/AltaEdicionInternalFrame.java b/src/main/java/logica/Presentacion/AltaEdicionInternalFrame.java[m
+[1mindex 70bdcb3..ddd0ca9 100644[m
+[1m--- a/src/main/java/logica/Presentacion/AltaEdicionInternalFrame.java[m
+[1m+++ b/src/main/java/logica/Presentacion/AltaEdicionInternalFrame.java[m
+[36m@@ -1,6 +1,5 @@[m
+ package logica.Presentacion;[m
+ [m
+[31m-import logica.Clases.Edicion;[m
+ import logica.Clases.Evento;[m
+ import logica.Clases.Organizador;[m
+ import logica.DataTypes.DTFecha;[m
+[36m@@ -23,6 +22,7 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+     private JTextField txtNombreEdicion;[m
+     private JTextField txtSiglaEdicion;[m
+     private JSpinner txtFechaAlta;[m
+[32m+[m[32m    private JSpinner txtFechaInicio;[m
+     private JSpinner txtFechaFin;[m
+     private JTextField txtCiudad;[m
+     private JTextField txtPais;[m
+[36m@@ -30,7 +30,7 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+     private Organizador organizadorSeleccionado;[m
+ [m
+     public AltaEdicionInternalFrame(ISistema sistema){[m
+[31m-        super("Alta de eventos", true, true, true, true);[m
+[32m+[m[32m        super("Alta de edición de evento", true, true, true, true);[m
+         this.sistema = sistema;[m
+ [m
+         setContentPane(eventosListados);[m
+[36m@@ -80,12 +80,13 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+     private void mostrarFormularioEdicion() {[m
+         txtNombreEdicion = new JTextField();[m
+         txtSiglaEdicion = new JTextField();[m
+[31m-        txtFechaAlta = crearSelectorFecha();[m
+[32m+[m[32m        txtFechaInicio = crearSelectorFecha();[m
+         txtFechaFin = crearSelectorFecha();[m
+[32m+[m[32m        txtFechaAlta = crearSelectorFecha();[m
+         txtCiudad = new JTextField();[m
+         txtPais = new JTextField();[m
+ [m
+[31m-        JPanel datos = new JPanel(new GridLayout(6, 2, 10, 10));[m
+[32m+[m[32m        JPanel datos = new JPanel(new GridLayout(7, 2, 10, 10));[m
+ [m
+         datos.add(new JLabel("Nombre edición:"));[m
+         datos.add(txtNombreEdicion);[m
+[36m@@ -93,12 +94,15 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+         datos.add(new JLabel("Sigla edición:"));[m
+         datos.add(txtSiglaEdicion);[m
+ [m
+[31m-        datos.add(new JLabel("Fecha alta:"));[m
+[31m-        datos.add(txtFechaAlta);[m
+[32m+[m[32m        datos.add(new JLabel("Fecha de inicio:"));[m
+[32m+[m[32m        datos.add(txtFechaInicio);[m
+ [m
+         datos.add(new JLabel("Fecha fin:"));[m
+         datos.add(txtFechaFin);[m
+ [m
+[32m+[m[32m        datos.add(new JLabel("Fecha de alta:"));[m
+[32m+[m[32m        datos.add(txtFechaAlta);[m
+[32m+[m
+         datos.add(new JLabel("Ciudad:"));[m
+         datos.add(txtCiudad);[m
+ [m
+[36m@@ -115,15 +119,8 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+         botones.add(btnAceptar);[m
+         botones.add(btnCancelar);[m
+ [m
+[31m-        panelFormularioEdicion.setLayout(new BorderLayout(10, 10));[m
+[31m-        panelFormularioEdicion.add([m
+[31m-                new JLabel("Alta de edición para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.getNombre()),[m
+[31m-                BorderLayout.NORTH[m
+[31m-        );[m
+[31m-        panelFormularioEdicion.add(datos, BorderLayout.CENTER);[m
+[31m-        panelFormularioEdicion.add(botones, BorderLayout.SOUTH);[m
+[31m-[m
+         panelFormularioEdicion.removeAll();[m
+[32m+[m[32m        panelFormularioEdicion.setLayout(new BorderLayout(10, 10));[m
+         panelFormularioEdicion.add([m
+                 new JLabel("Alta de edicion para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.getNombre()),[m
+                 BorderLayout.NORTH[m
+[36m@@ -175,26 +172,32 @@[m [mpublic class AltaEdicionInternalFrame extends JInternalFrame {[m
+         String ciudad = txtCiudad.getText().trim();[m
+         String pais = txtPais.getText().trim();[m
+ [m
+[31m-        DTFecha fechaAlta = convertirAFecha(txtFechaAlta);[m
+[32m+[m[32m        DTFecha fechaInicio = convertirAFecha(txtFechaInicio);[m
+         DTFecha fechaFin = convertirAFecha(txtFechaFin);[m
+[32m+[m[32m        DTFecha fechaAlta = convertirAFecha(txtFechaAlta);[m
+         if (nombreEdicion.isBlank() || siglaEdicion.isBlank()[m
+[31m-                || fechaAlta == null || fechaFin == null[m
+[32m+[m[32m                || fechaInicio == null || fechaFin == null || fechaAlta == null[m
+                 || ciudad.isBlank() || pais.isBlank()) {[m
+             JOptionPane.showMessageDialog(this, "Debe completar todos los campos.", "Datos incompletos", JOptionPane.WARNING_MESSAGE);[m
+             return;[m
+         }[m
+ [m
+[31m-        if (esAnterior(fechaFin, fechaAlta)) {[m
+[31m-            JOptionPane.showMessageDialog(this, "La fecha fin no puede ser anterior a la fecha alta.",[m
+[32m+[m[32m        if (esAnterior(fechaFin, fechaInicio)) {[m
+[32m+[m[32m            JOptionPane.showMessageDialog(this, "La fecha de fin no puede ser anterior a la fecha de inicio.",[m
+                     "Fechas inválidas", JOptionPane.WARNING_MESSAGE);[m
+             return;[m
+         }[m
+ [m
+[31m-        Edicion nuevaEdicion = new Edicion(nombreEdicion, siglaEdicion, fechaAlta, fechaFin, ciudad, pais);[m
+[31m-        eventoSeleccionado.agregarEdicion(nuevaEdicion);[m
+[31m-        JOptionPane.showMessageDialog([m
+[31m-                this, "Se crearía la edición '" + nombreEdicion + "' para el evento '" + eventoSeleccionado.getNombre() + "'. Con el organizador: " + organizadorSeleccionado);[m
+[31m-        dispose();[m
+[32m+[m[32m        try {[m
+[32m+[m[32m            sistema.altaEdicion([m
+[32m+[m[32m                    eventoSeleccionado, organizadorSeleccionado, nombreEdicion,[m
+[32m+[m[32m                    siglaEdicion, fechaInicio, fechaFin, fechaAlta, ciudad, pais);[m
+[32m+[m[32m            JOptionPane.showMessageDialog(this, "Edición dada de alta correctamente.");[m
+[32m+[m[32m            dispose();[m
+[32m+[m[32m        } catch (IllegalArgumentException e) {[m
+[32m+[m[32m            JOptionPane.showMessageDialog(this, e.getMessage(), "Error en el alta de edición",[m
+[32m+[m[32m                    JOptionPane.ERROR_MESSAGE);[m
+[32m+[m[32m        }[m
+     }[m
+ [m
+     private void createUIComponents() {[m
+[1mdiff --git a/src/main/java/logica/sistema01/ISistema.java b/src/main/java/logica/sistema01/ISistema.java[m
+[1mindex acfa094..7a611d4 100644[m
+[1m--- a/src/main/java/logica/sistema01/ISistema.java[m
+[1m+++ b/src/main/java/logica/sistema01/ISistema.java[m
+[36m@@ -59,6 +59,18 @@[m [mpublic interface ISistema {[m
+             List<String> nombresCategorias[m
+     );[m
+ [m
+[32m+[m[32m    void altaEdicion([m
+[32m+[m[32m            Evento evento,[m
+[32m+[m[32m            Organizador organizador,[m
+[32m+[m[32m            String nombre,[m
+[32m+[m[32m            String sigla,[m
+[32m+[m[32m            DTFecha fechaInicio,[m
+[32m+[m[32m            DTFecha fechaFin,[m
+[32m+[m[32m            DTFecha fechaAlta,[m
+[32m+[m[32m            String ciudad,[m
+[32m+[m[32m            String pais[m
+[32m+[m[32m    );[m
+[32m+[m
+     List<Edicion> listarEdiciones(Evento evento);[m
+ [m
+     Set<DTUsuario> listarUsuarios();[m
+[1mdiff --git a/src/main/java/logica/sistema01/Sistema.java b/src/main/java/logica/sistema01/Sistema.java[m
+[1mindex 9b2f915..215cd31 100644[m
+[1m--- a/src/main/java/logica/sistema01/Sistema.java[m
+[1m+++ b/src/main/java/logica/sistema01/Sistema.java[m
+[36m@@ -366,8 +366,68 @@[m [mpublic class Sistema implements ISistema {[m
+         return new ArrayList<>(eventos);[m
+     }[m
+ [m
+[31m-    public List<Edicion> listarEdiciones(Evento evento){[m
+[31m-        for (Edicion edicion : evento.getEdiciones()) {}[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public void altaEdicion([m
+[32m+[m[32m            Evento evento,[m
+[32m+[m[32m            Organizador organizador,[m
+[32m+[m[32m            String nombre,[m
+[32m+[m[32m            String sigla,[m
+[32m+[m[32m            DTFecha fechaInicio,[m
+[32m+[m[32m            DTFecha fechaFin,[m
+[32m+[m[32m            DTFecha fechaAlta,[m
+[32m+[m[32m            String ciudad,[m
+[32m+[m[32m            String pais) {[m
+[32m+[m
+[32m+[m[32m        if (evento == null) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Debe seleccionar un evento.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (organizador == null) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Debe seleccionar un organizador.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (nombre == null || nombre.isBlank()) {[m
+[32m+[m[32m            throw new IllegalArgumentException("El nombre de la edición es obligatorio.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (sigla == null || sigla.isBlank()) {[m
+[32m+[m[32m            throw new IllegalArgumentException("La sigla de la edición es obligatoria.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (ciudad == null || ciudad.isBlank() || pais == null || pais.isBlank()) {[m
+[32m+[m[32m            throw new IllegalArgumentException("La ciudad y el país son obligatorios.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (fechaInicio == null || fechaFin == null || fechaAlta == null) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Las fechas de la edición son obligatorias.");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (compararFechas(fechaFin, fechaInicio) < 0) {[m
+[32m+[m[32m            throw new IllegalArgumentException([m
+[32m+[m[32m                    "La fecha de fin no puede ser anterior a la fecha de inicio.");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        boolean nombreRepetido = eventos.stream()[m
+[32m+[m[32m                .flatMap(eventoExistente -> eventoExistente.getEdiciones().stream())[m
+[32m+[m[32m                .anyMatch(edicion -> edicion.getNombre().equalsIgnoreCase(nombre.trim()));[m
+[32m+[m[32m        if (nombreRepetido) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Ya existe una edición con ese nombre.");[m
+[32m+[m[32m        }[m
+[32m+[m
+[32m+[m[32m        evento.agregarEdicion(new Edicion([m
+[32m+[m[32m                nombre.trim(), sigla.trim(), fechaInicio, fechaFin, fechaAlta,[m
+[32m+[m[32m                ciudad.trim(), pais.trim(), organizador));[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    private int compararFechas(DTFecha primera, DTFecha segunda) {[m
+[32m+[m[32m        if (primera.getAnio() != segunda.getAnio()) {[m
+[32m+[m[32m            return Integer.compare(primera.getAnio(), segunda.getAnio());[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (primera.getMes() != segunda.getMes()) {[m
+[32m+[m[32m            return Integer.compare(primera.getMes(), segunda.getMes());[m
+[32m+[m[32m        }[m
+[32m+[m[32m        return Integer.compare(primera.getDia(), segunda.getDia());[m
+[32m+[m[32m    }[m
+[32m+[m
+[32m+[m[32m    @Override[m
+[32m+[m[32m    public List<Edicion> listarEdiciones(Evento evento) {[m
+[32m+[m[32m        if (evento == null) {[m
+[32m+[m[32m            throw new IllegalArgumentException("Debe seleccionar un evento.");[m
+[32m+[m[32m        }[m
+         return new ArrayList<>(evento.getEdiciones());[m
+     }[m
+ [m
+[36m@@ -431,6 +491,8 @@[m [mpublic class Sistema implements ISistema {[m
+             );[m
+         }[m
+ [m
+[32m+[m[32m        Organizador organizadorInicial =[m
+[32m+[m[32m                (Organizador) buscarPorNickname("juanchi");[m
+ [m
+ [m
+         Evento conferenciaJava = new Evento([m
+[36m@@ -447,8 +509,10 @@[m [mpublic class Sistema implements ISistema {[m
+                 "JV26",[m
+                 new DTFecha(2026, 1, 15),[m
+                 new DTFecha(2026, 11, 12),[m
+[32m+[m[32m                new DTFecha(2026, 1, 10),[m
+                 "Montevideo",[m
+[31m-                "Uruguay"[m
+[32m+[m[32m                "Uruguay",[m
+[32m+[m[32m                organizadorInicial[m
+         ));[m
+ [m
+         eventos.add(conferenciaJava);[m
+[1mdiff --git a/target/classes/logica/Clases/Edicion.class b/target/classes/logica/Clases/Edicion.class[m
+[1mindex 229c4e4..a5ca867 100644[m
+Binary files a/target/classes/logica/Clases/Edicion.class and b/target/classes/logica/Clases/Edicion.class differ
+[1mdiff --git a/target/classes/logica/Presentacion/AltaEdicionInternalFrame.class b/target/classes/logica/Presentacion/AltaEdicionInternalFrame.class[m
+[1mindex 344d7fc..42cf933 100644[m
+Binary files a/target/classes/logica/Presentacion/AltaEdicionInternalFrame.class and b/target/classes/logica/Presentacion/AltaEdicionInternalFrame.class differ
+[1mdiff --git a/target/classes/logica/Presentacion/AltaPatrocinio.class b/target/classes/logica/Presentacion/AltaPatrocinio.class[m
+[1mindex 3d8995d..8b63436 100644[m
+Binary files a/target/classes/logica/Presentacion/AltaPatrocinio.class and b/target/classes/logica/Presentacion/AltaPatrocinio.class differ
+[1mdiff --git a/target/classes/logica/Presentacion/AltaTipoRegistroInternalFrame.class b/target/classes/logica/Presentacion/AltaTipoRegistroInternalFrame.class[m
+[1mindex 62c5986..238f90e 100644[m
+Binary files a/target/classes/logica/Presentacion/AltaTipoRegistroInternalFrame.class and b/target/classes/logica/Presentacion/AltaTipoRegistroInternalFrame.class differ
+[1mdiff --git a/target/classes/logica/Presentacion/ConsultaEdiciones.class b/target/classes/logica/Presentacion/ConsultaEdiciones.class[m
+[1mindex 0e18ac8..e658058 100644[m
+Binary files a/target/classes/logica/Presentacion/ConsultaEdiciones.class and b/target/classes/logica/Presentacion/ConsultaEdiciones.class differ
+[1mdiff --git a/target/classes/logica/Presentacion/ConsultaTipoRegistroInternalFrame.class b/target/classes/logica/Presentacion/ConsultaTipoRegistroInternalFrame.class[m
+[1mindex 5cd1381..ce3f7a9 100644[m
+Binary files a/target/classes/logica/Presentacion/ConsultaTipoRegistroInternalFrame.class and b/target/classes/logica/Presentacion/ConsultaTipoRegistroInternalFrame.class differ
+[1mdiff --git a/target/classes/logica/sistema01/ISistema.class b/target/classes/logica/sistema01/ISistema.class[m
+[1mindex 0d5dd88..11a81a3 100644[m
+Binary files a/target/classes/logica/sistema01/ISistema.class and b/target/classes/logica/sistema01/ISistema.class differ
+[1mdiff --git a/target/classes/logica/sistema01/Sistema.class b/target/classes/logica/sistema01/Sistema.class[m
+[1mindex 8bb165a..ad5e711 100644[m
+Binary files a/target/classes/logica/sistema01/Sistema.class and b/target/classes/logica/sistema01/Sistema.class differ

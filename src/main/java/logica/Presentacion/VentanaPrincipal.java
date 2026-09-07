@@ -66,6 +66,10 @@ public class VentanaPrincipal extends JFrame {
         altaEvento.addActionListener(e -> mostrarAltaEvento());
         Eventos.add(altaEvento);
 
+        JMenuItem consultaEvento = new JMenuItem("Consulta evento");
+        consultaEvento.addActionListener(e -> mostrarConsultaEvento());
+        Eventos.add(consultaEvento);
+
         JMenuItem altaTipoRegistro =
                 new JMenuItem("Alta tipo de registro");
 
@@ -141,6 +145,14 @@ public class VentanaPrincipal extends JFrame {
         AltaEvento altaEvento = new AltaEvento(sistema);
         escritorio.add(altaEvento);
         altaEvento.setVisible(true);
+    }
+
+    private void mostrarConsultaEvento() {
+        ConsultaEventoInternalFrame consulta =
+                new ConsultaEventoInternalFrame(sistema);
+
+        escritorio.add(consulta);
+        consulta.setVisible(true);
     }
 
     private void mostrarAltaTipoRegistro() {
