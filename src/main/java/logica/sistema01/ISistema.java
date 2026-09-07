@@ -93,4 +93,6 @@ public interface ISistema {
     List<Organizador> listarOrganizadores();
 
     List<String> listarNombresCategorias();
+
+    void altaCategoria(String nombre);
 }

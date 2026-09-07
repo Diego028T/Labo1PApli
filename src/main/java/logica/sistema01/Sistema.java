@@ -226,6 +226,20 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public void altaCategoria(String nombre) {
+        String nombreLimpio = textoObligatorio(nombre, "nombre de la categoría");
+        String clave = claveNormalizada(nombreLimpio);
+
+        if (categorias.containsKey(clave)) {
+            throw new IllegalArgumentException(
+                    "Ya existe una categoría con ese nombre."
+            );
+        }
+
+        categorias.put(clave, new Categoria(nombreLimpio));
+    }
+
+    @Override
     public void altaEvento(
             String nombre,
             String descripcion,
