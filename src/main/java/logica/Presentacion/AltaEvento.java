@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class AltaEvento extends JInternalFrame {
     private JPanel PrincipalEvento;
@@ -30,6 +31,7 @@ public class AltaEvento extends JInternalFrame {
 
         this.sistema = sistema;
 
+        crearFormulario();
         configurarFecha();
         cargarCategorias();
 
@@ -39,6 +41,46 @@ public class AltaEvento extends JInternalFrame {
         setContentPane(FormularioEvento);
         pack();
         setLocation(100, 80);
+    }
+
+    private void crearFormulario() {
+        PrincipalEvento = new JPanel(new BorderLayout(10, 10));
+        FormularioEvento = new JPanel(new GridLayout(7, 2, 10, 10));
+
+        campoNombre = new JTextField(20);
+        campoDescripcion = new JTextField(20);
+        campoSiglas = new JTextField(20);
+        campoFecha = new JSpinner();
+        listaCategorias = new JList<>();
+
+        btnConfirmar = new JButton("Confirmar");
+        btnCancelar = new JButton("Cancelar");
+
+        textoNombre = new JLabel("Nombre:");
+        textoDescripcion = new JLabel("Descripción:");
+        textoSigla = new JLabel("Sigla:");
+        textoFecha = new JLabel("Fecha de alta:");
+        textoCategoria = new JLabel("Categorías:");
+
+        FormularioEvento.add(textoNombre);
+        FormularioEvento.add(campoNombre);
+
+        FormularioEvento.add(textoDescripcion);
+        FormularioEvento.add(campoDescripcion);
+
+        FormularioEvento.add(textoSigla);
+        FormularioEvento.add(campoSiglas);
+
+        FormularioEvento.add(textoFecha);
+        FormularioEvento.add(campoFecha);
+
+        FormularioEvento.add(textoCategoria);
+        FormularioEvento.add(new JScrollPane(listaCategorias));
+
+        FormularioEvento.add(btnConfirmar);
+        FormularioEvento.add(btnCancelar);
+
+        PrincipalEvento.add(FormularioEvento, BorderLayout.CENTER);
     }
 
     private void configurarFecha() {
