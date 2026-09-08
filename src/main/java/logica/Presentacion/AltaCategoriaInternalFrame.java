@@ -1,11 +1,15 @@
 package logica.Presentacion;
 
+import logica.Clases.TipoRegistro;
+import logica.Persistencia.CategoriaDAO;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
+import logica.Clases.Categoria;
+import java.util.List;
 
 public class AltaCategoriaInternalFrame extends JInternalFrame {
 
@@ -38,11 +42,7 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
                 SwingConstants.CENTER
         );
 
-        JPanel panelArbol = new JPanel(new BorderLayout());
-        panelArbol.setBorder(
-                BorderFactory.createTitledBorder("Árbol de categorías")
-        );
-        panelArbol.add(new JScrollPane(arbolCategorias), BorderLayout.CENTER);
+        JList<Categoria> panelArbol = new JList();
 
         JPanel panelNuevaCategoria = new JPanel(new FlowLayout());
 
@@ -66,17 +66,14 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
     }
 
     private void cargarArbolCategorias() {
-        DefaultMutableTreeNode raiz =
-                new DefaultMutableTreeNode("Categorías");
 
-        for (String nombreCategoria : sistema.listarNombresCategorias()) {
-            raiz.add(new DefaultMutableTreeNode(nombreCategoria));
+        DefaultListModel<Categoria> modelo = new DefaultListModel<>();
+
+        List<Categoria> cat = sistema.listarNombresCategorias();
+
+        for(Categoria categorias : cat){
+            modelo.addElement(categorias);
         }
-
-        DefaultTreeModel modelo = new DefaultTreeModel(raiz);
-
-        arbolCategorias.setModel(modelo);
-        arbolCategorias.expandRow(0);
     }
 
     private void confirmarAlta() {

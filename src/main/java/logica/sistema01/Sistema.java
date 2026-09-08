@@ -13,6 +13,7 @@ import logica.Persistencia.JPAUtil;
 import logica.Persistencia.UsuarioDAO;
 import logica.Persistencia.InstitucionDAO;
 import logica.Persistencia.tipoRegistroDAO;
+import logica.Persistencia.CategoriaDAO;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -218,11 +219,8 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<String> listarNombresCategorias() {
-        return categorias.values().stream()
-                .map(Categoria::getNombre)
-                .sorted()
-                .toList();
+    public List<Categoria> listarNombresCategorias() {
+        return CategoriaDAO.listarCategorias();
     }
 
     @Override
@@ -230,13 +228,16 @@ public class Sistema implements ISistema {
         String nombreLimpio = textoObligatorio(nombre, "nombre de la categoría");
         String clave = claveNormalizada(nombreLimpio);
 
-        if (categorias.containsKey(clave)) {
+        if (CategoriaDAO.buscarCategoriaPorNombre(clave)) {
             throw new IllegalArgumentException(
                     "Ya existe una categoría con ese nombre."
             );
         }
 
-        categorias.put(clave, new Categoria(nombreLimpio));
+        Categoria cat = new Categoria(clave);
+
+        CategoriaDAO.guardarCategoria(cat);
+
     }
 
     @Override

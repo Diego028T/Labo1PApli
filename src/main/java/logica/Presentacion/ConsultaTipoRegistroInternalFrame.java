@@ -198,8 +198,7 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
 
         DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
 
-        List<TipoRegistro> tiposRegistro =
-                sistema.listarTiposRegistro(edicionSeleccionada);
+        List<TipoRegistro> tiposRegistro = sistema.listarTiposRegistro(edicionSeleccionada);
 
         for (TipoRegistro tipo : tiposRegistro) {
             modelo.addElement(tipo);

@@ -79,10 +79,5 @@ public class TipoRegistro{
     public String toString() {
         return nombre;
     }
-//    public int getCantCupos() {
-//        return cantCupos;
-//    }
-//    public void setCantCupos(int cantCupos) {
-//        this.cantCupos = cantCupos;
-//    }
+
 }

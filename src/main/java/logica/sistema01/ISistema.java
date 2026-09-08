@@ -10,6 +10,7 @@ import logica.Clases.Evento;
 import logica.Clases.Organizador;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
+import logica.Clases.Categoria;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -92,7 +93,7 @@ public interface ISistema {
 
     List<Organizador> listarOrganizadores();
 
-    List<String> listarNombresCategorias();
+    List<Categoria> listarNombresCategorias();
 
     void altaCategoria(String nombre);
 }
