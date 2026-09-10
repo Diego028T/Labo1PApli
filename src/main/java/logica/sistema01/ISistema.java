@@ -73,6 +73,13 @@ public interface ISistema {
             String pais
     );
 
+    void registrarAsistenteEdicion(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro,
+            DTFecha fechaRegistro
+    );
+
     List<Edicion> listarEdiciones(Evento evento);
 
     List<TipoRegistro> listarTiposRegistro(Edicion edicion);

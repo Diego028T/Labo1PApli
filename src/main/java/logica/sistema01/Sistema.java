@@ -698,4 +698,78 @@ public class Sistema implements ISistema {
 
         tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
     }
+
+    @Override
+    public void registrarAsistenteEdicion(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro,
+            DTFecha fechaRegistro
+    ) {
+        if (nicknameAsistente == null || nicknameAsistente.isBlank()) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un asistente."
+            );
+        }
+
+        if (edicion == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar una edición."
+            );
+        }
+
+        if (tipoRegistro == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un tipo de registro."
+            );
+        }
+
+        if (fechaRegistro == null) {
+            throw new IllegalArgumentException(
+                    "La fecha de registro es obligatoria."
+            );
+        }
+
+        if (!edicion.getTiposRegistro().contains(tipoRegistro)) {
+            throw new IllegalArgumentException(
+                    "El tipo de registro no pertenece a la edición seleccionada."
+            );
+        }
+
+        Asistente asistente =
+                buscarAsistentePorNickname(nicknameAsistente.trim());
+
+        boolean yaRegistrado = asistente.getRegistros().stream()
+                .anyMatch(registro -> registro.getEdicion() == edicion);
+
+        if (yaRegistrado) {
+            throw new IllegalArgumentException(
+                    "El asistente ya está registrado a esta edición."
+            );
+        }
+
+        long cantidadRegistrosTipo = usuariosPorNickname.values().stream()
+                .filter(usuario -> usuario instanceof Asistente)
+                .map(usuario -> (Asistente) usuario)
+                .flatMap(usuario -> usuario.getRegistros().stream())
+                .filter(registro -> registro.getTipoRegistro() == tipoRegistro)
+                .count();
+
+        if (cantidadRegistrosTipo >= tipoRegistro.getCupo()) {
+            throw new IllegalArgumentException(
+                    "No quedan cupos disponibles para este tipo de registro."
+            );
+        }
+
+        Registro registro = new Registro(
+                siguienteIdRegistro++,
+                fechaRegistro,
+                tipoRegistro.getCosto(),
+                false,
+                tipoRegistro,
+                edicion
+        );
+
+        asistente.agregarRegistro(registro);
+    }
 }

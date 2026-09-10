@@ -2,6 +2,7 @@ package logica.Presentacion;
 
 import logica.sistema01.ISistema;
 import logica.DataTypes.DTFecha;
+import logica.Clases.Categoria;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -93,8 +94,8 @@ public class AltaEvento extends JInternalFrame {
     private void cargarCategorias() {
         DefaultListModel<String> modelo = new DefaultListModel<>();
 
-        for (String categoria : sistema.listarNombresCategorias()) {
-            modelo.addElement(categoria);
+        for (Categoria categoria : sistema.listarNombresCategorias()) {
+            modelo.addElement(categoria.getNombre());
         }
 
         listaCategorias.setModel(modelo);

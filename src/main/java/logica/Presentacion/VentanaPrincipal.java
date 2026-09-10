@@ -48,6 +48,13 @@ public class VentanaPrincipal extends JFrame {
         itemAltaUsuario.addActionListener(e -> mostrarAltaUsuario());
         menuUsuarios.add(itemAltaUsuario);
 
+        JMenu menuRegistros = new JMenu("Registros");
+        JMenuItem itemRegistroEdicion = new JMenuItem("Registro a edición");
+        itemRegistroEdicion.addActionListener(e -> mostrarRegistroEdicion()
+        );
+
+        menuRegistros.add(itemRegistroEdicion);
+
         JMenuItem itemModificarUsuario = new JMenuItem("Modificar usuario");
         itemModificarUsuario.addActionListener(e -> mostrarModificarUsuario());
         menuUsuarios.add(itemModificarUsuario);
@@ -94,6 +101,7 @@ public class VentanaPrincipal extends JFrame {
         menuBar.add(menuInstituciones);
         menuBar.add(menuCategorias);
         menuBar.add(menuUsuarios);
+        menuBar.add(menuRegistros);
         menuBar.add(Patrocinios);
         menuBar.add(Eventos);
 
@@ -186,5 +194,13 @@ public class VentanaPrincipal extends JFrame {
 
         escritorio.add(consulta);
         consulta.setVisible(true);
+    }
+
+    private void mostrarRegistroEdicion() {
+        RegistroEdicionInternalFrame registro =
+                new RegistroEdicionInternalFrame(sistema);
+
+        escritorio.add(registro);
+        registro.setVisible(true);
     }
 }
