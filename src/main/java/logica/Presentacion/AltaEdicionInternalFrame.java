@@ -33,6 +33,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         super("Alta de edición de evento", true, true, true, true);
         this.sistema = sistema;
 
+        crearPantallaInicial();
         setContentPane(eventosListados);
 
         cargarEventos();
@@ -231,6 +232,49 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
             return primera.getMes() < segunda.getMes();
         }
         return primera.getDia() < segunda.getDia();
+    }
+
+    private void crearPantallaInicial() {
+        eventosListados = new JPanel(new BorderLayout(10, 10));
+
+        txtEventos = new JLabel(
+                "Seleccione un evento y un organizador.",
+                SwingConstants.CENTER
+        );
+
+        listaEventos = new JList<>();
+        listaOrganizadores = new JList<>();
+        altaEdicionButton = new JButton("Alta edición");
+
+        panelFormularioEdicion = new JPanel();
+        panelFormularioEdicion.setVisible(false);
+
+        JPanel panelListas = new JPanel(new GridLayout(1, 2, 10, 10));
+
+        JPanel panelEventos = new JPanel(new BorderLayout());
+        panelEventos.add(new JLabel("Eventos disponibles"), BorderLayout.NORTH);
+        panelEventos.add(new JScrollPane(listaEventos), BorderLayout.CENTER);
+
+        JPanel panelOrganizadores = new JPanel(new BorderLayout());
+        panelOrganizadores.add(
+                new JLabel("Organizadores"),
+                BorderLayout.NORTH
+        );
+        panelOrganizadores.add(
+                new JScrollPane(listaOrganizadores),
+                BorderLayout.CENTER
+        );
+
+        panelListas.add(panelEventos);
+        panelListas.add(panelOrganizadores);
+
+        JPanel panelSur = new JPanel(new BorderLayout(10, 10));
+        panelSur.add(altaEdicionButton, BorderLayout.NORTH);
+        panelSur.add(panelFormularioEdicion, BorderLayout.CENTER);
+
+        eventosListados.add(txtEventos, BorderLayout.NORTH);
+        eventosListados.add(panelListas, BorderLayout.CENTER);
+        eventosListados.add(panelSur, BorderLayout.SOUTH);
     }
 
 }

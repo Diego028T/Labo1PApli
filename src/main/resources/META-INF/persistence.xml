@@ -34,7 +34,7 @@
 
             <!-- Hibernate crea o actualiza tablas segun las entidades -->
             <property name="hibernate.hbm2ddl.auto"
-                      value="create-drop"/>
+                      value="update"/>
 
             <!-- Muestra las consultas SQL en consola. Util al principio -->
             <property name="hibernate.show_sql"
