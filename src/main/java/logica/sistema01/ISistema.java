@@ -11,6 +11,7 @@ import logica.Clases.Organizador;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.Clases.Categoria;
+import logica.Clases.NivelPatrocinio;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -71,6 +72,17 @@ public interface ISistema {
             DTFecha fechaAlta,
             String ciudad,
             String pais
+    );
+
+    void altaPatrocinio(
+            Edicion edicion,
+            String nombreInstitucion,
+            TipoRegistro tipoRegistro,
+            NivelPatrocinio nivelPatrocinio,
+            float montoAportado,
+            int cantRegistros,
+            String codigo,
+            DTFecha fechaAlta
     );
 
     List<Edicion> listarEdiciones(Evento evento);

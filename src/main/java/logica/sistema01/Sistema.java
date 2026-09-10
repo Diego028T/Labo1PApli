@@ -31,6 +31,7 @@ public class Sistema implements ISistema {
     private final UsuarioDAO usuarioDAO;
     private final InstitucionDAO institucionDAO;
     private final RegistroDAO registroDAO;
+    private final PatrocinioDAO patrocinioDAO;
 
     private int siguienteIdRegistro;
 
@@ -43,6 +44,7 @@ public class Sistema implements ISistema {
         usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
         institucionDAO = new InstitucionDAO(JPAUtil.getEntityManagerFactory());
         registroDAO = new RegistroDAO(JPAUtil.getEntityManagerFactory());
+        patrocinioDAO = new PatrocinioDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
 
         cargarUsuariosPersistidos();
@@ -710,4 +712,78 @@ public class Sistema implements ISistema {
 
         tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
     }
+
+
+    @Override
+    public void altaPatrocinio(
+            Edicion edicion,
+            String nombreInstitucion,
+            TipoRegistro tipoRegistro,
+            NivelPatrocinio nivelPatrocinio,
+            float montoAportado,
+            int cantRegistros,
+            String codigo,
+            DTFecha fechaAlta
+    ) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (tipoRegistro == null) {
+            throw new IllegalArgumentException("Debe seleccionar un tipo de registro.");
+        }
+
+        if (nivelPatrocinio == null) {
+            throw new IllegalArgumentException("Debe seleccionar un nivel de patrocinio.");
+        }
+
+        String codigoLimpio = textoObligatorio(codigo, "código de patrocinio");
+
+        if (fechaAlta == null) {
+            throw new IllegalArgumentException("La fecha de alta es obligatoria.");
+        }
+
+        if (montoAportado <= 0) {
+            throw new IllegalArgumentException("El aporte económico debe ser mayor a cero.");
+        }
+
+        if (cantRegistros <= 0) {
+            throw new IllegalArgumentException("La cantidad de registros gratuitos debe ser mayor a cero.");
+        }
+
+        Institucion institucion = buscarInstitucion(nombreInstitucion);
+
+        if (patrocinioDAO.existeCodigo(codigoLimpio)) {
+            throw new IllegalArgumentException("Ya existe un patrocinio con ese código.");
+        }
+
+        if (patrocinioDAO.existePorInstitucionYEdicion(institucion, edicion)) {
+            throw new IllegalArgumentException(
+                    "Ya existe un patrocinio de esa institución para la edición seleccionada."
+            );
+        }
+
+        float costoRegistrosGratuitos = tipoRegistro.getCosto() * cantRegistros;
+        float maximoPermitido = montoAportado * 0.20f;
+
+        if (costoRegistrosGratuitos > maximoPermitido) {
+            throw new IllegalArgumentException(
+                    "El costo de los registros gratuitos supera el 20% del aporte económico."
+            );
+        }
+
+        Patrocinio patrocinio = new Patrocinio(
+                codigoLimpio,
+                fechaAlta,
+                montoAportado,
+                cantRegistros,
+                nivelPatrocinio,
+                institucion,
+                edicion,
+                tipoRegistro
+        );
+
+        patrocinioDAO.guardar(patrocinio);
+    }
+
 }
