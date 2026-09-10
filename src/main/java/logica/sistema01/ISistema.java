@@ -87,7 +87,7 @@ public interface ISistema {
 
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
-    DTRegistro mostrarDatosRegistro(String nickname, int idRegistro);
+    DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro);
 
     List<Evento> listarEventos();
 

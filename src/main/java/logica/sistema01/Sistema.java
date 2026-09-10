@@ -30,6 +30,7 @@ public class Sistema implements ISistema {
     private final Map<String, Categoria> categorias;
     private final UsuarioDAO usuarioDAO;
     private final InstitucionDAO institucionDAO;
+    private final RegistroDAO registroDAO;
 
     private int siguienteIdRegistro;
 
@@ -41,6 +42,7 @@ public class Sistema implements ISistema {
         categorias = new HashMap<>();
         usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
         institucionDAO = new InstitucionDAO(JPAUtil.getEntityManagerFactory());
+        registroDAO = new RegistroDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
 
         cargarUsuariosPersistidos();
@@ -362,10 +364,12 @@ public class Sistema implements ISistema {
 
     @Override
     public List<DTRegistroMin> listarRegistrosAsistente(String nickname) {
-        Asistente asistente = buscarAsistentePorNickname(nickname);
+        buscarAsistentePorNickname(nickname);
+
+        List<Registro> registros = registroDAO.listarPorAsistente(nickname);
         List<DTRegistroMin> resultado = new ArrayList<>();
 
-        for (Registro registro : asistente.getRegistros()) {
+        for (Registro registro : registros) {
             resultado.add(new DTRegistroMin(
                     registro.getId(),
                     registro.getFecha(),
@@ -378,24 +382,24 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public DTRegistro mostrarDatosRegistro(String nickname, int idRegistro) {
-        Asistente asistente = buscarAsistentePorNickname(nickname);
+    public DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro) {
+        buscarAsistentePorNickname(nickname);
 
-        for (Registro registro : asistente.getRegistros()) {
-            if (registro.getId() == idRegistro) {
-                return new DTRegistro(
-                        registro.getFecha(),
-                        registro.getCosto(),
-                        registro.isPatrocinado(),
-                        registro.getTipoRegistro().getNombre(),
-                        registro.getTipoRegistro().getDescripcion(),
-                        registro.getEdicion().getNombre()
-                );
-            }
+        Registro registro = registroDAO.buscarPorIdYAsistente(idRegistro, nickname);
+
+        if (registro == null) {
+            throw new IllegalArgumentException(
+                    "No existe un registro con id: " + idRegistro
+            );
         }
 
-        throw new IllegalArgumentException(
-                "No existe un registro con id: " + idRegistro
+        return new DTRegistro(
+                registro.getFecha(),
+                registro.getCosto(),
+                registro.isPatrocinado(),
+                registro.getTipoRegistro().getNombre(),
+                registro.getTipoRegistro().getDescripcion(),
+                registro.getEdicion().getNombre()
         );
     }
 

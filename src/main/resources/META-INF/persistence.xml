@@ -15,6 +15,7 @@
         <class>logica.Clases.Evento</class>
         <class>logica.Clases.Edicion</class>
         <class>logica.Clases.TipoRegistro</class>
+        <class>logica.Clases.Registro</class>
         <class>logica.DataTypes.DTFechaConverter</class>
 
         <properties>
