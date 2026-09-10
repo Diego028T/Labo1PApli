@@ -271,6 +271,7 @@ public class AltaPatrocinio extends JInternalFrame {
     }
 
     private void cambiarPanel(JPanel panel) {
+        panel.setVisible(true);
         setContentPane(panel);
         revalidate();
         repaint();
