@@ -1,6 +1,9 @@
 package logica.Clases;
 import  jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "categoria")
@@ -13,7 +16,11 @@ public class Categoria{
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
+    private List<Evento> eventos = new ArrayList<>();
+
     protected Categoria() {
+        this.eventos = new ArrayList<>();
     }
 
     public Categoria(String nombre){

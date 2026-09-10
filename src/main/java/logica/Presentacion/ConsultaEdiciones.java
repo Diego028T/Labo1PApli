@@ -34,7 +34,12 @@ public class ConsultaEdiciones extends JInternalFrame {
 
         btnSeleccionar.addActionListener(e -> {
             evento = listaEventos.getSelectedValue();
-            ocultarConsultaEdiciones();
+            if(evento != null){
+                ocultarConsultaEdiciones();
+            }
+            else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar un evento");
+            }
         });
         pack();
         setLocation(100, 80);
@@ -58,7 +63,11 @@ public class ConsultaEdiciones extends JInternalFrame {
         obtenerEdiciones();
         btnListarDetalles.addActionListener(e->{
             edicionSeleccionada = listaEdiciones.getSelectedValue();
-            listarDetalles();
+            if(edicionSeleccionada != null){listarDetalles();}
+            else {
+                JOptionPane.showMessageDialog(null, "Debe seleccionar una edición");
+            }
+
         });
     }
 

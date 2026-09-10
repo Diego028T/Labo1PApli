@@ -9,11 +9,7 @@ import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 import logica.DataTypes.DTFecha;
 import logica.DataTypes.EstadoAltaUsuario;
-import logica.Persistencia.JPAUtil;
-import logica.Persistencia.UsuarioDAO;
-import logica.Persistencia.InstitucionDAO;
-import logica.Persistencia.tipoRegistroDAO;
-import logica.Persistencia.CategoriaDAO;
+import logica.Persistencia.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +45,7 @@ public class Sistema implements ISistema {
 
         cargarUsuariosPersistidos();
         cargarInstitucionesPersistidas();
-        cargarDatosIniciales();
+        //cargarDatosIniciales();
     }
 
     public static Sistema getInstancia() {
@@ -228,7 +224,7 @@ public class Sistema implements ISistema {
         String nombreLimpio = textoObligatorio(nombre, "nombre de la categoría");
         String clave = claveNormalizada(nombreLimpio);
 
-        if (CategoriaDAO.buscarCategoriaPorNombre(clave)) {
+        if (CategoriaDAO.buscarCategoriaPorNombre(clave) != null) {
             throw new IllegalArgumentException(
                     "Ya existe una categoría con ese nombre."
             );
@@ -248,60 +244,53 @@ public class Sistema implements ISistema {
             DTFecha fechaAlta,
             List<String> nombresCategorias
     ) {
+
         if (nombre == null || nombre.isBlank()) {
             throw new IllegalArgumentException("El nombre del evento es obligatorio.");
         }
-
         if (descripcion == null || descripcion.isBlank()) {
             throw new IllegalArgumentException("La descripción del evento es obligatoria.");
         }
-
         if (sigla == null || sigla.isBlank()) {
             throw new IllegalArgumentException("La sigla del evento es obligatoria.");
         }
-
         if (fechaAlta == null) {
             throw new IllegalArgumentException("La fecha de alta es obligatoria.");
         }
-
         if (nombresCategorias == null || nombresCategorias.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Debe seleccionar al menos una categoría."
-            );
+            throw new IllegalArgumentException("Debe seleccionar al menos una categoría.");
         }
 
         boolean nombreRepetido = eventos.stream()
-                .anyMatch(evento -> evento.getNombre()
-                        .equalsIgnoreCase(nombre.trim()));
+                .anyMatch(e -> e.getNombre().equalsIgnoreCase(nombre.trim())) || EventoDAO.existeEventoPorNombre(nombre);
 
         if (nombreRepetido) {
-            throw new IllegalArgumentException(
-                    "Ya existe un evento con ese nombre."
-            );
+            throw new IllegalArgumentException("Ya existe un evento con ese nombre.");
         }
 
-        Evento evento = new Evento(
+        Evento nuevoEvento = new Evento(
                 nombre.trim(),
                 descripcion.trim(),
                 sigla.trim(),
                 fechaAlta
         );
 
-        for (String nombreCategoria : nombresCategorias) {
-            Categoria categoria = categorias.get(
-                    claveNormalizada(nombreCategoria)
-            );
-
+        for (String nombreCat : nombresCategorias) {
+            Categoria categoria = categorias.get(claveNormalizada(nombreCat));
             if (categoria == null) {
-                throw new IllegalArgumentException(
-                        "La categoría seleccionada no existe: " + nombreCategoria
-                );
+                categoria = CategoriaDAO.buscarPorNombre(nombreCat);
             }
 
-            evento.agregarCategoria(categoria);
+            if (categoria == null) {
+                throw new IllegalArgumentException("La categoría '" + nombreCat + "' no existe en el sistema.");
+            }
+
+            nuevoEvento.agregarCategoria(categoria);
         }
 
-        eventos.add(evento);
+        EventoDAO.guardarEvento(nuevoEvento);
+
+        eventos.add(nuevoEvento);
     }
 
     @Override
@@ -412,6 +401,13 @@ public class Sistema implements ISistema {
 
     @Override
     public List<Evento> listarEventos() {
+        try {
+            List<Evento> dbEventos = EventoDAO.listarEventos();
+            if (dbEventos != null && !dbEventos.isEmpty()) {
+                return dbEventos;
+            }
+        } catch (Exception ignored) {
+        }
         return new ArrayList<>(eventos);
     }
 
@@ -453,9 +449,10 @@ public class Sistema implements ISistema {
                     "La fecha de fin no puede ser anterior a la fecha de inicio.");
         }
 
-        boolean nombreRepetido = eventos.stream()
-                .flatMap(eventoExistente ->
-                        eventoExistente.getEdiciones().stream())
+        boolean nombreRepetido = EdicionDAO.existeEdicionPorNombre(nombre)
+                || eventos.stream()
+                .filter(eventoExistente -> eventoExistente.getId() == null)
+                .flatMap(eventoExistente -> eventoExistente.getEdiciones().stream())
                 .anyMatch(edicion -> edicion.getNombre()
                         .equalsIgnoreCase(nombre.trim()));
 
@@ -464,7 +461,7 @@ public class Sistema implements ISistema {
                     "Ya existe una edición con ese nombre.");
         }
 
-        evento.agregarEdicion(new Edicion(
+        Edicion nuevaEdicion = new Edicion(
                 nombre.trim(),
                 sigla.trim(),
                 fechaInicio,
@@ -472,8 +469,12 @@ public class Sistema implements ISistema {
                 fechaAlta,
                 ciudad.trim(),
                 pais.trim(),
-                organizador
-        ));
+                organizador,
+                evento
+        );
+
+        evento.agregarEdicion(nuevaEdicion);
+        EdicionDAO.guardarEdicion(nuevaEdicion);
     }
 
     private int compararFechas(DTFecha primera, DTFecha segunda) {
@@ -492,7 +493,14 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Debe seleccionar un evento.");
         }
 
-        return new ArrayList<>(evento.getEdiciones());
+        if (evento.getId() != null) {
+            try {
+                return EdicionDAO.listarPorEvento(evento.getId());
+            } catch (Exception ignored) {
+            }
+        }
+
+        return evento.getEdiciones();
     }
 
     @Override
@@ -521,98 +529,98 @@ public class Sistema implements ISistema {
         return resultado;
     }
 
-    private void cargarCategoriasIniciales() {
-        categorias.put("tecnología", new Categoria("Tecnología"));
-        categorias.put("educación", new Categoria("Educación"));
-        categorias.put("negocios", new Categoria("Negocios"));
-    }
-
-    private void cargarDatosIniciales() {
-        cargarCategoriasIniciales();
-
-        if (!instituciones.containsKey(claveNormalizada("UTEC"))
-                && !institucionDAO.existeNombre("UTEC")) {
-            altaInstitucion(
-                    "UTEC",
-                    "Universidad Tecnológica del Uruguay",
-                    "https://utec.edu.uy"
-            );
-        }
-
-        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
-                && !institucionDAO.existeNombre("ANTEL")) {
-            altaInstitucion(
-                    "ANTEL",
-                    "Empresa nacional de telecomunicaciones",
-                    "https://www.antel.com.uy"
-            );
-        }
-
-        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
-                && !usuarioDAO.existeNickname("MatiB")) {
-            altaAsistente(
-                    "MatiB",
-                    "Matias",
-                    "matiasbragiotorres@gmail.com",
-                    "Bragio",
-                    LocalDate.of(2000, 5, 10),
-                    ""
-            );
-        }
-
-        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
-                && !usuarioDAO.existeNickname("juanchi")) {
-            altaOrganizador(
-                    "juanchi",
-                    "Juancito",
-                    "juancito@gmail.com",
-                    "Organizador de conferencias",
-                    "https://orgconf.com"
-            );
-        }
-
-        Organizador organizadorInicial =
-                (Organizador) buscarPorNickname("juanchi");
-
-        if (eventos.stream().noneMatch(evento ->
-                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
-            Evento conferenciaJava = new Evento(
-                    "Conferencia Java",
-                    "Conferencia sobre Java",
-                    "JV2026",
-                    new DTFecha(2026, 1, 15)
-            );
-
-            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
-
-            conferenciaJava.agregarEdicion(new Edicion(
-                    "Java 2026",
-                    "JV26",
-                    new DTFecha(2026, 1, 15),
-                    new DTFecha(2026, 11, 12),
-                    new DTFecha(2026, 1, 10),
-                    "Montevideo",
-                    "Uruguay",
-                    organizadorInicial
-            ));
-
-            eventos.add(conferenciaJava);
-        }
-
-        if (eventos.stream().noneMatch(evento ->
-                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
-            Evento conferenciaPython = new Evento(
-                    "Conferencia Python",
-                    "Conferencia sobre Python",
-                    "PY2026",
-                    new DTFecha(2026, 2, 1)
-            );
-
-            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
-
-            eventos.add(conferenciaPython);
-        }
-    }
+//    private void cargarCategoriasIniciales() {
+//        categorias.put("tecnología", new Categoria("Tecnología"));
+//        categorias.put("educación", new Categoria("Educación"));
+//        categorias.put("negocios", new Categoria("Negocios"));
+//    }
+//
+//    private void cargarDatosIniciales() {
+//        cargarCategoriasIniciales();
+//
+//        if (!instituciones.containsKey(claveNormalizada("UTEC"))
+//                && !institucionDAO.existeNombre("UTEC")) {
+//            altaInstitucion(
+//                    "UTEC",
+//                    "Universidad Tecnológica del Uruguay",
+//                    "https://utec.edu.uy"
+//            );
+//        }
+//
+//        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
+//                && !institucionDAO.existeNombre("ANTEL")) {
+//            altaInstitucion(
+//                    "ANTEL",
+//                    "Empresa nacional de telecomunicaciones",
+//                    "https://www.antel.com.uy"
+//            );
+//        }
+//
+//        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
+//                && !usuarioDAO.existeNickname("MatiB")) {
+//            altaAsistente(
+//                    "MatiB",
+//                    "Matias",
+//                    "matiasbragiotorres@gmail.com",
+//                    "Bragio",
+//                    LocalDate.of(2000, 5, 10),
+//                    ""
+//            );
+//        }
+//
+//        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
+//                && !usuarioDAO.existeNickname("juanchi")) {
+//            altaOrganizador(
+//                    "juanchi",
+//                    "Juancito",
+//                    "juancito@gmail.com",
+//                    "Organizador de conferencias",
+//                    "https://orgconf.com"
+//            );
+//        }
+//
+//        Organizador organizadorInicial =
+//                (Organizador) buscarPorNickname("juanchi");
+//
+//        if (eventos.stream().noneMatch(evento ->
+//                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
+//            Evento conferenciaJava = new Evento(
+//                    "Conferencia Java",
+//                    "Conferencia sobre Java",
+//                    "JV2026",
+//                    new DTFecha(2026, 1, 15)
+//            );
+//
+//            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
+//
+//            conferenciaJava.agregarEdicion(new Edicion(
+//                    "Java 2026",
+//                    "JV26",
+//                    new DTFecha(2026, 1, 15),
+//                    new DTFecha(2026, 11, 12),
+//                    new DTFecha(2026, 1, 10),
+//                    "Montevideo",
+//                    "Uruguay",
+//                    organizadorInicial
+//            ));
+//
+//            eventos.add(conferenciaJava);
+//        }
+//
+//        if (eventos.stream().noneMatch(evento ->
+//                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
+//            Evento conferenciaPython = new Evento(
+//                    "Conferencia Python",
+//                    "Conferencia sobre Python",
+//                    "PY2026",
+//                    new DTFecha(2026, 2, 1)
+//            );
+//
+//            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
+//
+//            eventos.add(conferenciaPython);
+//        }
+//    }
 
     private void cargarUsuariosPersistidos() {
         for (Usuario usuario : usuarioDAO.listarUsuarios()) {

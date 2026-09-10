@@ -11,8 +11,11 @@
         <class>logica.Clases.Asistente</class>
         <class>logica.Clases.Organizador</class>
         <class>logica.Clases.Institucion</class>
+        <class>logica.Clases.Categoria</class>
+        <class>logica.Clases.Evento</class>
+        <class>logica.Clases.Edicion</class>
         <class>logica.Clases.TipoRegistro</class>
-        <class>logica.Persistencia.DTFechaConverter</class>
+        <class>logica.DataTypes.DTFechaConverter</class>
 
         <properties>
 

@@ -1,84 +1,77 @@
 package logica.Presentacion;
 
-import logica.Clases.TipoRegistro;
-import logica.Persistencia.CategoriaDAO;
+import logica.Clases.Categoria;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import java.awt.*;
-import logica.Clases.Categoria;
 import java.util.List;
 
 public class AltaCategoriaInternalFrame extends JInternalFrame {
 
-    private final ISistema sistema;
+    private JPanel principalPanel;
+    private JLabel lblTitulo;
+    private JTree arbolCategorias;
+    private JLabel lblNombre;
+    private JTextField txtNombre;
+    private JButton btnAceptar;
+    private JButton btnCancelar;
 
-    private final JTree arbolCategorias;
-    private final JTextField txtNombre;
+    private final ISistema sistema;
 
     public AltaCategoriaInternalFrame(ISistema sistema) {
         super("Alta de categoría", true, true, true, true);
 
+        if (sistema == null) {
+            throw new IllegalArgumentException("El sistema no puede ser null.");
+        }
+
         this.sistema = sistema;
 
-        arbolCategorias = new JTree();
-        txtNombre = new JTextField(20);
+        setContentPane(principalPanel);
 
-        setContentPane(crearPanelPrincipal());
+        cargarCategorias();
 
-        cargarArbolCategorias();
+        btnAceptar.addActionListener(e -> confirmarAlta());
+        btnCancelar.addActionListener(e -> dispose());
 
         pack();
         setLocation(100, 80);
     }
 
-    private JPanel crearPanelPrincipal() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
+    private void cargarCategorias() {
+        DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Categorías");
+        List<Categoria> categorias = sistema.listarNombresCategorias();
 
-        JLabel titulo = new JLabel(
-                "Categorías existentes",
-                SwingConstants.CENTER
-        );
+        if (categorias != null) {
+            for (Categoria categoria : categorias) {
+                raiz.add(new DefaultMutableTreeNode(categoria.getNombre()));
+            }
+        }
 
-        JList<Categoria> panelArbol = new JList();
+        DefaultTreeModel modelo = new DefaultTreeModel(raiz);
+        arbolCategorias.setModel(modelo);
 
-        JPanel panelNuevaCategoria = new JPanel(new FlowLayout());
-
-        JLabel lblNombre = new JLabel("Nueva categoría:");
-        JButton btnAceptar = new JButton("Aceptar");
-        JButton btnCancelar = new JButton("Cancelar");
-
-        panelNuevaCategoria.add(lblNombre);
-        panelNuevaCategoria.add(txtNombre);
-        panelNuevaCategoria.add(btnAceptar);
-        panelNuevaCategoria.add(btnCancelar);
-
-        panel.add(titulo, BorderLayout.NORTH);
-        panel.add(panelArbol, BorderLayout.CENTER);
-        panel.add(panelNuevaCategoria, BorderLayout.SOUTH);
-
-        btnAceptar.addActionListener(e -> confirmarAlta());
-        btnCancelar.addActionListener(e -> dispose());
-
-        return panel;
-    }
-
-    private void cargarArbolCategorias() {
-
-        DefaultListModel<Categoria> modelo = new DefaultListModel<>();
-
-        List<Categoria> cat = sistema.listarNombresCategorias();
-
-        for(Categoria categorias : cat){
-            modelo.addElement(categorias);
+        for (int i = 0; i < arbolCategorias.getRowCount(); i++) {
+            arbolCategorias.expandRow(i);
         }
     }
 
     private void confirmarAlta() {
         try {
-            sistema.altaCategoria(txtNombre.getText());
+            String nombre = txtNombre.getText().trim();
+            if (nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "El nombre de la categoría no puede estar vacío.",
+                        "Error en alta de categoría",
+                        JOptionPane.ERROR_MESSAGE
+                );
+                return;
+            }
+
+            sistema.altaCategoria(nombre);
 
             JOptionPane.showMessageDialog(
                     this,
@@ -88,7 +81,7 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
             );
 
             txtNombre.setText("");
-            cargarArbolCategorias();
+            cargarCategorias();
 
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(

@@ -1,9 +1,10 @@
 package logica.Clases;
+
 import jakarta.persistence.*;
 import logica.DataTypes.DTFecha;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "edicion")
@@ -28,7 +29,7 @@ public class Edicion {
     @Column(nullable = false)
     private DTFecha fechaAlta;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "organizador_id", nullable = false)
     private Organizador organizador;
 
@@ -37,6 +38,10 @@ public class Edicion {
 
     @Column(nullable = false, length = 50)
     private String pais;
+
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "evento_id", nullable = false)
+    private Evento evento;
 
     @OneToMany(mappedBy = "edicion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TipoRegistro> tiposRegistro;
@@ -66,37 +71,61 @@ public class Edicion {
         this.tiposRegistro = new ArrayList<>();
     }
 
-        public Long getId() {
-            return id;
-        }
+    public Edicion(
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais,
+            Organizador organizador,
+            Evento evento
+    ) {
+        this(nombre, sigla, fechaInicio, fechaFin, fechaAlta, ciudad, pais, organizador);
+        this.evento = evento;
+    }
 
-        public String obtenerDetalles() {
-            return "Nombre: " + nombre
-                    + "\nSigla: " + sigla
-                    + "\nFecha de inicio: " + fechaInicio
-                    + "\nFecha de fin: " + fechaFin
-                    + "\nFecha de alta: " + fechaAlta
-                    + "\nCiudad: " + ciudad
-                    + "\nPaís: " + pais
-                    + "\nOrganizador: "
-                    + (organizador == null ? "Sin asignar" : organizador.getNombre());
-        }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String obtenerDetalles() {
+        return "Nombre: " + nombre
+                + "\nSigla: " + sigla
+                + "\nFecha de inicio: " + fechaInicio
+                + "\nFecha de fin: " + fechaFin
+                + "\nFecha de alta: " + fechaAlta
+                + "\nCiudad: " + ciudad
+                + "\nPaís: " + pais
+                + "\nOrganizador: "
+                + (organizador == null ? "Sin asignar" : organizador.getNombre());
+    }
 
     public String getNombre() {
         return nombre;
     }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
+
     public String getSigla() {
         return sigla;
     }
+
     public void setSigla(String sigla) {
         this.sigla = sigla;
     }
+
     public DTFecha getFechaAlta() {
         return fechaAlta;
     }
+
     public void setFechaAlta(DTFecha fechaAlta) {
         this.fechaAlta = fechaAlta;
     }
@@ -108,15 +137,19 @@ public class Edicion {
     public void setFechaFin(DTFecha fechaFin) {
         this.fechaFin = fechaFin;
     }
+
     public String getCiudad() {
         return ciudad;
     }
+
     public void setCiudad(String ciudad) {
         this.ciudad = ciudad;
     }
+
     public String getPais() {
         return pais;
     }
+
     public void setPais(String pais) {
         this.pais = pais;
     }
@@ -125,25 +158,44 @@ public class Edicion {
         return fechaInicio;
     }
 
+    public void setFechaInicio(DTFecha fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
     public Organizador getOrganizador() {
         return organizador;
     }
 
+    public void setOrganizador(Organizador organizador) {
+        this.organizador = organizador;
+    }
+
+    public Evento getEvento() {
+        return evento;
+    }
+
+    public void setEvento(Evento evento) {
+        this.evento = evento;
+    }
+
     public List<TipoRegistro> getTiposRegistro() {
         if (tiposRegistro == null) {
-            tiposRegistro = new ArrayList<>();
+            return new ArrayList<>();
         }
+        try {
+            return new ArrayList<>(tiposRegistro);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+    }
 
-        return new ArrayList<>(tiposRegistro);
+    public void setTiposRegistro(List<TipoRegistro> tiposRegistro) {
+        this.tiposRegistro = tiposRegistro != null ? tiposRegistro : new ArrayList<>();
     }
 
     public void agregarTipoRegistro(TipoRegistro tipoRegistro) {
         if (tipoRegistro == null) {
             throw new IllegalArgumentException("El tipo de registro no puede ser null");
-        }
-
-        if (tiposRegistro == null) {
-            tiposRegistro = new ArrayList<>();
         }
 
         String nombreNuevo = tipoRegistro.getNombre();
@@ -152,17 +204,29 @@ public class Edicion {
             throw new IllegalArgumentException("El nombre es obligatorio");
         }
 
-        boolean yaExiste = tiposRegistro.stream()
-                .anyMatch(tipo -> tipo.getNombre().equalsIgnoreCase(nombreNuevo.trim()));
+        try {
+            if (tiposRegistro != null) {
+                boolean yaExiste = tiposRegistro.stream()
+                        .anyMatch(tipo -> tipo.getNombre().equalsIgnoreCase(nombreNuevo.trim()));
 
-        if (yaExiste) {
-            throw new IllegalArgumentException(
-                    "Ya existe un tipo de registro con ese nombre para esta edición"
-            );
+                if (yaExiste) {
+                    throw new IllegalArgumentException(
+                            "Ya existe un tipo de registro con ese nombre para esta edición"
+                    );
+                }
+            }
+        } catch (org.hibernate.LazyInitializationException e) {
+            // Colección no inicializada fuera de sesión JPA activa
         }
 
         tipoRegistro.setEdicion(this);
-        tiposRegistro.add(tipoRegistro);
+        try {
+            if (tiposRegistro != null) {
+                tiposRegistro.add(tipoRegistro);
+            }
+        } catch (org.hibernate.LazyInitializationException e) {
+            // Colección no inicializada fuera de sesión JPA activa
+        }
     }
 
     @Override
