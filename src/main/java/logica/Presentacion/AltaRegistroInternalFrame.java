@@ -14,6 +14,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import java.awt.FlowLayout;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.List;
@@ -24,6 +26,7 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     private final JList<Evento> listaEventos = new JList<>();
     private final JList<Edicion> listaEdiciones = new JList<>();
     private final JList<TipoRegistro> listaTiposRegistro = new JList<>();
+    private final JTextField txtCodigoPatrocinio = new JTextField(15);
     private final JList<DTUsuario> listaAsistentes = new JList<>();
 
     public AltaRegistroInternalFrame(ISistema sistema) {
@@ -45,11 +48,14 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     private void construirInterfaz() {
         JPanel principal = new JPanel(new BorderLayout(10, 10));
         JPanel selecciones = new JPanel(new GridLayout(1, 4, 10, 10));
+        JPanel panelCodigo = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         selecciones.add(crearPanel("Eventos", listaEventos));
         selecciones.add(crearPanel("Ediciones", listaEdiciones));
         selecciones.add(crearPanel("Tipos de registro", listaTiposRegistro));
         selecciones.add(crearPanel("Asistentes", listaAsistentes));
+        panelCodigo.add(new JLabel("Código de patrocinio (opcional):"));
+        panelCodigo.add(txtCodigoPatrocinio);
 
         listaEventos.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -73,8 +79,10 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
         botones.add(btnRegistrar);
         botones.add(btnCancelar);
 
+        principal.add(panelCodigo, BorderLayout.NORTH);
         principal.add(selecciones, BorderLayout.CENTER);
         principal.add(botones, BorderLayout.SOUTH);
+
         setContentPane(principal);
     }
 
@@ -151,7 +159,8 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
             sistema.altaRegistro(
                     asistente.nickname(),
                     edicion,
-                    tipoRegistro
+                    tipoRegistro,
+                    txtCodigoPatrocinio.getText()
             );
 
             JOptionPane.showMessageDialog(

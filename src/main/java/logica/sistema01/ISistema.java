@@ -109,7 +109,8 @@ public interface ISistema {
     void altaRegistro(
             String nicknameAsistente,
             Edicion edicion,
-            TipoRegistro tipoRegistro
+            TipoRegistro tipoRegistro,
+            String codigoPatrocinio
     );
 
     List<Evento> listarEventos();

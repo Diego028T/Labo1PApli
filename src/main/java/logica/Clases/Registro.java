@@ -31,6 +31,10 @@ public class Registro {
     @Column(nullable = false)
     private boolean patrocinado;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patrocinio_id")
+    private Patrocinio patrocinio;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "asistente_id", nullable = false)
     private Asistente asistente;
@@ -52,7 +56,8 @@ public class Registro {
             boolean patrocinado,
             Asistente asistente,
             TipoRegistro tipoRegistro,
-            Edicion edicion
+            Edicion edicion,
+            Patrocinio patrocinio
     ) {
         this.fecha = fecha;
         this.costo = costo;
@@ -60,6 +65,7 @@ public class Registro {
         this.asistente = asistente;
         this.tipoRegistro = tipoRegistro;
         this.edicion = edicion;
+        this.patrocinio = patrocinio;
     }
 
     public Long getId() {
@@ -113,4 +119,8 @@ public class Registro {
     public void setEdicion(Edicion edicion) {
         this.edicion = edicion;
     }
+
+    public Patrocinio getPatrocinio() { return patrocinio; }
+
+    public void setPatrocinio(Patrocinio patrocinio) { this.patrocinio = patrocinio; }
 }

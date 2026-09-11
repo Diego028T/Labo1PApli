@@ -409,7 +409,8 @@ public class Sistema implements ISistema {
     public void altaRegistro(
             String nicknameAsistente,
             Edicion edicion,
-            TipoRegistro tipoRegistro
+            TipoRegistro tipoRegistro,
+            String codigoPatrocinio
     ) {
         if (edicion == null) {
             throw new IllegalArgumentException("Debe seleccionar una edición.");
@@ -445,7 +446,44 @@ public class Sistema implements ISistema {
                     "No hay cupos disponibles para el tipo de registro seleccionado.");
         }
 
+        double costo = tipoRegistro.getCosto();
+        boolean patrocinado = false;
+        Patrocinio patrocinio = null;
+
+        if (codigoPatrocinio != null && !codigoPatrocinio.isBlank()) {
+            patrocinio = patrocinioDAO.buscarPorCodigoEdicionYTipo(
+                    codigoPatrocinio,
+                    edicion.getId(),
+                    tipoRegistro.getId()
+            );
+
+            if (patrocinio == null) {
+                throw new IllegalArgumentException(
+                        "El código no es válido para esta edición y tipo."
+                );
+            }
+
+            if (asistente.getInstitucion() == null
+                    || !asistente.getInstitucion().getId()
+                    .equals(patrocinio.getInstitucion().getId())) {
+                throw new IllegalArgumentException(
+                        "El asistente no pertenece a la institución patrocinadora."
+                );
+            }
+
+            if (registroDAO.cantidadPorPatrocinio(patrocinio)
+                    >= patrocinio.getCantRegistros()) {
+                throw new IllegalArgumentException(
+                        "No quedan cupos gratuitos para este patrocinio."
+                );
+            }
+
+            costo = 0;
+            patrocinado = true;
+        }
+
         LocalDate hoy = LocalDate.now();
+
         DTFecha fechaRegistro = new DTFecha(
                 hoy.getYear(),
                 hoy.getMonthValue(),
@@ -454,11 +492,12 @@ public class Sistema implements ISistema {
 
         Registro registro = new Registro(
                 fechaRegistro,
-                tipoRegistro.getCosto(),
-                false,
+                costo,
+                patrocinado,
                 asistente,
                 tipoRegistro,
-                edicion
+                edicion,
+                patrocinio
         );
 
         registroDAO.guardar(registro);

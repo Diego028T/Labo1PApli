@@ -6,6 +6,7 @@ import logica.Clases.Asistente;
 import logica.Clases.Edicion;
 import logica.Clases.Registro;
 import logica.Clases.TipoRegistro;
+import logica.Clases.Patrocinio;
 
 import java.util.List;
 
@@ -26,6 +27,11 @@ public class RegistroDAO {
             Asistente asistente = em.merge(registro.getAsistente());
             Edicion edicion = em.merge(registro.getEdicion());
             TipoRegistro tipoRegistro = em.merge(registro.getTipoRegistro());
+
+            if (registro.getPatrocinio() != null) {
+                Patrocinio patrocinio = em.merge(registro.getPatrocinio());
+                registro.setPatrocinio(patrocinio);
+            }
 
             registro.setAsistente(asistente);
             registro.setEdicion(edicion);
@@ -76,6 +82,22 @@ public class RegistroDAO {
                             Long.class
                     )
                     .setParameter("tipoRegistroId", tipoRegistro.getId())
+                    .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+
+    public long cantidadPorPatrocinio(Patrocinio patrocinio) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT COUNT(r) FROM Registro r " +
+                                    "WHERE r.patrocinio.id = :patrocinioId",
+                            Long.class
+                    )
+                    .setParameter("patrocinioId", patrocinio.getId())
                     .getSingleResult();
         } finally {
             em.close();

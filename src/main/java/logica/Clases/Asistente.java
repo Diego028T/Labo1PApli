@@ -3,7 +3,9 @@ package logica.Clases;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTUsuarioAsist;
@@ -22,8 +24,8 @@ public class Asistente extends Usuario {
     @Column(nullable = false)
     private LocalDate fechaNacimiento;
 
-    // Provisorio: no se persiste hasta terminar el mapeo de Institucion.
-    @Transient
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "institucion_id")
     private Institucion institucion;
 
     @OneToMany(mappedBy = "asistente")

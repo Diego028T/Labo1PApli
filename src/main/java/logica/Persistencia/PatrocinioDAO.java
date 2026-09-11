@@ -86,6 +86,33 @@ public class PatrocinioDAO {
         }
     }
 
+    public Patrocinio buscarPorCodigoEdicionYTipo(
+            String codigo,
+            Long edicionId,
+            Long tipoRegistroId
+    ) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT p FROM Patrocinio p " +
+                                    "JOIN FETCH p.institucion " +
+                                    "WHERE LOWER(p.codigo) = LOWER(:codigo) " +
+                                    "AND p.edicion.id = :edicionId " +
+                                    "AND p.tipoRegistro.id = :tipoRegistroId",
+                            Patrocinio.class
+                    )
+                    .setParameter("codigo", codigo.trim())
+                    .setParameter("edicionId", edicionId)
+                    .setParameter("tipoRegistroId", tipoRegistroId)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            em.close();
+        }
+    }
+
     public List<Patrocinio> listarPorEdicion(Edicion edicion) {
         EntityManager em = entityManagerFactory.createEntityManager();
 
