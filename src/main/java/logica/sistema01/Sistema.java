@@ -582,6 +582,19 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public List<Patrocinio> listarPatrocinios(Edicion edicion) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (edicion.getId() == null) {
+            return List.of();
+        }
+
+        return patrocinioDAO.listarPorEdicion(edicion);
+    }
+
+    @Override
     public List<Organizador> listarOrganizadores() {
         List<Organizador> resultado = new ArrayList<>();
 

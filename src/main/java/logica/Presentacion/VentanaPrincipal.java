@@ -73,6 +73,10 @@ public class VentanaPrincipal extends JFrame {
         altaPatrocinio.addActionListener(e -> mostrarAltaPatrocinio());
         Patrocinios.add(altaPatrocinio);
 
+        JMenuItem consultaPatrocinio = new JMenuItem("Consulta patrocinio");
+        consultaPatrocinio.addActionListener(e -> mostrarConsultaPatrocinio());
+        Patrocinios.add(consultaPatrocinio);
+
         JMenu Eventos = new JMenu("Eventos");
         JMenuItem altaEvento = new JMenuItem("Alta evento");
         altaEvento.addActionListener(e -> mostrarAltaEvento());
@@ -168,6 +172,14 @@ public class VentanaPrincipal extends JFrame {
         AltaPatrocinio altaPatrocinio = new AltaPatrocinio(sistema);
         escritorio.add(altaPatrocinio);
         altaPatrocinio.setVisible(true);
+    }
+
+    private void mostrarConsultaPatrocinio() {
+        ConsultaPatrocinioInternalFrame consulta =
+                new ConsultaPatrocinioInternalFrame(sistema);
+
+        escritorio.add(consulta);
+        consulta.setVisible(true);
     }
 
     private void mostrarAltaEvento(){
