@@ -8,6 +8,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
+import logica.Clases.Patrocinio;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.Clases.Categoria;
@@ -88,6 +89,8 @@ public interface ISistema {
     List<Edicion> listarEdiciones(Evento evento);
 
     List<TipoRegistro> listarTiposRegistro(Edicion edicion);
+
+    List<Patrocinio> listarPatrocinios(Edicion edicion);
 
     Set<DTUsuario> listarUsuarios();
 

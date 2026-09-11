@@ -7,6 +7,8 @@ import logica.Clases.Institucion;
 import logica.Clases.Patrocinio;
 import logica.Clases.TipoRegistro;
 
+import java.util.List;
+
 public class PatrocinioDAO {
 
     private final EntityManagerFactory entityManagerFactory;
@@ -79,6 +81,26 @@ public class PatrocinioDAO {
                     .getSingleResult();
 
             return cantidad > 0;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Patrocinio> listarPorEdicion(Edicion edicion) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT p FROM Patrocinio p " +
+                                    "JOIN FETCH p.institucion " +
+                                    "JOIN FETCH p.edicion " +
+                                    "JOIN FETCH p.tipoRegistro " +
+                                    "WHERE p.edicion.id = :edicionId " +
+                                    "ORDER BY p.codigo",
+                            Patrocinio.class
+                    )
+                    .setParameter("edicionId", edicion.getId())
+                    .getResultList();
         } finally {
             em.close();
         }
