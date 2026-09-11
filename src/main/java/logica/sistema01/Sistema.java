@@ -49,7 +49,7 @@ public class Sistema implements ISistema {
 
         cargarUsuariosPersistidos();
         cargarInstitucionesPersistidas();
-        //cargarDatosIniciales();
+        cargarDatosIniciales();
     }
 
     public static Sistema getInstancia() {
@@ -406,6 +406,65 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public void altaRegistro(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro
+    ) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (tipoRegistro == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un tipo de registro.");
+        }
+
+        Asistente asistente = buscarAsistentePorNickname(nicknameAsistente);
+
+        if (edicion.getId() == null || tipoRegistro.getId() == null) {
+            throw new IllegalArgumentException(
+                    "La edición y el tipo de registro deben estar persistidos.");
+        }
+
+        if (tipoRegistro.getEdicion() != null
+                && tipoRegistro.getEdicion().getId() != null
+                && !tipoRegistro.getEdicion().getId().equals(edicion.getId())) {
+            throw new IllegalArgumentException(
+                    "El tipo de registro no pertenece a la edición seleccionada.");
+        }
+
+        if (registroDAO.existeParaAsistenteYEdicion(asistente, edicion)) {
+            throw new IllegalArgumentException(
+                    "El asistente ya está registrado en esta edición.");
+        }
+
+        long cantidadActual = registroDAO.cantidadPorTipoRegistro(tipoRegistro);
+        if (cantidadActual >= tipoRegistro.getCupo()) {
+            throw new IllegalArgumentException(
+                    "No hay cupos disponibles para el tipo de registro seleccionado.");
+        }
+
+        LocalDate hoy = LocalDate.now();
+        DTFecha fechaRegistro = new DTFecha(
+                hoy.getYear(),
+                hoy.getMonthValue(),
+                hoy.getDayOfMonth()
+        );
+
+        Registro registro = new Registro(
+                fechaRegistro,
+                tipoRegistro.getCosto(),
+                false,
+                asistente,
+                tipoRegistro,
+                edicion
+        );
+
+        registroDAO.guardar(registro);
+    }
+
+    @Override
     public List<Evento> listarEventos() {
         try {
             List<Evento> dbEventos = EventoDAO.listarEventos();
@@ -535,98 +594,98 @@ public class Sistema implements ISistema {
         return resultado;
     }
 
-//    private void cargarCategoriasIniciales() {
-//        categorias.put("tecnología", new Categoria("Tecnología"));
-//        categorias.put("educación", new Categoria("Educación"));
-//        categorias.put("negocios", new Categoria("Negocios"));
-//    }
-//
-//    private void cargarDatosIniciales() {
-//        cargarCategoriasIniciales();
-//
-//        if (!instituciones.containsKey(claveNormalizada("UTEC"))
-//                && !institucionDAO.existeNombre("UTEC")) {
-//            altaInstitucion(
-//                    "UTEC",
-//                    "Universidad Tecnológica del Uruguay",
-//                    "https://utec.edu.uy"
-//            );
-//        }
-//
-//        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
-//                && !institucionDAO.existeNombre("ANTEL")) {
-//            altaInstitucion(
-//                    "ANTEL",
-//                    "Empresa nacional de telecomunicaciones",
-//                    "https://www.antel.com.uy"
-//            );
-//        }
-//
-//        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
-//                && !usuarioDAO.existeNickname("MatiB")) {
-//            altaAsistente(
-//                    "MatiB",
-//                    "Matias",
-//                    "matiasbragiotorres@gmail.com",
-//                    "Bragio",
-//                    LocalDate.of(2000, 5, 10),
-//                    ""
-//            );
-//        }
-//
-//        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
-//                && !usuarioDAO.existeNickname("juanchi")) {
-//            altaOrganizador(
-//                    "juanchi",
-//                    "Juancito",
-//                    "juancito@gmail.com",
-//                    "Organizador de conferencias",
-//                    "https://orgconf.com"
-//            );
-//        }
-//
-//        Organizador organizadorInicial =
-//                (Organizador) buscarPorNickname("juanchi");
-//
-//        if (eventos.stream().noneMatch(evento ->
-//                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
-//            Evento conferenciaJava = new Evento(
-//                    "Conferencia Java",
-//                    "Conferencia sobre Java",
-//                    "JV2026",
-//                    new DTFecha(2026, 1, 15)
-//            );
-//
-//            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
-//
-//            conferenciaJava.agregarEdicion(new Edicion(
-//                    "Java 2026",
-//                    "JV26",
-//                    new DTFecha(2026, 1, 15),
-//                    new DTFecha(2026, 11, 12),
-//                    new DTFecha(2026, 1, 10),
-//                    "Montevideo",
-//                    "Uruguay",
-//                    organizadorInicial
-//            ));
-//
-//            eventos.add(conferenciaJava);
-//        }
-//
-//        if (eventos.stream().noneMatch(evento ->
-//                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
-//            Evento conferenciaPython = new Evento(
-//                    "Conferencia Python",
-//                    "Conferencia sobre Python",
-//                    "PY2026",
-//                    new DTFecha(2026, 2, 1)
-//            );
-//
-//            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
-//
-//            eventos.add(conferenciaPython);
-//        }
-//    }
+    private void cargarCategoriasIniciales() {
+        categorias.put("tecnología", new Categoria("Tecnología"));
+        categorias.put("educación", new Categoria("Educación"));
+        categorias.put("negocios", new Categoria("Negocios"));
+    }
+
+    private void cargarDatosIniciales() {
+        cargarCategoriasIniciales();
+
+        if (!instituciones.containsKey(claveNormalizada("UTEC"))
+                && !institucionDAO.existeNombre("UTEC")) {
+            altaInstitucion(
+                    "UTEC",
+                    "Universidad Tecnológica del Uruguay",
+                    "https://utec.edu.uy"
+            );
+        }
+
+        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
+                && !institucionDAO.existeNombre("ANTEL")) {
+            altaInstitucion(
+                    "ANTEL",
+                    "Empresa nacional de telecomunicaciones",
+                    "https://www.antel.com.uy"
+            );
+        }
+
+        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
+                && !usuarioDAO.existeNickname("MatiB")) {
+            altaAsistente(
+                    "MatiB",
+                    "Matias",
+                    "matiasbragiotorres@gmail.com",
+                    "Bragio",
+                    LocalDate.of(2000, 5, 10),
+                    ""
+            );
+        }
+
+        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
+                && !usuarioDAO.existeNickname("juanchi")) {
+            altaOrganizador(
+                    "juanchi",
+                    "Juancito",
+                    "juancito@gmail.com",
+                    "Organizador de conferencias",
+                    "https://orgconf.com"
+            );
+        }
+
+        Organizador organizadorInicial =
+                (Organizador) buscarPorNickname("juanchi");
+
+        if (eventos.stream().noneMatch(evento ->
+                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
+            Evento conferenciaJava = new Evento(
+                    "Conferencia Java",
+                    "Conferencia sobre Java",
+                    "JV2026",
+                    new DTFecha(2026, 1, 15)
+            );
+
+            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
+
+            conferenciaJava.agregarEdicion(new Edicion(
+                    "Java 2026",
+                    "JV26",
+                    new DTFecha(2026, 1, 15),
+                    new DTFecha(2026, 11, 12),
+                    new DTFecha(2026, 1, 10),
+                    "Montevideo",
+                    "Uruguay",
+                    organizadorInicial
+            ));
+
+            eventos.add(conferenciaJava);
+        }
+
+        if (eventos.stream().noneMatch(evento ->
+                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
+            Evento conferenciaPython = new Evento(
+                    "Conferencia Python",
+                    "Conferencia sobre Python",
+                    "PY2026",
+                    new DTFecha(2026, 2, 1)
+            );
+
+            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
+
+            eventos.add(conferenciaPython);
+        }
+    }
 
     private void cargarUsuariosPersistidos() {
         for (Usuario usuario : usuarioDAO.listarUsuarios()) {

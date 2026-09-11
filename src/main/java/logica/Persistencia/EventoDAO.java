@@ -19,6 +19,7 @@ public class EventoDAO {
             List<Categoria> categoriasGestionadas = evento.getCategorias().stream()
                     .map(cat -> em.contains(cat) ? cat : em.merge(cat))
                     .toList();
+            evento.reemplazarCategorias(categoriasGestionadas);
             em.persist(evento);
 
             em.getTransaction().commit();

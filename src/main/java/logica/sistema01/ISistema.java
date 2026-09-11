@@ -12,6 +12,8 @@ import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.Clases.Categoria;
 import logica.Clases.NivelPatrocinio;
+import logica.Clases.Edicion;
+import logica.Clases.TipoRegistro;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -100,6 +102,12 @@ public interface ISistema {
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
     DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro);
+
+    void altaRegistro(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro
+    );
 
     List<Evento> listarEventos();
 

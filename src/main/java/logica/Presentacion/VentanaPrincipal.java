@@ -56,6 +56,10 @@ public class VentanaPrincipal extends JFrame {
         itemConsultaRegistro.addActionListener(e -> mostrarConsultaRegistro());
         menuUsuarios.add(itemConsultaRegistro);
 
+        JMenuItem itemAltaRegistro = new JMenuItem("Registro a edición");
+        itemAltaRegistro.addActionListener(e -> mostrarAltaRegistro());
+        menuUsuarios.add(itemAltaRegistro);
+
         JMenu Ediciones = new JMenu("Ediciones");
         JMenuItem nuevaEdicion = new JMenuItem("Alta edicion");
         JMenuItem consultarEdicion = new JMenuItem("Consultar edicion");
@@ -138,6 +142,14 @@ public class VentanaPrincipal extends JFrame {
 
         escritorio.add(consulta);
         consulta.setVisible(true);
+    }
+
+    private void mostrarAltaRegistro() {
+        AltaRegistroInternalFrame alta =
+                new AltaRegistroInternalFrame(sistema);
+
+        escritorio.add(alta);
+        alta.setVisible(true);
     }
 
     private void mostrarAltaEdicion() {
