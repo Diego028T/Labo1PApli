@@ -374,6 +374,7 @@ public class Sistema implements ISistema {
         for (Registro registro : registros) {
             resultado.add(new DTRegistroMin(
                     registro.getId(),
+                    registro.getEdicion().getId(),
                     registro.getFecha(),
                     registro.getEdicion().getNombre(),
                     registro.getTipoRegistro().getNombre()
@@ -894,6 +895,23 @@ public class Sistema implements ISistema {
         );
 
         patrocinioDAO.guardar(patrocinio);
+    }
+
+    @Override
+    public String mostrarDatosEdicion(Long idEdicion) {
+        if (idEdicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        Edicion edicion = EdicionDAO.buscarPorId(idEdicion);
+
+        if (edicion == null) {
+            throw new IllegalArgumentException(
+                    "No existe una edición con id: " + idEdicion
+            );
+        }
+
+        return edicion.obtenerDetalles();
     }
 
 }

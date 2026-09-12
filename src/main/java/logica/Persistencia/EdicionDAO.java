@@ -68,7 +68,17 @@ public class EdicionDAO {
     public static Edicion buscarPorId(Long id) {
         EntityManager em = entityManagerFactory.createEntityManager();
         try {
-            return em.find(Edicion.class, id);
+            return em.createQuery(
+                            "SELECT e FROM Edicion e " +
+                                    "LEFT JOIN FETCH e.organizador " +
+                                    "LEFT JOIN FETCH e.evento " +
+                                    "WHERE e.id = :id",
+                            Edicion.class
+                    )
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
         } finally {
             em.close();
         }

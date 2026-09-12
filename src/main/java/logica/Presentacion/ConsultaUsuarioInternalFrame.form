@@ -44,7 +44,7 @@
           </component>
         </children>
       </grid>
-      <grid id="ce3a8" binding="panelEspecifico" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="ce3a8" binding="panelEspecifico" layout-manager="GridLayoutManager" row-count="5" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -76,17 +76,43 @@
             </constraints>
             <properties/>
           </component>
-          <component id="95fe3" class="javax.swing.JButton" binding="btnEspecifico">
+          <grid id="61d07" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+            <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
+            <properties/>
+            <border type="none"/>
+            <children>
+              <component id="95fe3" class="javax.swing.JButton" binding="btnEspecifico">
+                <constraints>
+                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Ver detalle registro"/>
+                </properties>
+              </component>
+              <component id="e685e" class="javax.swing.JButton" binding="btnDetalleEdicion">
+                <constraints>
+                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text value="Ver detalle edición"/>
+                </properties>
+              </component>
+            </children>
+          </grid>
+          <component id="3df65" class="javax.swing.JButton" binding="btnVolverUsuarios">
+            <constraints>
+              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
             <properties>
-              <text value="Button"/>
+              <text value="Volver a usuarios"/>
             </properties>
           </component>
         </children>
       </grid>
-      <grid id="3e4c1" binding="panelSeleccionado" layout-manager="GridLayoutManager" row-count="2" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="3e4c1" binding="panelSeleccionado" layout-manager="GridLayoutManager" row-count="3" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -110,6 +136,14 @@
             </constraints>
             <properties>
               <text value=""/>
+            </properties>
+          </component>
+          <component id="dfc57" class="javax.swing.JButton" binding="btnVolverEspecifico">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Volver"/>
             </properties>
           </component>
         </children>
