@@ -3,16 +3,19 @@ package logica.DataTypes;
 public class DTRegistroMin {
 
     private Long id;
+    private Long idEdicion;
     private DTFecha fecha;
     private String nombreEdicion;
     private String nombreTipoRegistro;
 
     public DTRegistroMin(
             Long id,
+            Long idEdicion,
             DTFecha fecha,
             String nombreEdicion,
             String nombreTipoRegistro) {
         this.id = id;
+        this.idEdicion = idEdicion;
         this.fecha = fecha;
         this.nombreEdicion = nombreEdicion;
         this.nombreTipoRegistro = nombreTipoRegistro;
@@ -20,6 +23,10 @@ public class DTRegistroMin {
 
     public Long getId() {
         return id;
+    }
+
+    public Long getIdEdicion() {
+        return idEdicion;
     }
 
     public DTFecha getFecha() {
@@ -36,6 +43,9 @@ public class DTRegistroMin {
 
     @Override
     public String toString() {
-        return fecha + " - " + nombreEdicion + " - " + nombreTipoRegistro;
+        return "Id registro: " + id
+                + " - Fecha: " + fecha
+                + " - Edición: " + nombreEdicion
+                + " - Tipo: " + nombreTipoRegistro;
     }
 }

@@ -90,6 +90,8 @@ public interface ISistema {
 
     List<Edicion> listarEdiciones(Evento evento);
 
+    String mostrarDatosEdicion(Long idEdicion);
+
     List<TipoRegistro> listarTiposRegistro(Edicion edicion);
 
     List<Patrocinio> listarPatrocinios(Edicion edicion);
