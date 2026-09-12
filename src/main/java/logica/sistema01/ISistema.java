@@ -120,4 +120,5 @@ public interface ISistema {
     List<Categoria> listarNombresCategorias();
 
     void altaCategoria(String nombre);
+
 }

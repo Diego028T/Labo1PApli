@@ -46,14 +46,10 @@ public class VentanaPrincipal extends JFrame {
         JMenu menuUsuarios = new JMenu("Usuarios");
         JMenuItem itemAltaUsuario = new JMenuItem("Alta usuario");
         itemAltaUsuario.addActionListener(e -> mostrarAltaUsuario());
+        JMenuItem itemConsultaUsuario = new JMenuItem("Consulta usuario");
+        itemConsultaUsuario.addActionListener(e -> mostrarConsultaUsuario());
+        menuUsuarios.add(itemConsultaUsuario);
         menuUsuarios.add(itemAltaUsuario);
-
-        JMenu menuRegistros = new JMenu("Registros");
-        JMenuItem itemRegistroEdicion = new JMenuItem("Registro a edición");
-        itemRegistroEdicion.addActionListener(e -> mostrarRegistroEdicion()
-        );
-
-        menuRegistros.add(itemRegistroEdicion);
 
         JMenuItem itemModificarUsuario = new JMenuItem("Modificar usuario");
         itemModificarUsuario.addActionListener(e -> mostrarModificarUsuario());
@@ -109,7 +105,6 @@ public class VentanaPrincipal extends JFrame {
         menuBar.add(menuInstituciones);
         menuBar.add(menuCategorias);
         menuBar.add(menuUsuarios);
-        menuBar.add(menuRegistros);
         menuBar.add(Patrocinios);
         menuBar.add(Eventos);
 
@@ -220,11 +215,10 @@ public class VentanaPrincipal extends JFrame {
         consulta.setVisible(true);
     }
 
-    private void mostrarRegistroEdicion() {
-        RegistroEdicionInternalFrame registro =
-                new RegistroEdicionInternalFrame(sistema);
+    private void mostrarConsultaUsuario(){
+        ConsultaUsuarioInternalFrame consulta = new ConsultaUsuarioInternalFrame(sistema);
 
-        escritorio.add(registro);
-        registro.setVisible(true);
+        escritorio.add(consulta);
+        consulta.setVisible(true);
     }
 }

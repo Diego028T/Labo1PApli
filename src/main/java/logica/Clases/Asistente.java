@@ -93,4 +93,9 @@ public class Asistente extends Usuario {
                 fechaNacimiento
         );
     }
+
+    @Override
+    public String toString() {
+        return super.getNickname();
+    }
 }

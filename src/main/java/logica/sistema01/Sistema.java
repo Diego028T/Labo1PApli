@@ -824,7 +824,6 @@ public class Sistema implements ISistema {
         tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
     }
 
-
     @Override
     public void altaPatrocinio(
             Edicion edicion,
