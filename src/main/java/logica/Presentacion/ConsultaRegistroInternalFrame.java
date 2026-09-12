@@ -202,7 +202,7 @@ public class ConsultaRegistroInternalFrame extends JInternalFrame {
         }
 
         try {
-            int idRegistro = Integer.parseInt(txtIdRegistro.getText().trim());
+            Long idRegistro = Long.parseLong(txtIdRegistro.getText().trim());
             DTRegistro registro = sistema.mostrarDatosRegistro(nicknameSeleccionado, idRegistro);
 
             txtDetalleRegistro.setText(

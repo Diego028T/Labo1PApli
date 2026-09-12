@@ -63,6 +63,10 @@ public class VentanaPrincipal extends JFrame {
         itemConsultaRegistro.addActionListener(e -> mostrarConsultaRegistro());
         menuUsuarios.add(itemConsultaRegistro);
 
+        JMenuItem itemAltaRegistro = new JMenuItem("Registro a edición");
+        itemAltaRegistro.addActionListener(e -> mostrarAltaRegistro());
+        menuUsuarios.add(itemAltaRegistro);
+
         JMenu Ediciones = new JMenu("Ediciones");
         JMenuItem nuevaEdicion = new JMenuItem("Alta edicion");
         JMenuItem consultarEdicion = new JMenuItem("Consultar edicion");
@@ -75,6 +79,10 @@ public class VentanaPrincipal extends JFrame {
         JMenuItem altaPatrocinio = new JMenuItem("Alta patrocinio");
         altaPatrocinio.addActionListener(e -> mostrarAltaPatrocinio());
         Patrocinios.add(altaPatrocinio);
+
+        JMenuItem consultaPatrocinio = new JMenuItem("Consulta patrocinio");
+        consultaPatrocinio.addActionListener(e -> mostrarConsultaPatrocinio());
+        Patrocinios.add(consultaPatrocinio);
 
         JMenu Eventos = new JMenu("Eventos");
         JMenuItem altaEvento = new JMenuItem("Alta evento");
@@ -148,6 +156,14 @@ public class VentanaPrincipal extends JFrame {
         consulta.setVisible(true);
     }
 
+    private void mostrarAltaRegistro() {
+        AltaRegistroInternalFrame alta =
+                new AltaRegistroInternalFrame(sistema);
+
+        escritorio.add(alta);
+        alta.setVisible(true);
+    }
+
     private void mostrarAltaEdicion() {
         AltaEdicionInternalFrame altaEdicion = new AltaEdicionInternalFrame(sistema);
         escritorio.add(altaEdicion);
@@ -164,6 +180,14 @@ public class VentanaPrincipal extends JFrame {
         AltaPatrocinio altaPatrocinio = new AltaPatrocinio(sistema);
         escritorio.add(altaPatrocinio);
         altaPatrocinio.setVisible(true);
+    }
+
+    private void mostrarConsultaPatrocinio() {
+        ConsultaPatrocinioInternalFrame consulta =
+                new ConsultaPatrocinioInternalFrame(sistema);
+
+        escritorio.add(consulta);
+        consulta.setVisible(true);
     }
 
     private void mostrarAltaEvento(){

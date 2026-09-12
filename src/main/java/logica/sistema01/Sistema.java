@@ -30,6 +30,8 @@ public class Sistema implements ISistema {
     private final Map<String, Categoria> categorias;
     private final UsuarioDAO usuarioDAO;
     private final InstitucionDAO institucionDAO;
+    private final RegistroDAO registroDAO;
+    private final PatrocinioDAO patrocinioDAO;
 
     private int siguienteIdRegistro;
 
@@ -41,6 +43,8 @@ public class Sistema implements ISistema {
         categorias = new HashMap<>();
         usuarioDAO = new UsuarioDAO(JPAUtil.getEntityManagerFactory());
         institucionDAO = new InstitucionDAO(JPAUtil.getEntityManagerFactory());
+        registroDAO = new RegistroDAO(JPAUtil.getEntityManagerFactory());
+        patrocinioDAO = new PatrocinioDAO(JPAUtil.getEntityManagerFactory());
         siguienteIdRegistro = 1;
 
         cargarUsuariosPersistidos();
@@ -362,10 +366,12 @@ public class Sistema implements ISistema {
 
     @Override
     public List<DTRegistroMin> listarRegistrosAsistente(String nickname) {
-        Asistente asistente = buscarAsistentePorNickname(nickname);
+        buscarAsistentePorNickname(nickname);
+
+        List<Registro> registros = registroDAO.listarPorAsistente(nickname);
         List<DTRegistroMin> resultado = new ArrayList<>();
 
-        for (Registro registro : asistente.getRegistros()) {
+        for (Registro registro : registros) {
             resultado.add(new DTRegistroMin(
                     registro.getId(),
                     registro.getFecha(),
@@ -378,25 +384,123 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public DTRegistro mostrarDatosRegistro(String nickname, int idRegistro) {
-        Asistente asistente = buscarAsistentePorNickname(nickname);
+    public DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro) {
+        buscarAsistentePorNickname(nickname);
 
-        for (Registro registro : asistente.getRegistros()) {
-            if (registro.getId() == idRegistro) {
-                return new DTRegistro(
-                        registro.getFecha(),
-                        registro.getCosto(),
-                        registro.isPatrocinado(),
-                        registro.getTipoRegistro().getNombre(),
-                        registro.getTipoRegistro().getDescripcion(),
-                        registro.getEdicion().getNombre()
-                );
-            }
+        Registro registro = registroDAO.buscarPorIdYAsistente(idRegistro, nickname);
+
+        if (registro == null) {
+            throw new IllegalArgumentException(
+                    "No existe un registro con id: " + idRegistro
+            );
         }
 
-        throw new IllegalArgumentException(
-                "No existe un registro con id: " + idRegistro
+        return new DTRegistro(
+                registro.getFecha(),
+                registro.getCosto(),
+                registro.isPatrocinado(),
+                registro.getTipoRegistro().getNombre(),
+                registro.getTipoRegistro().getDescripcion(),
+                registro.getEdicion().getNombre()
         );
+    }
+
+    @Override
+    public void altaRegistro(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro,
+            String codigoPatrocinio
+    ) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (tipoRegistro == null) {
+            throw new IllegalArgumentException(
+                    "Debe seleccionar un tipo de registro.");
+        }
+
+        Asistente asistente = buscarAsistentePorNickname(nicknameAsistente);
+
+        if (edicion.getId() == null || tipoRegistro.getId() == null) {
+            throw new IllegalArgumentException(
+                    "La edición y el tipo de registro deben estar persistidos.");
+        }
+
+        if (tipoRegistro.getEdicion() != null
+                && tipoRegistro.getEdicion().getId() != null
+                && !tipoRegistro.getEdicion().getId().equals(edicion.getId())) {
+            throw new IllegalArgumentException(
+                    "El tipo de registro no pertenece a la edición seleccionada.");
+        }
+
+        if (registroDAO.existeParaAsistenteYEdicion(asistente, edicion)) {
+            throw new IllegalArgumentException(
+                    "El asistente ya está registrado en esta edición.");
+        }
+
+        long cantidadActual = registroDAO.cantidadPorTipoRegistro(tipoRegistro);
+        if (cantidadActual >= tipoRegistro.getCupo()) {
+            throw new IllegalArgumentException(
+                    "No hay cupos disponibles para el tipo de registro seleccionado.");
+        }
+
+        double costo = tipoRegistro.getCosto();
+        boolean patrocinado = false;
+        Patrocinio patrocinio = null;
+
+        if (codigoPatrocinio != null && !codigoPatrocinio.isBlank()) {
+            patrocinio = patrocinioDAO.buscarPorCodigoEdicionYTipo(
+                    codigoPatrocinio,
+                    edicion.getId(),
+                    tipoRegistro.getId()
+            );
+
+            if (patrocinio == null) {
+                throw new IllegalArgumentException(
+                        "El código no es válido para esta edición y tipo."
+                );
+            }
+
+            if (asistente.getInstitucion() == null
+                    || !asistente.getInstitucion().getId()
+                    .equals(patrocinio.getInstitucion().getId())) {
+                throw new IllegalArgumentException(
+                        "El asistente no pertenece a la institución patrocinadora."
+                );
+            }
+
+            if (registroDAO.cantidadPorPatrocinio(patrocinio)
+                    >= patrocinio.getCantRegistros()) {
+                throw new IllegalArgumentException(
+                        "No quedan cupos gratuitos para este patrocinio."
+                );
+            }
+
+            costo = 0;
+            patrocinado = true;
+        }
+
+        LocalDate hoy = LocalDate.now();
+
+        DTFecha fechaRegistro = new DTFecha(
+                hoy.getYear(),
+                hoy.getMonthValue(),
+                hoy.getDayOfMonth()
+        );
+
+        Registro registro = new Registro(
+                fechaRegistro,
+                costo,
+                patrocinado,
+                asistente,
+                tipoRegistro,
+                edicion,
+                patrocinio
+        );
+
+        registroDAO.guardar(registro);
     }
 
     @Override
@@ -514,6 +618,19 @@ public class Sistema implements ISistema {
         }
 
         return tipoRegistroDAO.listarPorEdicion(edicion);
+    }
+
+    @Override
+    public List<Patrocinio> listarPatrocinios(Edicion edicion) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (edicion.getId() == null) {
+            return List.of();
+        }
+
+        return patrocinioDAO.listarPorEdicion(edicion);
     }
 
     @Override
@@ -707,77 +824,77 @@ public class Sistema implements ISistema {
         tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
     }
 
-    @Override
-    public void registrarAsistenteEdicion(
-            String nicknameAsistente,
-            Edicion edicion,
-            TipoRegistro tipoRegistro,
-            DTFecha fechaRegistro
-    ) {
-        if (nicknameAsistente == null || nicknameAsistente.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Debe seleccionar un asistente."
-            );
-        }
 
+    @Override
+    public void altaPatrocinio(
+            Edicion edicion,
+            String nombreInstitucion,
+            TipoRegistro tipoRegistro,
+            NivelPatrocinio nivelPatrocinio,
+            float montoAportado,
+            int cantRegistros,
+            String codigo,
+            DTFecha fechaAlta
+    ) {
         if (edicion == null) {
-            throw new IllegalArgumentException(
-                    "Debe seleccionar una edición."
-            );
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
         }
 
         if (tipoRegistro == null) {
+            throw new IllegalArgumentException("Debe seleccionar un tipo de registro.");
+        }
+
+        if (nivelPatrocinio == null) {
+            throw new IllegalArgumentException("Debe seleccionar un nivel de patrocinio.");
+        }
+
+        String codigoLimpio = textoObligatorio(codigo, "código de patrocinio");
+
+        if (fechaAlta == null) {
+            throw new IllegalArgumentException("La fecha de alta es obligatoria.");
+        }
+
+        if (montoAportado <= 0) {
+            throw new IllegalArgumentException("El aporte económico debe ser mayor a cero.");
+        }
+
+        if (cantRegistros <= 0) {
+            throw new IllegalArgumentException("La cantidad de registros gratuitos debe ser mayor a cero.");
+        }
+
+        Institucion institucion = buscarInstitucion(nombreInstitucion);
+
+        if (patrocinioDAO.existeCodigo(codigoLimpio)) {
+            throw new IllegalArgumentException("Ya existe un patrocinio con ese código.");
+        }
+
+        if (patrocinioDAO.existePorInstitucionYEdicion(institucion, edicion)) {
             throw new IllegalArgumentException(
-                    "Debe seleccionar un tipo de registro."
+                    "Ya existe un patrocinio de esa institución para la edición seleccionada."
             );
         }
 
-        if (fechaRegistro == null) {
+        float costoRegistrosGratuitos = tipoRegistro.getCosto() * cantRegistros;
+        float maximoPermitido = montoAportado * 0.20f;
+
+        if (costoRegistrosGratuitos > maximoPermitido) {
             throw new IllegalArgumentException(
-                    "La fecha de registro es obligatoria."
+                    "El costo de los registros gratuitos supera el 20% del aporte económico."
             );
         }
 
-        if (!edicion.getTiposRegistro().contains(tipoRegistro)) {
-            throw new IllegalArgumentException(
-                    "El tipo de registro no pertenece a la edición seleccionada."
-            );
-        }
-
-        Asistente asistente =
-                buscarAsistentePorNickname(nicknameAsistente.trim());
-
-        boolean yaRegistrado = asistente.getRegistros().stream()
-                .anyMatch(registro -> registro.getEdicion() == edicion);
-
-        if (yaRegistrado) {
-            throw new IllegalArgumentException(
-                    "El asistente ya está registrado a esta edición."
-            );
-        }
-
-        long cantidadRegistrosTipo = usuariosPorNickname.values().stream()
-                .filter(usuario -> usuario instanceof Asistente)
-                .map(usuario -> (Asistente) usuario)
-                .flatMap(usuario -> usuario.getRegistros().stream())
-                .filter(registro -> registro.getTipoRegistro() == tipoRegistro)
-                .count();
-
-        if (cantidadRegistrosTipo >= tipoRegistro.getCupo()) {
-            throw new IllegalArgumentException(
-                    "No quedan cupos disponibles para este tipo de registro."
-            );
-        }
-
-        Registro registro = new Registro(
-                siguienteIdRegistro++,
-                fechaRegistro,
-                tipoRegistro.getCosto(),
-                false,
-                tipoRegistro,
-                edicion
+        Patrocinio patrocinio = new Patrocinio(
+                codigoLimpio,
+                fechaAlta,
+                montoAportado,
+                cantRegistros,
+                nivelPatrocinio,
+                institucion,
+                edicion,
+                tipoRegistro
         );
 
-        asistente.agregarRegistro(registro);
+        patrocinioDAO.guardar(patrocinio);
     }
+
 }

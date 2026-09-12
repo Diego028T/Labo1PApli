@@ -116,6 +116,11 @@ public class Evento {
         }
     }
 
+    public void reemplazarCategorias(List<Categoria> categoriasNuevas) {
+        categorias.clear();
+        categorias.addAll(categoriasNuevas);
+    }
+
     public void agregarEdicion(Edicion edicion) {
         if (edicion == null) {
             throw new IllegalArgumentException("La edición no puede ser null.");

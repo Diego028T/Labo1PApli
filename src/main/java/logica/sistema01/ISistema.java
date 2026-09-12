@@ -8,9 +8,13 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Clases.Evento;
 import logica.Clases.Organizador;
+import logica.Clases.Patrocinio;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.Clases.Categoria;
+import logica.Clases.NivelPatrocinio;
+import logica.Clases.Edicion;
+import logica.Clases.TipoRegistro;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -73,16 +77,22 @@ public interface ISistema {
             String pais
     );
 
-    void registrarAsistenteEdicion(
-            String nicknameAsistente,
+    void altaPatrocinio(
             Edicion edicion,
+            String nombreInstitucion,
             TipoRegistro tipoRegistro,
-            DTFecha fechaRegistro
+            NivelPatrocinio nivelPatrocinio,
+            float montoAportado,
+            int cantRegistros,
+            String codigo,
+            DTFecha fechaAlta
     );
 
     List<Edicion> listarEdiciones(Evento evento);
 
     List<TipoRegistro> listarTiposRegistro(Edicion edicion);
+
+    List<Patrocinio> listarPatrocinios(Edicion edicion);
 
     Set<DTUsuario> listarUsuarios();
 
@@ -94,7 +104,14 @@ public interface ISistema {
 
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
-    DTRegistro mostrarDatosRegistro(String nickname, int idRegistro);
+    DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro);
+
+    void altaRegistro(
+            String nicknameAsistente,
+            Edicion edicion,
+            TipoRegistro tipoRegistro,
+            String codigoPatrocinio
+    );
 
     List<Evento> listarEventos();
 

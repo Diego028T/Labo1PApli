@@ -2,13 +2,13 @@ package logica.DataTypes;
 
 public class DTRegistroMin {
 
-    private int id;
+    private Long id;
     private DTFecha fecha;
     private String nombreEdicion;
     private String nombreTipoRegistro;
 
     public DTRegistroMin(
-            int id,
+            Long id,
             DTFecha fecha,
             String nombreEdicion,
             String nombreTipoRegistro) {
@@ -18,7 +18,7 @@ public class DTRegistroMin {
         this.nombreTipoRegistro = nombreTipoRegistro;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
