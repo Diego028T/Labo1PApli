@@ -74,6 +74,12 @@ public class Sistema implements ISistema {
         return valor.trim();
     }
 
+    private boolean correoValido(String correo) {
+        return correo.matches(
+                "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$"
+        );
+    }
+
     @Override
     public EstadoAltaUsuario chequearUsuario(String nickname, String correo) {
         String nicknameNormalizado = claveNormalizada(nickname);
@@ -142,6 +148,12 @@ public class Sistema implements ISistema {
         String correoLimpio = textoObligatorio(correo, "correo");
         String apellidoLimpio = textoObligatorio(apellido, "apellido");
 
+        if (!correoValido(correoLimpio)) {
+            throw new IllegalArgumentException(
+                    "Ingrese un correo electrónico válido."
+            );
+        }
+
         if (fechaNacimiento == null) {
             throw new IllegalArgumentException("La fecha de nacimiento es obligatoria.");
         }
@@ -179,6 +191,12 @@ public class Sistema implements ISistema {
         String nombreLimpio = textoObligatorio(nombre, "nombre");
         String correoLimpio = textoObligatorio(correo, "correo");
         String descripcionLimpia = textoObligatorio(descripcion, "descripción");
+
+        if (!correoValido(correoLimpio)) {
+            throw new IllegalArgumentException(
+                    "Ingrese un correo electrónico válido."
+            );
+        }
 
         EstadoAltaUsuario estado = chequearUsuario(nicknameLimpio, correoLimpio);
 
@@ -550,6 +568,10 @@ public class Sistema implements ISistema {
         if (fechaInicio == null || fechaFin == null || fechaAlta == null) {
             throw new IllegalArgumentException(
                     "Las fechas de la edición son obligatorias.");
+        }
+        if (compararFechas(fechaAlta, fechaInicio) > 0) {
+            throw new IllegalArgumentException(
+                    "La fecha de alta no puede ser posterior a la fecha de inicio.");
         }
         if (compararFechas(fechaFin, fechaInicio) < 0) {
             throw new IllegalArgumentException(

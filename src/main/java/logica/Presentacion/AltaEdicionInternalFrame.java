@@ -189,6 +189,12 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
             return;
         }
 
+        if (esAnterior(fechaInicio, fechaAlta)) {
+            JOptionPane.showMessageDialog(this, "La fecha de alta no puede ser posterior a la fecha de inicio.",
+                    "Fechas inválidas", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
         try {
             sistema.altaEdicion(
                     eventoSeleccionado, organizadorSeleccionado, nombreEdicion,
