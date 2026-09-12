@@ -4,24 +4,17 @@ Proyecto Java/Swing para la gestion de eventos.
 
 ## Estado actual de persistencia
 
-Se empezo a incorporar persistencia con JPA, Hibernate y PostgreSQL.
+El proyecto utiliza JPA, Hibernate y PostgreSQL para persistir el dominio
+principal:
 
-Por ahora la persistencia esta aplicada solamente al primer bloque de usuarios:
+- usuarios, asistentes y organizadores;
+- instituciones y categorías;
+- eventos y ediciones;
+- tipos de registro, registros y patrocinios.
 
-- Usuario
-- Asistente
-- Organizador
-
-El resto del sistema todavia sigue funcionando mayormente en memoria:
-
-- Instituciones
-- Eventos
-- Ediciones
-- Tipos de registro
-- Registros
-- Patrocinios
-
-Esto es intencional para avanzar de a poco y no romper todos los casos de uso al mismo tiempo.
+`Sistema` mantiene algunas colecciones en memoria como apoyo para los casos de
+uso que todavía las utilizan, pero los datos de prueba y las operaciones
+principales se guardan en PostgreSQL.
 
 ## Requisitos
 
@@ -116,7 +109,7 @@ Con `update`, Hibernate reutiliza las tablas existentes y crea las que falten. N
 
 ## Clases mapeadas por ahora
 
-### Usuario
+### Entidades mapeadas
 
 Se marco como entidad JPA:
 
@@ -162,7 +155,7 @@ Sus datos propios son:
 - descripcion
 - enlace
 
-## Clases agregadas en persistencia
+## Clases de persistencia
 
 ### JPAUtil
 
@@ -213,19 +206,21 @@ Se mantiene una copia en memoria para no romper casos de uso que todavia depende
 
 ## Datos iniciales
 
-Los usuarios de prueba siguen existiendo:
+Al iniciar la aplicación se ejecuta una precarga idempotente desde
+`logica.Persistencia.DatosIniciales`. Si un dato ya existe, se reutiliza; si
+falta, se crea. Esto evita duplicados al cerrar y volver a abrir la aplicación.
 
-- `MatiB`
-- `juanchi`
+La precarga incluye:
 
-Pero ahora se cargan con cuidado:
+- usuarios asistentes y organizadores;
+- instituciones y categorías;
+- eventos y ediciones;
+- tipos de registro;
+- patrocinios;
+- registros gratuitos y pagos.
 
-```text
-Si ya existen en la base, no se vuelven a crear.
-Si no existen, se crean.
-```
-
-Esto evita errores por nickname o correo repetido al cerrar y abrir la aplicacion.
+Los datos se cargan en PostgreSQL, por lo que quedan disponibles también para
+las consultas de la interfaz.
 
 ## Como correr
 

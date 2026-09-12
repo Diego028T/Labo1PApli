@@ -49,7 +49,9 @@ public class Sistema implements ISistema {
 
         cargarUsuariosPersistidos();
         cargarInstitucionesPersistidas();
-        //cargarDatosIniciales();
+        DatosIniciales.cargar(JPAUtil.getEntityManagerFactory());
+        cargarUsuariosPersistidos();
+        cargarInstitucionesPersistidas();
     }
 
     public static Sistema getInstancia() {
