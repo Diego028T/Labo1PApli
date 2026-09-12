@@ -5,24 +5,45 @@ import logica.Clases.Evento;
 import logica.Clases.TipoRegistro;
 import logica.sistema01.ISistema;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import java.awt.CardLayout;
 import java.util.List;
 
 public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
 
     private final ISistema sistema;
+    private final CardLayout cardLayout = new CardLayout();
 
-    private final CardLayout cardLayout;
-    private final JPanel panelPrincipal;
+    private JPanel panelPrincipal;
+    private JPanel panelEventos;
+    private JPanel panelEdiciones;
+    private JPanel panelTipos;
+    private JPanel panelDetalles;
 
-    private final JList<Evento> listaEventos;
-    private final JList<Edicion> listaEdiciones;
-    private final JList<TipoRegistro> listaTiposRegistro;
+    private JList<Evento> listaEventos;
+    private JList<Edicion> listaEdiciones;
+    private JList<TipoRegistro> listaTiposRegistro;
 
-    private final JLabel lblEventoSeleccionado;
-    private final JLabel lblEdicionSeleccionada;
-    private final JTextArea txtDetalles;
+    private JLabel lblEventoSeleccionado;
+    private JLabel lblEdicionSeleccionada;
+    private JTextArea txtDetalles;
+
+    private JButton btnSeleccionarEvento;
+    private JButton btnCerrarEventos;
+    private JButton btnSeleccionarEdicion;
+    private JButton btnVolverEventos;
+    private JButton btnVerDetalle;
+    private JButton btnVolverEdiciones;
+    private JButton btnVolverTipos;
+    private JButton btnCerrarDetalles;
 
     private Evento eventoSeleccionado;
     private Edicion edicionSeleccionada;
@@ -32,121 +53,35 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
 
         this.sistema = sistema;
 
-        cardLayout = new CardLayout();
-        panelPrincipal = new JPanel(cardLayout);
-
-        listaEventos = new JList<>();
-        listaEdiciones = new JList<>();
-        listaTiposRegistro = new JList<>();
-
-        lblEventoSeleccionado = new JLabel();
-        lblEdicionSeleccionada = new JLabel();
-
-        txtDetalles = new JTextArea(8, 30);
-        txtDetalles.setEditable(false);
-
-        panelPrincipal.add(crearPanelEventos(), "EVENTOS");
-        panelPrincipal.add(crearPanelEdiciones(), "EDICIONES");
-        panelPrincipal.add(crearPanelTipos(), "TIPOS");
-        panelPrincipal.add(crearPanelDetalles(), "DETALLES");
-
-        setContentPane(panelPrincipal);
-
+        configurarInterfaz();
         cargarEventos();
 
+        setContentPane(panelPrincipal);
         pack();
         setLocation(140, 80);
     }
 
-    private JPanel crearPanelEventos() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
+    private void configurarInterfaz() {
+        panelPrincipal.removeAll();
+        panelPrincipal.setLayout(cardLayout);
+        panelPrincipal.add(panelEventos, "EVENTOS");
+        panelPrincipal.add(panelEdiciones, "EDICIONES");
+        panelPrincipal.add(panelTipos, "TIPOS");
+        panelPrincipal.add(panelDetalles, "DETALLES");
 
-        JLabel titulo = new JLabel(
-                "Seleccione un evento",
-                SwingConstants.CENTER
-        );
+        txtDetalles.setEditable(false);
+        listaEventos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listaEdiciones.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        listaTiposRegistro.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        JButton btnSeleccionar = new JButton("Seleccionar evento");
-        JButton btnCerrar = new JButton("Cerrar");
-
-        JPanel botones = new JPanel();
-        botones.add(btnSeleccionar);
-        botones.add(btnCerrar);
-
-        panel.add(titulo, BorderLayout.NORTH);
-        panel.add(new JScrollPane(listaEventos), BorderLayout.CENTER);
-        panel.add(botones, BorderLayout.SOUTH);
-
-        btnSeleccionar.addActionListener(e -> seleccionarEvento());
-        btnCerrar.addActionListener(e -> dispose());
-
-        return panel;
-    }
-
-    private JPanel crearPanelEdiciones() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-
-        JButton btnSeleccionar = new JButton("Seleccionar edición");
-        JButton btnVolver = new JButton("Volver");
-
-        JPanel botones = new JPanel();
-        botones.add(btnSeleccionar);
-        botones.add(btnVolver);
-
-        panel.add(lblEventoSeleccionado, BorderLayout.NORTH);
-        panel.add(new JScrollPane(listaEdiciones), BorderLayout.CENTER);
-        panel.add(botones, BorderLayout.SOUTH);
-
-        btnSeleccionar.addActionListener(e -> seleccionarEdicion());
-        btnVolver.addActionListener(e ->
-                cardLayout.show(panelPrincipal, "EVENTOS")
-        );
-
-        return panel;
-    }
-
-    private JPanel crearPanelTipos() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-
-        JButton btnSeleccionar = new JButton("Ver detalle");
-        JButton btnVolver = new JButton("Volver");
-
-        JPanel botones = new JPanel();
-        botones.add(btnSeleccionar);
-        botones.add(btnVolver);
-
-        panel.add(lblEdicionSeleccionada, BorderLayout.NORTH);
-        panel.add(new JScrollPane(listaTiposRegistro), BorderLayout.CENTER);
-        panel.add(botones, BorderLayout.SOUTH);
-
-        btnSeleccionar.addActionListener(e -> mostrarDetalle());
-        btnVolver.addActionListener(e ->
-                cardLayout.show(panelPrincipal, "EDICIONES")
-        );
-
-        return panel;
-    }
-
-    private JPanel crearPanelDetalles() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-
-        JButton btnVolver = new JButton("Volver a tipos de registro");
-        JButton btnCerrar = new JButton("Cerrar");
-
-        JPanel botones = new JPanel();
-        botones.add(btnVolver);
-        botones.add(btnCerrar);
-
-        panel.add(new JScrollPane(txtDetalles), BorderLayout.CENTER);
-        panel.add(botones, BorderLayout.SOUTH);
-
-        btnVolver.addActionListener(e ->
-                cardLayout.show(panelPrincipal, "TIPOS")
-        );
-
-        btnCerrar.addActionListener(e -> dispose());
-
-        return panel;
+        btnSeleccionarEvento.addActionListener(e -> seleccionarEvento());
+        btnCerrarEventos.addActionListener(e -> dispose());
+        btnSeleccionarEdicion.addActionListener(e -> seleccionarEdicion());
+        btnVolverEventos.addActionListener(e -> cardLayout.show(panelPrincipal, "EVENTOS"));
+        btnVerDetalle.addActionListener(e -> mostrarDetalle());
+        btnVolverEdiciones.addActionListener(e -> cardLayout.show(panelPrincipal, "EDICIONES"));
+        btnVolverTipos.addActionListener(e -> cardLayout.show(panelPrincipal, "TIPOS"));
+        btnCerrarDetalles.addActionListener(e -> dispose());
     }
 
     private void cargarEventos() {
@@ -157,9 +92,6 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
         }
 
         listaEventos.setModel(modelo);
-        listaEventos.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION
-        );
     }
 
     private void seleccionarEvento() {
@@ -177,10 +109,6 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
         }
 
         listaEdiciones.setModel(modelo);
-        listaEdiciones.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION
-        );
-
         lblEventoSeleccionado.setText(
                 "Evento seleccionado: " + eventoSeleccionado.getNombre()
         );
@@ -197,18 +125,14 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
         }
 
         DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
-
-        List<TipoRegistro> tiposRegistro = sistema.listarTiposRegistro(edicionSeleccionada);
+        List<TipoRegistro> tiposRegistro =
+                sistema.listarTiposRegistro(edicionSeleccionada);
 
         for (TipoRegistro tipo : tiposRegistro) {
             modelo.addElement(tipo);
         }
 
         listaTiposRegistro.setModel(modelo);
-        listaTiposRegistro.setSelectionMode(
-                ListSelectionModel.SINGLE_SELECTION
-        );
-
         lblEdicionSeleccionada.setText(
                 "Edición seleccionada: " + edicionSeleccionada.getNombre()
         );

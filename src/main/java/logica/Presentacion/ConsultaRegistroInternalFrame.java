@@ -7,14 +7,10 @@ import logica.sistema01.ISistema;
 
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.util.List;
 import java.util.Set;
 
@@ -22,15 +18,19 @@ public class ConsultaRegistroInternalFrame extends JInternalFrame {
 
     private final ISistema sistema;
 
+    private JPanel panelPrincipal;
     private JTextArea txtListadoAsistentes;
     private JTextField txtNickname;
+    private JButton btnBuscarRegistros;
 
     private JPanel panelRegistros;
     private JTextArea txtListadoRegistros;
     private JTextField txtIdRegistro;
+    private JButton btnVerDetalle;
 
     private JPanel panelDetalle;
     private JTextArea txtDetalleRegistro;
+    private JButton btnCerrar;
 
     private String nicknameSeleccionado;
 
@@ -39,91 +39,24 @@ public class ConsultaRegistroInternalFrame extends JInternalFrame {
 
         this.sistema = sistema;
 
-        construirInterfaz();
+        configurarInterfaz();
         cargarListadoAsistentes();
 
+        setContentPane(panelPrincipal);
         pack();
         setLocation(150, 90);
     }
 
-    private void construirInterfaz() {
-        JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
-
-        panelPrincipal.add(construirPanelAsistentes(), BorderLayout.NORTH);
-
-        panelRegistros = construirPanelRegistros();
-        panelRegistros.setVisible(false);
-        panelPrincipal.add(panelRegistros, BorderLayout.CENTER);
-
-        panelDetalle = construirPanelDetalle();
-        panelDetalle.setVisible(false);
-        panelPrincipal.add(panelDetalle, BorderLayout.SOUTH);
-
-        add(panelPrincipal);
-    }
-
-    private JPanel construirPanelAsistentes() {
-        JPanel panelAsistentes = new JPanel(new BorderLayout(10, 10));
-
-        txtListadoAsistentes = new JTextArea(8, 55);
+    private void configurarInterfaz() {
         txtListadoAsistentes.setEditable(false);
-
-        JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        txtNickname = new JTextField(18);
-
-        JButton btnBuscarRegistros = new JButton("Buscar registros");
-        btnBuscarRegistros.addActionListener(e -> buscarRegistros());
-
-        panelBusqueda.add(new JLabel("Nickname del asistente:"));
-        panelBusqueda.add(txtNickname);
-        panelBusqueda.add(btnBuscarRegistros);
-
-        panelAsistentes.add(new JScrollPane(txtListadoAsistentes), BorderLayout.CENTER);
-        panelAsistentes.add(panelBusqueda, BorderLayout.SOUTH);
-
-        return panelAsistentes;
-    }
-
-    private JPanel construirPanelRegistros() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-
-        txtListadoRegistros = new JTextArea(6, 55);
         txtListadoRegistros.setEditable(false);
-
-        JPanel panelSeleccion = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        txtIdRegistro = new JTextField(8);
-
-        JButton btnVerDetalle = new JButton("Ver detalle");
-        btnVerDetalle.addActionListener(e -> verDetalleRegistro());
-
-        panelSeleccion.add(new JLabel("Id del registro:"));
-        panelSeleccion.add(txtIdRegistro);
-        panelSeleccion.add(btnVerDetalle);
-
-        panel.add(new JScrollPane(txtListadoRegistros), BorderLayout.CENTER);
-        panel.add(panelSeleccion, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    private JPanel construirPanelDetalle() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-
-        txtDetalleRegistro = new JTextArea(7, 55);
         txtDetalleRegistro.setEditable(false);
+        panelRegistros.setVisible(false);
+        panelDetalle.setVisible(false);
 
-        JButton btnCerrar = new JButton("Cerrar");
+        btnBuscarRegistros.addActionListener(e -> buscarRegistros());
+        btnVerDetalle.addActionListener(e -> verDetalleRegistro());
         btnCerrar.addActionListener(e -> dispose());
-
-        JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        panelBoton.add(btnCerrar);
-
-        panel.add(new JScrollPane(txtDetalleRegistro), BorderLayout.CENTER);
-        panel.add(panelBoton, BorderLayout.SOUTH);
-
-        return panel;
     }
 
     private void cargarListadoAsistentes() {
@@ -163,7 +96,7 @@ public class ConsultaRegistroInternalFrame extends JInternalFrame {
 
             panelRegistros.setVisible(true);
             panelDetalle.setVisible(false);
-            pack();
+            ajustarVentana();
         } catch (RuntimeException e) {
             panelRegistros.setVisible(false);
             panelDetalle.setVisible(false);
@@ -215,12 +148,18 @@ public class ConsultaRegistroInternalFrame extends JInternalFrame {
             );
 
             panelDetalle.setVisible(true);
-            pack();
+            ajustarVentana();
         } catch (NumberFormatException e) {
             mostrarAdvertencia("El id del registro debe ser un numero.");
         } catch (RuntimeException e) {
             mostrarError(e.getMessage());
         }
+    }
+
+    private void ajustarVentana() {
+        panelPrincipal.revalidate();
+        panelPrincipal.repaint();
+        pack();
     }
 
     private void mostrarAdvertencia(String mensaje) {

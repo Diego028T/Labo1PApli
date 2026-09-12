@@ -6,15 +6,11 @@ import logica.sistema01.ISistema;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -22,6 +18,7 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
 
     private final ISistema sistema;
 
+    private JPanel panelPrincipal;
     private JTextField txtNickname;
     private JTextField txtNombre;
     private JTextField txtCorreo;
@@ -30,12 +27,18 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
     private JRadioButton rbOrganizador;
 
     private JPanel panelDatosEspecificos;
+    private JPanel panelAsistente;
+    private JPanel panelOrganizador;
 
     private JTextField txtApellido;
     private JTextField txtFechaNacimiento;
     private JTextField txtInstitucion;
     private JTextField txtDescripcion;
     private JTextField txtEnlace;
+
+    private JButton btnContinuar;
+    private JButton btnAceptar;
+    private JButton btnCancelar;
 
     private final Color colorNormal;
     private final Color colorError;
@@ -47,62 +50,28 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
         this.colorNormal = Color.WHITE;
         this.colorError = new Color(255, 210, 210);
 
-        construirInterfaz();
+        configurarInterfaz();
 
+        setContentPane(panelPrincipal);
         pack();
         setLocation(140, 100);
     }
 
-    private void construirInterfaz() {
-        JPanel panelPrincipal = new JPanel(new BorderLayout(10, 10));
-
-        panelPrincipal.add(construirPanelDatosComunes(), BorderLayout.NORTH);
-
-        panelDatosEspecificos = new JPanel(new BorderLayout(10, 10));
-        panelDatosEspecificos.setVisible(false);
-        panelPrincipal.add(panelDatosEspecificos, BorderLayout.CENTER);
-
-        add(panelPrincipal);
-    }
-
-    private JPanel construirPanelDatosComunes() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        JPanel datos = new JPanel(new GridLayout(4, 2, 10, 10));
-
-        txtNickname = new JTextField();
-        txtNombre = new JTextField();
-        txtCorreo = new JTextField();
-
-        rbAsistente = new JRadioButton("Asistente", true);
-        rbOrganizador = new JRadioButton("Organizador");
-
+    private void configurarInterfaz() {
         ButtonGroup grupoTipoUsuario = new ButtonGroup();
         grupoTipoUsuario.add(rbAsistente);
         grupoTipoUsuario.add(rbOrganizador);
+        rbAsistente.setSelected(true);
 
-        JPanel panelTipo = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelTipo.add(rbAsistente);
-        panelTipo.add(rbOrganizador);
+        panelDatosEspecificos.setVisible(false);
+        panelAsistente.setVisible(false);
+        panelOrganizador.setVisible(false);
+        btnAceptar.setVisible(false);
+        btnCancelar.setVisible(false);
 
-        datos.add(new JLabel("Nickname:"));
-        datos.add(txtNickname);
-        datos.add(new JLabel("Nombre:"));
-        datos.add(txtNombre);
-        datos.add(new JLabel("Correo:"));
-        datos.add(txtCorreo);
-        datos.add(new JLabel("Tipo de usuario:"));
-        datos.add(panelTipo);
-
-        JButton btnContinuar = new JButton("Continuar");
         btnContinuar.addActionListener(e -> continuar());
-
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        botones.add(btnContinuar);
-
-        panel.add(datos, BorderLayout.CENTER);
-        panel.add(botones, BorderLayout.SOUTH);
-
-        return panel;
+        btnAceptar.addActionListener(e -> confirmarAlta());
+        btnCancelar.addActionListener(e -> dispose());
     }
 
     private void continuar() {
@@ -160,55 +129,26 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
     }
 
     private void mostrarFormularioAsistente() {
-        panelDatosEspecificos.removeAll();
-
-        txtApellido = new JTextField();
-        txtFechaNacimiento = new JTextField();
-        txtInstitucion = new JTextField();
-
-        JPanel datos = new JPanel(new GridLayout(3, 2, 10, 10));
-        datos.add(new JLabel("Apellido:"));
-        datos.add(txtApellido);
-        datos.add(new JLabel("Fecha nacimiento:"));
-        datos.add(txtFechaNacimiento);
-        datos.add(new JLabel("Institución opcional:"));
-        datos.add(txtInstitucion);
-
-        cargarPanelEspecifico(datos);
+        panelDatosEspecificos.setVisible(true);
+        panelAsistente.setVisible(true);
+        panelOrganizador.setVisible(false);
+        btnAceptar.setVisible(true);
+        btnCancelar.setVisible(true);
+        ajustarVentana();
     }
 
     private void mostrarFormularioOrganizador() {
-        panelDatosEspecificos.removeAll();
-
-        txtDescripcion = new JTextField();
-        txtEnlace = new JTextField();
-
-        JPanel datos = new JPanel(new GridLayout(2, 2, 10, 10));
-        datos.add(new JLabel("Descripción:"));
-        datos.add(txtDescripcion);
-        datos.add(new JLabel("Enlace:"));
-        datos.add(txtEnlace);
-
-        cargarPanelEspecifico(datos);
+        panelDatosEspecificos.setVisible(true);
+        panelAsistente.setVisible(false);
+        panelOrganizador.setVisible(true);
+        btnAceptar.setVisible(true);
+        btnCancelar.setVisible(true);
+        ajustarVentana();
     }
 
-    private void cargarPanelEspecifico(JPanel datos) {
-        JButton btnAceptar = new JButton("Aceptar");
-        JButton btnCancelar = new JButton("Cancelar");
-
-        btnAceptar.addActionListener(e -> confirmarAlta());
-        btnCancelar.addActionListener(e -> dispose());
-
-        JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        botones.add(btnAceptar);
-        botones.add(btnCancelar);
-
-        panelDatosEspecificos.add(datos, BorderLayout.CENTER);
-        panelDatosEspecificos.add(botones, BorderLayout.SOUTH);
-        panelDatosEspecificos.setVisible(true);
-
-        panelDatosEspecificos.revalidate();
-        panelDatosEspecificos.repaint();
+    private void ajustarVentana() {
+        panelPrincipal.revalidate();
+        panelPrincipal.repaint();
         pack();
     }
 
