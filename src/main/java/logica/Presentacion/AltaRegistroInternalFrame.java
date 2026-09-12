@@ -9,25 +9,23 @@ import logica.sistema01.ISistema;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import java.awt.FlowLayout;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.util.List;
 
 public class AltaRegistroInternalFrame extends JInternalFrame {
 
     private final ISistema sistema;
-    private final JList<Evento> listaEventos = new JList<>();
-    private final JList<Edicion> listaEdiciones = new JList<>();
-    private final JList<TipoRegistro> listaTiposRegistro = new JList<>();
-    private final JTextField txtCodigoPatrocinio = new JTextField(15);
-    private final JList<DTUsuario> listaAsistentes = new JList<>();
+    private JPanel panelPrincipal;
+    private JList<Evento> listaEventos;
+    private JList<Edicion> listaEdiciones;
+    private JList<TipoRegistro> listaTiposRegistro;
+    private JTextField txtCodigoPatrocinio;
+    private JList<DTUsuario> listaAsistentes;
+    private JButton btnRegistrar;
+    private JButton btnCancelar;
 
     public AltaRegistroInternalFrame(ISistema sistema) {
         super("Registro a edición", true, true, true, true);
@@ -37,26 +35,16 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
         }
 
         this.sistema = sistema;
-        construirInterfaz();
+        configurarInterfaz();
         cargarEventos();
 
+        setContentPane(panelPrincipal);
         pack();
         setSize(850, 500);
         setLocation(25, 25);
     }
 
-    private void construirInterfaz() {
-        JPanel principal = new JPanel(new BorderLayout(10, 10));
-        JPanel selecciones = new JPanel(new GridLayout(1, 4, 10, 10));
-        JPanel panelCodigo = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        selecciones.add(crearPanel("Eventos", listaEventos));
-        selecciones.add(crearPanel("Ediciones", listaEdiciones));
-        selecciones.add(crearPanel("Tipos de registro", listaTiposRegistro));
-        selecciones.add(crearPanel("Asistentes", listaAsistentes));
-        panelCodigo.add(new JLabel("Código de patrocinio (opcional):"));
-        panelCodigo.add(txtCodigoPatrocinio);
-
+    private void configurarInterfaz() {
         listaEventos.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 cargarEdiciones();
@@ -69,28 +57,8 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
             }
         });
 
-        JButton btnRegistrar = new JButton("Registrar asistente");
         btnRegistrar.addActionListener(e -> registrarAsistente());
-
-        JButton btnCancelar = new JButton("Cancelar");
         btnCancelar.addActionListener(e -> dispose());
-
-        JPanel botones = new JPanel();
-        botones.add(btnRegistrar);
-        botones.add(btnCancelar);
-
-        principal.add(panelCodigo, BorderLayout.NORTH);
-        principal.add(selecciones, BorderLayout.CENTER);
-        principal.add(botones, BorderLayout.SOUTH);
-
-        setContentPane(principal);
-    }
-
-    private JPanel crearPanel(String titulo, JList<?> lista) {
-        JPanel panel = new JPanel(new BorderLayout(5, 5));
-        panel.add(new JLabel(titulo), BorderLayout.NORTH);
-        panel.add(new JScrollPane(lista), BorderLayout.CENTER);
-        return panel;
     }
 
     private void cargarEventos() {
