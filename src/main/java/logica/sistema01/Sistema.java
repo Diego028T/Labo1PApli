@@ -659,6 +659,19 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public List<Registro> listarRegistrosEdicion(Edicion edicion) {
+        if (edicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edición.");
+        }
+
+        if (edicion.getId() == null) {
+            return List.of();
+        }
+
+        return registroDAO.listarPorEdicion(edicion);
+    }
+
+    @Override
     public List<Organizador> listarOrganizadores() {
         List<Organizador> resultado = new ArrayList<>();
 

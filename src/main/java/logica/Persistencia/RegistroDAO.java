@@ -144,4 +144,25 @@ public class RegistroDAO {
             em.close();
         }
     }
+
+    public List<Registro> listarPorEdicion(Edicion edicion) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT r FROM Registro r " +
+                                    "JOIN FETCH r.asistente " +
+                                    "JOIN FETCH r.tipoRegistro " +
+                                    "JOIN FETCH r.edicion " +
+                                    "LEFT JOIN FETCH r.patrocinio " +
+                                    "WHERE r.edicion.id = :edicionId " +
+                                    "ORDER BY r.fecha",
+                            Registro.class
+                    )
+                    .setParameter("edicionId", edicion.getId())
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
