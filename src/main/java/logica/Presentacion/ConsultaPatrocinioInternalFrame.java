@@ -1,8 +1,8 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
-import logica.Clases.Patrocinio;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTPatrocinio;
 import logica.sistema01.ISistema;
 
 import javax.swing.DefaultListCellRenderer;
@@ -30,9 +30,9 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
     private JPanel panelPatrocinios;
     private JPanel panelDetalles;
 
-    private JList<Evento> listaEventos;
-    private JList<Edicion> listaEdiciones;
-    private JList<Patrocinio> listaPatrocinios;
+    private JList<DTEvento> listaEventos;
+    private JList<DTEdicion> listaEdiciones;
+    private JList<DTPatrocinio> listaPatrocinios;
 
     private JLabel lblEventoSeleccionado;
     private JLabel lblEdicionSeleccionada;
@@ -47,8 +47,8 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
     private JButton btnVolverPatrocinios;
     private JButton btnCerrarDetalles;
 
-    private Evento eventoSeleccionado;
-    private Edicion edicionSeleccionada;
+    private DTEvento eventoSeleccionado;
+    private DTEdicion edicionSeleccionada;
 
     public ConsultaPatrocinioInternalFrame(ISistema sistema) {
         super("Consulta de patrocinio", true, true, true, true);
@@ -117,7 +117,7 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
             if (patrocinio != null) {
                 etiqueta.setText(
                         patrocinio.getCodigo() + " - "
-                                + patrocinio.getInstitucion().getNombre() + " - "
+                                + patrocinio.getNombreInstitucion() + " - "
                                 + patrocinio.getNivelPatrocinio()
                 );
             }
@@ -146,9 +146,9 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
 
-        for (Evento evento : sistema.listarEventos()) {
+        for (DTEvento evento : sistema.listarEventos()) {
             modelo.addElement(evento);
         }
 
@@ -163,9 +163,9 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
             return;
         }
 
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
 
-        for (Edicion edicion : sistema.listarEdiciones(eventoSeleccionado)) {
+        for (DTEdicion edicion : sistema.listarEdiciones(eventoSeleccionado.getId())) {
             modelo.addElement(edicion);
         }
 
@@ -185,11 +185,11 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
             return;
         }
 
-        DefaultListModel<Patrocinio> modelo = new DefaultListModel<>();
-        List<Patrocinio> patrocinios =
-                sistema.listarPatrocinios(edicionSeleccionada);
+        DefaultListModel<DTPatrocinio> modelo = new DefaultListModel<>();
+        List<DTPatrocinio> patrocinios =
+                sistema.listarPatrocinios(edicionSeleccionada.getId());
 
-        for (Patrocinio patrocinio : patrocinios) {
+        for (DTPatrocinio patrocinio : patrocinios) {
             modelo.addElement(patrocinio);
         }
 
@@ -202,23 +202,14 @@ public class ConsultaPatrocinioInternalFrame extends JInternalFrame {
     }
 
     private void mostrarDetalle() {
-        Patrocinio patrocinio = listaPatrocinios.getSelectedValue();
+        DTPatrocinio patrocinio = listaPatrocinios.getSelectedValue();
 
         if (patrocinio == null) {
             mostrarAdvertencia("Debe seleccionar un patrocinio.");
             return;
         }
 
-        txtDetalles.setText(
-                "Código: " + patrocinio.getCodigo() + "\n" +
-                        "Fecha de alta: " + patrocinio.getFecha() + "\n" +
-                        "Institución: " + patrocinio.getInstitucion().getNombre() + "\n" +
-                        "Edición: " + patrocinio.getEdicion().getNombre() + "\n" +
-                        "Tipo de registro: " + patrocinio.getTipoRegistro().getNombre() + "\n" +
-                        "Nivel: " + patrocinio.getNivelPatrocinio() + "\n" +
-                        "Monto aportado: " + patrocinio.getMontoAportado() + "\n" +
-                        "Registros gratuitos: " + patrocinio.getCantRegistros()
-        );
+        txtDetalles.setText(FormatoDetalles.patrocinio(patrocinio));
 
         cardLayout.show(panelPrincipal, "DETALLES");
     }

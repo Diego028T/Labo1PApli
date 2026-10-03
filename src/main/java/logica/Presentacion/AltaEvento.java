@@ -1,6 +1,5 @@
 package logica.Presentacion;
 
-import logica.Clases.Categoria;
 import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
@@ -15,7 +14,7 @@ public class AltaEvento extends JInternalFrame {
     private JTextField campoDescripcion;
     private JTextField campoSiglas;
     private JSpinner campoFecha;
-    private JList<Categoria> listaCategorias;
+    private JList<String> listaCategorias;
     private JButton btnConfirmar;
     private JButton btnCancelar;
     private JLabel textoNombre;
@@ -53,10 +52,10 @@ public class AltaEvento extends JInternalFrame {
     }
 
     private void cargarCategorias() {
-        DefaultListModel<Categoria> modelo = new DefaultListModel<>();
-        List<Categoria> categorias = sistema.listarNombresCategorias();
+        DefaultListModel<String> modelo = new DefaultListModel<>();
+        List<String> categorias = sistema.listarNombresCategorias();
 
-        for (Categoria categoria : categorias) {
+        for (String categoria : categorias) {
             modelo.addElement(categoria);
         }
 
@@ -68,10 +67,7 @@ public class AltaEvento extends JInternalFrame {
 
     private void confirmarAlta() {
         try {
-            List<String> nombresCategorias = listaCategorias.getSelectedValuesList()
-                    .stream()
-                    .map(Categoria::getNombre)
-                    .toList();
+            List<String> nombresCategorias = listaCategorias.getSelectedValuesList();
 
             sistema.altaEvento(
                     campoNombre.getText().trim(),

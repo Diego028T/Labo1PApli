@@ -1,7 +1,6 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
+import logica.DataTypes.DTEdicion;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTRegistro;
 import logica.DataTypes.DTRegistroMin;
@@ -78,7 +77,7 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
 
             if (valor instanceof DTRegistroMin registro) {
                 etiqueta.setText(registro.toString());
-            } else if (valor instanceof Edicion edicion) {
+            } else if (valor instanceof DTEdicion edicion) {
                 etiqueta.setText("ID edición: " + edicion.getId()
                         + " - " + edicion.getNombre()
                         + " (" + edicion.getSigla() + ")");
@@ -193,14 +192,9 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
                         : "No especificado")
         );
 
-        for (Evento evento : sistema.listarEventos()) {
-            for (Edicion edicion : sistema.listarEdiciones(evento)) {
-                if (edicion.getOrganizador() != null
-                        && edicion.getOrganizador().getNickname()
-                        .equalsIgnoreCase(organizador.getNickname())) {
-                    modeloLista.addElement(edicion);
-                }
-            }
+        for (DTEdicion edicion : sistema.listarEdicionesOrganizador(
+                organizador.getNickname())) {
+            modeloLista.addElement(edicion);
         }
 
         if (modeloLista.isEmpty()) {
@@ -262,7 +256,8 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
 
         try {
             txtSeleccionado.setText("Detalle de la edición:");
-            paneSeleccionado.setText(sistema.mostrarDatosEdicion(idEdicion));
+            DTEdicion datos = sistema.mostrarDatosEdicion(idEdicion);
+            paneSeleccionado.setText(FormatoDetalles.edicion(datos));
             mostrarPanel(panelSeleccionado);
         } catch (RuntimeException e) {
             mostrarError(e.getMessage());
@@ -274,7 +269,7 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
             return registro.getIdEdicion();
         }
 
-        if (seleccionado instanceof Edicion edicion) {
+        if (seleccionado instanceof DTEdicion edicion) {
             return edicion.getId();
         }
 

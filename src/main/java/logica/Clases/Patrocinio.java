@@ -1,5 +1,7 @@
 package logica.Clases;
 
+import logica.DataTypes.NivelPatrocinio;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;

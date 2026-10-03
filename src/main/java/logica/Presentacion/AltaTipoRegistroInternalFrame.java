@@ -1,7 +1,7 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
@@ -19,7 +19,7 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
     private JButton btnLimpiar;
     private JTextField txtCupo;
     private final ISistema sistema;
-    private Edicion edicionSeleccionada;
+    private DTEdicion edicionSeleccionada;
 
     public AltaTipoRegistroInternalFrame(ISistema sistema) {
         super("Alta de tipos de registro", true, true, true, true);
@@ -87,8 +87,8 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
         principalPanel.add(formulario, BorderLayout.CENTER);
     }
 
-    private Edicion seleccionarEdicion() {
-        List<Evento> eventos = sistema.listarEventos();
+    private DTEdicion seleccionarEdicion() {
+        List<DTEvento> eventos = sistema.listarEventos();
         if (eventos.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
@@ -99,7 +99,7 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
             return null;
         }
 
-        Evento evento = (Evento) JOptionPane.showInputDialog(
+        DTEvento evento = (DTEvento) JOptionPane.showInputDialog(
                 this,
                 "Seleccione un evento:",
                 "Evento",
@@ -113,7 +113,7 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
             return null;
         }
 
-        List<Edicion> ediciones = sistema.listarEdiciones(evento);
+        List<DTEdicion> ediciones = sistema.listarEdiciones(evento.getId());
         if (ediciones.isEmpty()) {
             JOptionPane.showMessageDialog(
                     this,
@@ -124,7 +124,7 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
             return null;
         }
 
-        return (Edicion) JOptionPane.showInputDialog(
+        return (DTEdicion) JOptionPane.showInputDialog(
                 this,
                 "Seleccione una edición:",
                 "Edición",
@@ -146,7 +146,7 @@ public class AltaTipoRegistroInternalFrame extends JInternalFrame {
             int cupo = Integer.parseInt(txtCupo.getText().trim());
 
             sistema.altaTipoRegistro(
-                    edicionSeleccionada,
+                    edicionSeleccionada.getId(),
                     nombre,
                     descripcion,
                     costo,
