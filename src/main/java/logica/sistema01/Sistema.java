@@ -1,6 +1,12 @@
 package logica.sistema01;
 
 import logica.Clases.*;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTTipoRegistro;
+import logica.DataTypes.DTPatrocinio;
+import logica.DataTypes.DTRegistroEdicion;
+import logica.DataTypes.NivelPatrocinio;
 import logica.DataTypes.DTDatosUsuario;
 import logica.DataTypes.DTRegistro;
 import logica.DataTypes.DTRegistroMin;
@@ -239,8 +245,12 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<Categoria> listarNombresCategorias() {
-        return CategoriaDAO.listarCategorias();
+    public List<String> listarNombresCategorias() {
+        List<String> resultado = new ArrayList<>();
+        for (Categoria categoria : CategoriaDAO.listarCategorias()) {
+            resultado.add(categoria.getNombre());
+        }
+        return resultado;
     }
 
     @Override
@@ -429,10 +439,13 @@ public class Sistema implements ISistema {
     @Override
     public void altaRegistro(
             String nicknameAsistente,
-            Edicion edicion,
-            TipoRegistro tipoRegistro,
+            Long idEdicion,
+            Long idTipoRegistro,
             String codigoPatrocinio
     ) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        TipoRegistro tipoRegistro = buscarTipoRegistroPersistido(idTipoRegistro, idEdicion);
+
         if (edicion == null) {
             throw new IllegalArgumentException("Debe seleccionar una edición.");
         }
@@ -525,21 +538,18 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<Evento> listarEventos() {
-        try {
-            List<Evento> dbEventos = EventoDAO.listarEventos();
-            if (dbEventos != null && !dbEventos.isEmpty()) {
-                return dbEventos;
-            }
-        } catch (Exception ignored) {
+    public List<DTEvento> listarEventos() {
+        List<DTEvento> resultado = new ArrayList<>();
+        for (Evento evento : EventoDAO.listarEventos()) {
+            resultado.add(convertirEvento(evento));
         }
-        return new ArrayList<>(eventos);
+        return resultado;
     }
 
     @Override
     public void altaEdicion(
-            Evento evento,
-            Organizador organizador,
+            Long idEvento,
+            String nicknameOrganizador,
             String nombre,
             String sigla,
             DTFecha fechaInicio,
@@ -548,6 +558,9 @@ public class Sistema implements ISistema {
             String ciudad,
             String pais
     ) {
+        Evento evento = buscarEventoPersistido(idEvento);
+        Organizador organizador = buscarOrganizadorPersistido(nicknameOrganizador);
+
         if (evento == null) {
             throw new IllegalArgumentException("Debe seleccionar un evento.");
         }
@@ -617,165 +630,67 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<Edicion> listarEdiciones(Evento evento) {
-        if (evento == null) {
-            throw new IllegalArgumentException("Debe seleccionar un evento.");
+    public List<DTEdicion> listarEdiciones(Long idEvento) {
+        buscarEventoPersistido(idEvento);
+        List<DTEdicion> resultado = new ArrayList<>();
+        for (Edicion edicion : EdicionDAO.listarPorEvento(idEvento)) {
+            resultado.add(convertirEdicion(edicion));
         }
-
-        if (evento.getId() != null) {
-            try {
-                return EdicionDAO.listarPorEvento(evento.getId());
-            } catch (Exception ignored) {
-            }
-        }
-
-        return evento.getEdiciones();
-    }
-
-    @Override
-    public List<TipoRegistro> listarTiposRegistro(Edicion edicion) {
-        if (edicion == null) {
-            throw new IllegalArgumentException("Debe seleccionar una edición.");
-        }
-
-        if (edicion.getId() == null) {
-            return edicion.getTiposRegistro();
-        }
-
-        return tipoRegistroDAO.listarPorEdicion(edicion);
-    }
-
-    @Override
-    public List<Patrocinio> listarPatrocinios(Edicion edicion) {
-        if (edicion == null) {
-            throw new IllegalArgumentException("Debe seleccionar una edición.");
-        }
-
-        if (edicion.getId() == null) {
-            return List.of();
-        }
-
-        return patrocinioDAO.listarPorEdicion(edicion);
-    }
-
-    @Override
-    public List<Registro> listarRegistrosEdicion(Edicion edicion) {
-        if (edicion == null) {
-            throw new IllegalArgumentException("Debe seleccionar una edición.");
-        }
-
-        if (edicion.getId() == null) {
-            return List.of();
-        }
-
-        return registroDAO.listarPorEdicion(edicion);
-    }
-
-    @Override
-    public List<Organizador> listarOrganizadores() {
-        List<Organizador> resultado = new ArrayList<>();
-
-        for (Usuario usuario : usuarioDAO.listarUsuarios()) {
-            if (usuario instanceof Organizador organizador) {
-                resultado.add(organizador);
-            }
-        }
-
         return resultado;
     }
 
-//    private void cargarCategoriasIniciales() {
-//        categorias.put("tecnología", new Categoria("Tecnología"));
-//        categorias.put("educación", new Categoria("Educación"));
-//        categorias.put("negocios", new Categoria("Negocios"));
-//    }
-//
-//    private void cargarDatosIniciales() {
-//        cargarCategoriasIniciales();
-//
-//        if (!instituciones.containsKey(claveNormalizada("UTEC"))
-//                && !institucionDAO.existeNombre("UTEC")) {
-//            altaInstitucion(
-//                    "UTEC",
-//                    "Universidad Tecnológica del Uruguay",
-//                    "https://utec.edu.uy"
-//            );
-//        }
-//
-//        if (!instituciones.containsKey(claveNormalizada("ANTEL"))
-//                && !institucionDAO.existeNombre("ANTEL")) {
-//            altaInstitucion(
-//                    "ANTEL",
-//                    "Empresa nacional de telecomunicaciones",
-//                    "https://www.antel.com.uy"
-//            );
-//        }
-//
-//        if (!usuariosPorNickname.containsKey(claveNormalizada("MatiB"))
-//                && !usuarioDAO.existeNickname("MatiB")) {
-//            altaAsistente(
-//                    "MatiB",
-//                    "Matias",
-//                    "matiasbragiotorres@gmail.com",
-//                    "Bragio",
-//                    LocalDate.of(2000, 5, 10),
-//                    ""
-//            );
-//        }
-//
-//        if (!usuariosPorNickname.containsKey(claveNormalizada("juanchi"))
-//                && !usuarioDAO.existeNickname("juanchi")) {
-//            altaOrganizador(
-//                    "juanchi",
-//                    "Juancito",
-//                    "juancito@gmail.com",
-//                    "Organizador de conferencias",
-//                    "https://orgconf.com"
-//            );
-//        }
-//
-//        Organizador organizadorInicial =
-//                (Organizador) buscarPorNickname("juanchi");
-//
-//        if (eventos.stream().noneMatch(evento ->
-//                evento.getNombre().equalsIgnoreCase("Conferencia Java"))) {
-//            Evento conferenciaJava = new Evento(
-//                    "Conferencia Java",
-//                    "Conferencia sobre Java",
-//                    "JV2026",
-//                    new DTFecha(2026, 1, 15)
-//            );
-//
-//            conferenciaJava.agregarCategoria(categorias.get("tecnología"));
-//
-//            conferenciaJava.agregarEdicion(new Edicion(
-//                    "Java 2026",
-//                    "JV26",
-//                    new DTFecha(2026, 1, 15),
-//                    new DTFecha(2026, 11, 12),
-//                    new DTFecha(2026, 1, 10),
-//                    "Montevideo",
-//                    "Uruguay",
-//                    organizadorInicial
-//            ));
-//
-//            eventos.add(conferenciaJava);
-//        }
-//
-//        if (eventos.stream().noneMatch(evento ->
-//                evento.getNombre().equalsIgnoreCase("Conferencia Python"))) {
-//            Evento conferenciaPython = new Evento(
-//                    "Conferencia Python",
-//                    "Conferencia sobre Python",
-//                    "PY2026",
-//                    new DTFecha(2026, 2, 1)
-//            );
-//
-//            conferenciaPython.agregarCategoria(categorias.get("tecnología"));
-//
-//            eventos.add(conferenciaPython);
-//        }
-//    }
+    @Override
+    public List<DTTipoRegistro> listarTiposRegistro(Long idEdicion) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        List<DTTipoRegistro> resultado = new ArrayList<>();
+        for (TipoRegistro tipo : tipoRegistroDAO.listarPorEdicion(edicion)) {
+            resultado.add(new DTTipoRegistro(
+                    tipo.getId(), tipo.getNombre(), tipo.getDescripcion(),
+                    tipo.getCosto(), tipo.getCupo()));
+        }
+        return resultado;
+    }
+
+    @Override
+    public List<DTPatrocinio> listarPatrocinios(Long idEdicion) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        List<DTPatrocinio> resultado = new ArrayList<>();
+        for (Patrocinio patrocinio : patrocinioDAO.listarPorEdicion(edicion)) {
+            resultado.add(new DTPatrocinio(
+                    patrocinio.getId(), patrocinio.getCodigo(),
+                    patrocinio.getFecha(), patrocinio.getInstitucion().getNombre(),
+                    patrocinio.getEdicion().getNombre(),
+                    patrocinio.getTipoRegistro().getNombre(),
+                    patrocinio.getNivelPatrocinio(),
+                    patrocinio.getMontoAportado(), patrocinio.getCantRegistros()));
+        }
+        return resultado;
+    }
+
+    @Override
+    public List<DTRegistroEdicion> listarRegistrosEdicion(Long idEdicion) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        List<DTRegistroEdicion> resultado = new ArrayList<>();
+        for (Registro registro : registroDAO.listarPorEdicion(edicion)) {
+            resultado.add(new DTRegistroEdicion(
+                    registro.getId(), registro.getFecha(),
+                    registro.getAsistente().getNickname(),
+                    registro.getTipoRegistro().getNombre(),
+                    registro.getCosto(), registro.isPatrocinado()));
+        }
+        return resultado;
+    }
+
+    @Override
+    public List<DTUsuario> listarOrganizadores() {
+        List<DTUsuario> resultado = new ArrayList<>();
+        for (Usuario usuario : usuarioDAO.listarUsuarios()) {
+            if (usuario instanceof Organizador) {
+                resultado.add(usuario.getDTUsuario());
+            }
+        }
+        return resultado;
+    }
 
     private void cargarUsuariosPersistidos() {
         for (Usuario usuario : usuarioDAO.listarUsuarios()) {
@@ -824,11 +739,13 @@ public class Sistema implements ISistema {
 
     @Override
     public void altaTipoRegistro(
-            Edicion edicion,
+            Long idEdicion,
             String nombre,
             String descripcion,
             float costo,
             int cupo) {
+
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
 
         if (edicion == null) {
             throw new IllegalArgumentException("Debe seleccionar una edición");
@@ -864,15 +781,18 @@ public class Sistema implements ISistema {
 
     @Override
     public void altaPatrocinio(
-            Edicion edicion,
+            Long idEdicion,
             String nombreInstitucion,
-            TipoRegistro tipoRegistro,
+            Long idTipoRegistro,
             NivelPatrocinio nivelPatrocinio,
             float montoAportado,
             int cantRegistros,
             String codigo,
             DTFecha fechaAlta
     ) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        TipoRegistro tipoRegistro = buscarTipoRegistroPersistido(idTipoRegistro, idEdicion);
+
         if (edicion == null) {
             throw new IllegalArgumentException("Debe seleccionar una edición.");
         }
@@ -935,20 +855,85 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public String mostrarDatosEdicion(Long idEdicion) {
-        if (idEdicion == null) {
-            throw new IllegalArgumentException("Debe seleccionar una edición.");
-        }
-
-        Edicion edicion = EdicionDAO.buscarPorId(idEdicion);
-
-        if (edicion == null) {
-            throw new IllegalArgumentException(
-                    "No existe una edición con id: " + idEdicion
-            );
-        }
-
-        return edicion.obtenerDetalles();
+    public DTEdicion mostrarDatosEdicion(Long idEdicion) {
+        return convertirEdicion(buscarEdicionPersistida(idEdicion));
     }
 
+
+    private Evento buscarEventoPersistido(Long idEvento) {
+        if (idEvento == null) {
+            throw new IllegalArgumentException("Debe seleccionar un evento.");
+        }
+        Evento evento = EventoDAO.buscarPorId(idEvento);
+        if (evento == null) {
+            throw new IllegalArgumentException("No existe el evento seleccionado.");
+        }
+        return evento;
+    }
+
+    private Edicion buscarEdicionPersistida(Long idEdicion) {
+        if (idEdicion == null) {
+            throw new IllegalArgumentException("Debe seleccionar una edicion.");
+        }
+        Edicion edicion = EdicionDAO.buscarPorId(idEdicion);
+        if (edicion == null) {
+            throw new IllegalArgumentException("No existe la edicion seleccionada.");
+        }
+        return edicion;
+    }
+
+    private Organizador buscarOrganizadorPersistido(String nickname) {
+        Usuario usuario = buscarPorNickname(nickname);
+        if (!(usuario instanceof Organizador organizador)) {
+            throw new IllegalArgumentException("Debe seleccionar un organizador.");
+        }
+        return organizador;
+    }
+
+    private TipoRegistro buscarTipoRegistroPersistido(
+            Long idTipoRegistro, Long idEdicion) {
+        if (idTipoRegistro == null) {
+            throw new IllegalArgumentException("Debe seleccionar un tipo de registro.");
+        }
+        TipoRegistro tipo = tipoRegistroDAO.buscarPorIdEnEdicion(idTipoRegistro, idEdicion);
+        if (tipo == null) {
+            throw new IllegalArgumentException(
+                    "No existe ese tipo de registro para la edicion seleccionada.");
+        }
+        return tipo;
+    }
+
+    private DTEvento convertirEvento(Evento evento) {
+        List<String> nombresCategorias = new ArrayList<>();
+        for (Categoria categoria : evento.getCategorias()) {
+            nombresCategorias.add(categoria.getNombre());
+        }
+        return new DTEvento(
+                evento.getId(), evento.getNombre(), evento.getDescripcion(),
+                evento.getSigla(), evento.getFechaAlta(), nombresCategorias);
+    }
+
+    private DTEdicion convertirEdicion(Edicion edicion) {
+        Organizador organizador = edicion.getOrganizador();
+        return new DTEdicion(
+                edicion.getId(), edicion.getNombre(), edicion.getSigla(),
+                edicion.getFechaInicio(), edicion.getFechaFin(), edicion.getFechaAlta(),
+                edicion.getCiudad(), edicion.getPais(),
+                organizador == null ? null : organizador.getNickname(),
+                organizador == null ? "Sin asignar" : organizador.getNombre());
+    }
+
+    @Override
+    public List<DTEdicion> listarEdicionesOrganizador(String nickname) {
+        Organizador organizador = buscarOrganizadorPersistido(nickname);
+        List<DTEdicion> resultado = new ArrayList<>();
+        for (Edicion edicion : EdicionDAO.listarEdiciones()) {
+            if (edicion.getOrganizador() != null
+                    && edicion.getOrganizador().getNickname()
+                    .equalsIgnoreCase(organizador.getNickname())) {
+                resultado.add(convertirEdicion(edicion));
+            }
+        }
+        return resultado;
+    }
 }

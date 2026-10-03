@@ -61,4 +61,23 @@ public class tipoRegistroDAO {
             em.close();
         }
     }
+
+    public static TipoRegistro buscarPorIdEnEdicion(Long idTipoRegistro, Long idEdicion) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT tr FROM TipoRegistro tr " +
+                                    "JOIN FETCH tr.edicion " +
+                                    "WHERE tr.id = :idTipoRegistro " +
+                                    "AND tr.edicion.id = :idEdicion",
+                            TipoRegistro.class)
+                    .setParameter("idTipoRegistro", idTipoRegistro)
+                    .setParameter("idEdicion", idEdicion)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            em.close();
+        }
+    }
 }

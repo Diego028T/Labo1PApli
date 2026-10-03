@@ -2,7 +2,6 @@ package logica.Presentacion;
 
 import logica.Clases.Edicion;
 import logica.Clases.Evento;
-import logica.Clases.NivelPatrocinio;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
