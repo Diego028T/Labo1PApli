@@ -12,6 +12,7 @@ import logica.DataTypes.DTTipoRegistro;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.DataTypes.NivelPatrocinio;
+import logica.DataTypes.DTCategoria;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -57,8 +58,6 @@ public interface ISistema {
 
     List<String> listarNombresCategorias();
 
-    void altaCategoria(String nombre);
-
     Set<DTUsuario> listarUsuarios();
 
     Set<DTUsuario> listarAsistentes();
@@ -70,4 +69,8 @@ public interface ISistema {
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
     DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro);
+
+    List<DTCategoria> listarCategoriasJerarquicas();
+
+    void altaCategoria(String nombre, Long idPadre);
 }

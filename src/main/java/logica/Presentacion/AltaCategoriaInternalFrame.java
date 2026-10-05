@@ -1,11 +1,14 @@
 package logica.Presentacion;
 
+import logica.DataTypes.DTCategoria;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AltaCategoriaInternalFrame extends JInternalFrame {
 
@@ -41,11 +44,19 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
 
     private void cargarCategorias() {
         DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Categorías");
-        List<String> categorias = sistema.listarNombresCategorias();
+        List<DTCategoria> categorias = sistema.listarCategoriasJerarquicas();
+        Map<Long, DefaultMutableTreeNode> nodos = new HashMap<>();
 
         if (categorias != null) {
-            for (String categoria : categorias) {
-                raiz.add(new DefaultMutableTreeNode(categoria));
+            for (DTCategoria categoria : categorias) {
+                nodos.put(categoria.id(), new DefaultMutableTreeNode(categoria));
+            }
+            for (DTCategoria categoria : categorias) {
+                DefaultMutableTreeNode nodo = nodos.get(categoria.id());
+                DefaultMutableTreeNode padre = categoria.idPadre() == null
+                        ? raiz
+                        : nodos.get(categoria.idPadre());
+                (padre == null ? raiz : padre).add(nodo);
             }
         }
 
@@ -55,6 +66,7 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
         for (int i = 0; i < arbolCategorias.getRowCount(); i++) {
             arbolCategorias.expandRow(i);
         }
+        arbolCategorias.setSelectionPath(new javax.swing.tree.TreePath(raiz.getPath()));
     }
 
     private void confirmarAlta() {
@@ -70,7 +82,12 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
                 return;
             }
 
-            sistema.altaCategoria(nombre);
+            DefaultMutableTreeNode nodoSeleccionado = (DefaultMutableTreeNode)
+                    arbolCategorias.getLastSelectedPathComponent();
+            Object seleccion = nodoSeleccionado == null ? null : nodoSeleccionado.getUserObject();
+            Long idPadre = seleccion instanceof DTCategoria categoria ? categoria.id() : null;
+
+            sistema.altaCategoria(nombre, idPadre);
 
             JOptionPane.showMessageDialog(
                     this,
@@ -86,6 +103,13 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
             JOptionPane.showMessageDialog(
                     this,
                     e.getMessage(),
+                    "Error en alta de categoría",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        } catch (RuntimeException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo guardar la categoría. " + e.getMessage(),
                     "Error en alta de categoría",
                     JOptionPane.ERROR_MESSAGE
             );
