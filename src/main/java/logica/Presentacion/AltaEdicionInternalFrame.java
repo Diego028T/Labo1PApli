@@ -1,7 +1,7 @@
 package logica.Presentacion;
 
-import logica.Clases.Evento;
-import logica.Clases.Organizador;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
@@ -14,11 +14,11 @@ import java.util.List;
 public class AltaEdicionInternalFrame extends JInternalFrame {
     private final ISistema sistema;
     private JLabel txtEventos;
-    private JList<Evento> listaEventos;
+    private JList<DTEvento> listaEventos;
     private JPanel eventosListados;
     private JButton altaEdicionButton;
     private JPanel panelFormularioEdicion;
-    private JList<Organizador> listaOrganizadores;
+    private JList<DTUsuario> listaOrganizadores;
     private JTextField txtNombreEdicion;
     private JTextField txtSiglaEdicion;
     private JSpinner txtFechaAlta;
@@ -26,8 +26,8 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JSpinner txtFechaFin;
     private JTextField txtCiudad;
     private JTextField txtPais;
-    private Evento eventoSeleccionado;
-    private Organizador organizadorSeleccionado;
+    private DTEvento eventoSeleccionado;
+    private DTUsuario organizadorSeleccionado;
 
     public AltaEdicionInternalFrame(ISistema sistema){
         super("Alta de edición de evento", true, true, true, true);
@@ -46,18 +46,18 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
-        List<Evento> eventos = sistema.listarEventos();
-        for (Evento e : eventos) {
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
+        List<DTEvento> eventos = sistema.listarEventos();
+        for (DTEvento e : eventos) {
             modelo.addElement(e);
         }
         listaEventos.setModel(modelo);
     }
 
     private void cargarOrganizadores() {
-        DefaultListModel<Organizador> modelo = new DefaultListModel<>();
-        List<Organizador> organizadores = sistema.listarOrganizadores();
-        for (Organizador o : organizadores) {
+        DefaultListModel<DTUsuario> modelo = new DefaultListModel<>();
+        List<DTUsuario> organizadores = sistema.listarOrganizadores();
+        for (DTUsuario o : organizadores) {
             modelo.addElement(o);
         }
         listaOrganizadores.setModel(modelo);
@@ -123,7 +123,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         panelFormularioEdicion.removeAll();
         panelFormularioEdicion.setLayout(new BorderLayout(10, 10));
         panelFormularioEdicion.add(
-                new JLabel("Alta de edicion para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.getNombre()),
+                new JLabel("Alta de edicion para el evento: " + eventoSeleccionado.getNombre() + " - Organizador: " + organizadorSeleccionado.nombre()),
                 BorderLayout.NORTH
         );
         panelFormularioEdicion.add(datos, BorderLayout.CENTER);
@@ -197,7 +197,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
         try {
             sistema.altaEdicion(
-                    eventoSeleccionado, organizadorSeleccionado, nombreEdicion,
+                    eventoSeleccionado.getId(), organizadorSeleccionado.nickname(), nombreEdicion,
                     siglaEdicion, fechaInicio, fechaFin, fechaAlta, ciudad, pais);
             JOptionPane.showMessageDialog(this, "Edición dada de alta correctamente.");
             dispose();

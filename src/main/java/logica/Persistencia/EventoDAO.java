@@ -57,4 +57,20 @@ public class EventoDAO {
             em.close();
         }
     }
+
+    public static Evento buscarPorId(Long id) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT e FROM Evento e " +
+                                    "LEFT JOIN FETCH e.categorias WHERE e.id = :id",
+                            Evento.class)
+                    .setParameter("id", id)
+                    .getResultStream()
+                    .findFirst()
+                    .orElse(null);
+        } finally {
+            em.close();
+        }
+    }
 }

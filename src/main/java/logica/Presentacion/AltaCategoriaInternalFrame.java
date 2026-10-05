@@ -1,6 +1,5 @@
 package logica.Presentacion;
 
-import logica.Clases.Categoria;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
@@ -42,11 +41,11 @@ public class AltaCategoriaInternalFrame extends JInternalFrame {
 
     private void cargarCategorias() {
         DefaultMutableTreeNode raiz = new DefaultMutableTreeNode("Categorías");
-        List<Categoria> categorias = sistema.listarNombresCategorias();
+        List<String> categorias = sistema.listarNombresCategorias();
 
         if (categorias != null) {
-            for (Categoria categoria : categorias) {
-                raiz.add(new DefaultMutableTreeNode(categoria.getNombre()));
+            for (String categoria : categorias) {
+                raiz.add(new DefaultMutableTreeNode(categoria));
             }
         }
 

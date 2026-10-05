@@ -1,9 +1,9 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
-import logica.Clases.NivelPatrocinio;
-import logica.Clases.TipoRegistro;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.NivelPatrocinio;
+import logica.DataTypes.DTTipoRegistro;
 import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
@@ -17,15 +17,15 @@ public class AltaPatrocinio extends JInternalFrame {
     private final ISistema sistema;
     private JPanel principalJpanel;
     private JPanel eventosDisponibles;
-    private JList<Evento> listaEventos;
+    private JList<DTEvento> listaEventos;
     private JLabel TituloEventos;
     private JButton btnConfirmarEvento;
-    private JList<Edicion> listaEdiciones;
+    private JList<DTEdicion> listaEdiciones;
     private JLabel TituloEdiciones;
     private JPanel edicionesDisponibles;
     private JButton btnConfirmarEdicion;
     private JPanel formularioPatrocinio;
-    private JList<TipoRegistro> listaTiposRegistro;
+    private JList<DTTipoRegistro> listaTiposRegistro;
     private JComboBox<String> comboInstituciones;
     private JComboBox<NivelPatrocinio> comboNivelPatrocinio;
     private JTextField txtMontoAportado;
@@ -34,8 +34,8 @@ public class AltaPatrocinio extends JInternalFrame {
     private JSpinner spinnerFechaAlta;
     private JButton btnGuardarPatrocinio;
     private JButton btnCancelarPatrocinio;
-    private Evento eventoSeleccionado;
-    private Edicion edicionSeleccionada;
+    private DTEvento eventoSeleccionado;
+    private DTEdicion edicionSeleccionada;
 
     public AltaPatrocinio(ISistema sistema) {
         super("Alta de patrocinio", true, true, true, true);
@@ -141,10 +141,10 @@ public class AltaPatrocinio extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
-        List<Evento> eventos = sistema.listarEventos();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
+        List<DTEvento> eventos = sistema.listarEventos();
 
-        for (Evento evento : eventos) {
+        for (DTEvento evento : eventos) {
             modelo.addElement(evento);
         }
 
@@ -164,10 +164,10 @@ public class AltaPatrocinio extends JInternalFrame {
     }
 
     private void cargarEdiciones() {
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
-        List<Edicion> ediciones = sistema.listarEdiciones(eventoSeleccionado);
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
+        List<DTEdicion> ediciones = sistema.listarEdiciones(eventoSeleccionado.getId());
 
-        for (Edicion edicion : ediciones) {
+        for (DTEdicion edicion : ediciones) {
             modelo.addElement(edicion);
         }
 
@@ -188,10 +188,10 @@ public class AltaPatrocinio extends JInternalFrame {
     }
 
     private void cargarTiposRegistro() {
-        DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
-        List<TipoRegistro> tiposRegistro = sistema.listarTiposRegistro(edicionSeleccionada);
+        DefaultListModel<DTTipoRegistro> modelo = new DefaultListModel<>();
+        List<DTTipoRegistro> tiposRegistro = sistema.listarTiposRegistro(edicionSeleccionada.getId());
 
-        for (TipoRegistro tipoRegistro : tiposRegistro) {
+        for (DTTipoRegistro tipoRegistro : tiposRegistro) {
             modelo.addElement(tipoRegistro);
         }
 
@@ -208,7 +208,7 @@ public class AltaPatrocinio extends JInternalFrame {
 
     private void guardarPatrocinio() {
         try {
-            TipoRegistro tipoRegistro = listaTiposRegistro.getSelectedValue();
+            DTTipoRegistro tipoRegistro = listaTiposRegistro.getSelectedValue();
             String nombreInstitucion = (String) comboInstituciones.getSelectedItem();
             NivelPatrocinio nivelPatrocinio = (NivelPatrocinio) comboNivelPatrocinio.getSelectedItem();
 
@@ -223,9 +223,9 @@ public class AltaPatrocinio extends JInternalFrame {
             }
 
             sistema.altaPatrocinio(
-                    edicionSeleccionada,
+                    edicionSeleccionada.getId(),
                     nombreInstitucion,
-                    tipoRegistro,
+                    tipoRegistro.getId(),
                     nivelPatrocinio,
                     leerMontoAportado(),
                     leerCantidadRegistros(),

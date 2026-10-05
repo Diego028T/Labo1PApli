@@ -1,21 +1,17 @@
 package logica.sistema01;
 
-import logica.Clases.Edicion;
 import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTPatrocinio;
 import logica.DataTypes.DTRegistro;
+import logica.DataTypes.DTRegistroEdicion;
 import logica.DataTypes.DTRegistroMin;
+import logica.DataTypes.DTTipoRegistro;
 import logica.DataTypes.DTUsuario;
 import logica.DataTypes.EstadoAltaUsuario;
-import logica.Clases.Evento;
-import logica.Clases.Organizador;
-import logica.Clases.Patrocinio;
-import logica.Clases.Registro;
-import logica.Clases.TipoRegistro;
-import logica.DataTypes.DTFecha;
-import logica.Clases.Categoria;
-import logica.Clases.NivelPatrocinio;
-import logica.Clases.Edicion;
-import logica.Clases.TipoRegistro;
+import logica.DataTypes.NivelPatrocinio;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,81 +19,45 @@ import java.util.Set;
 
 public interface ISistema {
 
-    void altaInstitucion(
-            String nombre,
-            String descripcion,
-            String sitioWeb
-    );
+    void altaInstitucion(String nombre, String descripcion, String sitioWeb);
 
     List<String> listarNombresInstituciones();
 
     EstadoAltaUsuario chequearUsuario(String nickname, String correo);
 
-    void altaAsistente(
-            String nickname,
-            String nombre,
-            String correo,
-            String apellido,
-            LocalDate fechaNacimiento,
-            String nombreInstitucion
-    );
+    void altaAsistente(String nickname, String nombre, String correo, String apellido, LocalDate fechaNacimiento, String nombreInstitucion);
 
-    void altaOrganizador(
-            String nickname,
-            String nombre,
-            String correo,
-            String descripcion,
-            String enlace
-    );
+    void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace);
 
-    void altaTipoRegistro(
-            Edicion edicion,
-            String nombre,
-            String descripcion,
-            float costo,
-            int cupo
-    );
+    void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias);
 
-    void altaEvento(
-            String nombre,
-            String descripcion,
-            String sigla,
-            DTFecha fechaAlta,
-            List<String> nombresCategorias
-    );
+    void altaEdicion(Long idEvento, String nicknameOrganizador, String nombre, String sigla, DTFecha fechaInicio, DTFecha fechaFin, DTFecha fechaAlta, String ciudad, String pais);
 
-    void altaEdicion(
-            Evento evento,
-            Organizador organizador,
-            String nombre,
-            String sigla,
-            DTFecha fechaInicio,
-            DTFecha fechaFin,
-            DTFecha fechaAlta,
-            String ciudad,
-            String pais
-    );
+    void altaTipoRegistro(Long idEdicion, String nombre, String descripcion, float costo, int cupo);
 
-    void altaPatrocinio(
-            Edicion edicion,
-            String nombreInstitucion,
-            TipoRegistro tipoRegistro,
-            NivelPatrocinio nivelPatrocinio,
-            float montoAportado,
-            int cantRegistros,
-            String codigo,
-            DTFecha fechaAlta
-    );
+    void altaPatrocinio(Long idEdicion, String nombreInstitucion, Long idTipoRegistro, NivelPatrocinio nivelPatrocinio, float montoAportado, int cantRegistros, String codigo, DTFecha fechaAlta);
 
-    List<Edicion> listarEdiciones(Evento evento);
+    void altaRegistro(String nicknameAsistente, Long idEdicion, Long idTipoRegistro, String codigoPatrocinio);
 
-    String mostrarDatosEdicion(Long idEdicion);
+    List<DTEvento> listarEventos();
 
-    List<TipoRegistro> listarTiposRegistro(Edicion edicion);
+    List<DTEdicion> listarEdiciones(Long idEvento);
 
-    List<Patrocinio> listarPatrocinios(Edicion edicion);
+    List<DTEdicion> listarEdicionesOrganizador(String nickname);
 
-    List<Registro> listarRegistrosEdicion(Edicion edicion);
+    DTEdicion mostrarDatosEdicion(Long idEdicion);
+
+    List<DTTipoRegistro> listarTiposRegistro(Long idEdicion);
+
+    List<DTPatrocinio> listarPatrocinios(Long idEdicion);
+
+    List<DTRegistroEdicion> listarRegistrosEdicion(Long idEdicion);
+
+    List<DTUsuario> listarOrganizadores();
+
+    List<String> listarNombresCategorias();
+
+    void altaCategoria(String nombre);
 
     Set<DTUsuario> listarUsuarios();
 
@@ -110,20 +70,4 @@ public interface ISistema {
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
     DTRegistro mostrarDatosRegistro(String nickname, Long idRegistro);
-
-    void altaRegistro(
-            String nicknameAsistente,
-            Edicion edicion,
-            TipoRegistro tipoRegistro,
-            String codigoPatrocinio
-    );
-
-    List<Evento> listarEventos();
-
-    List<Organizador> listarOrganizadores();
-
-    List<Categoria> listarNombresCategorias();
-
-    void altaCategoria(String nombre);
-
 }

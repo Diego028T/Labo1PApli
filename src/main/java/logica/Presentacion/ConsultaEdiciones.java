@@ -1,10 +1,10 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
-import logica.Clases.Patrocinio;
-import logica.Clases.Registro;
-import logica.Clases.TipoRegistro;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTPatrocinio;
+import logica.DataTypes.DTRegistroEdicion;
+import logica.DataTypes.DTTipoRegistro;
 import logica.sistema01.ISistema;
 
 import javax.swing.DefaultListCellRenderer;
@@ -32,10 +32,10 @@ public class ConsultaEdiciones extends JInternalFrame {
     private JPanel panelDetalleEdicion;
     private JPanel panelDetalleSeleccionado;
 
-    private JList<Evento> listaEventos;
-    private JList<Edicion> listaEdiciones;
-    private JList<TipoRegistro> listaTiposRegistro;
-    private JList<Patrocinio> listaPatrocinios;
+    private JList<DTEvento> listaEventos;
+    private JList<DTEdicion> listaEdiciones;
+    private JList<DTTipoRegistro> listaTiposRegistro;
+    private JList<DTPatrocinio> listaPatrocinios;
 
     private JLabel lblEventoSeleccionado;
     private JLabel lblEdicionSeleccionada;
@@ -54,8 +54,8 @@ public class ConsultaEdiciones extends JInternalFrame {
     private JButton btnVolverDetalleEdicion;
     private JButton btnCerrarDetalleSeleccionado;
 
-    private Evento eventoSeleccionado;
-    private Edicion edicionSeleccionada;
+    private DTEvento eventoSeleccionado;
+    private DTEdicion edicionSeleccionada;
 
     public ConsultaEdiciones(ISistema sistema) {
         super("Consulta Ediciones", true, true, true, true);
@@ -140,7 +140,7 @@ public class ConsultaEdiciones extends JInternalFrame {
             if (patrocinio != null) {
                 etiqueta.setText(
                         patrocinio.getCodigo() + " - "
-                                + patrocinio.getInstitucion().getNombre() + " - "
+                                + patrocinio.getNombreInstitucion() + " - "
                                 + patrocinio.getNivelPatrocinio()
                 );
             }
@@ -169,9 +169,9 @@ public class ConsultaEdiciones extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
 
-        for (Evento evento : sistema.listarEventos()) {
+        for (DTEvento evento : sistema.listarEventos()) {
             modelo.addElement(evento);
         }
 
@@ -186,10 +186,10 @@ public class ConsultaEdiciones extends JInternalFrame {
             return;
         }
 
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
-        List<Edicion> ediciones = sistema.listarEdiciones(eventoSeleccionado);
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
+        List<DTEdicion> ediciones = sistema.listarEdiciones(eventoSeleccionado.getId());
 
-        for (Edicion edicion : ediciones) {
+        for (DTEdicion edicion : ediciones) {
             modelo.addElement(edicion);
         }
 
@@ -212,7 +212,7 @@ public class ConsultaEdiciones extends JInternalFrame {
         lblEdicionSeleccionada.setText(
                 "Edición seleccionada: " + edicionSeleccionada.getNombre()
         );
-        txtDetalleEdicion.setText(edicionSeleccionada.obtenerDetalles());
+        txtDetalleEdicion.setText(FormatoDetalles.edicion(edicionSeleccionada));
         cargarTiposRegistro();
         cargarRegistros();
         cargarPatrocinios();
@@ -221,9 +221,9 @@ public class ConsultaEdiciones extends JInternalFrame {
     }
 
     private void cargarTiposRegistro() {
-        DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
+        DefaultListModel<DTTipoRegistro> modelo = new DefaultListModel<>();
 
-        for (TipoRegistro tipoRegistro : sistema.listarTiposRegistro(edicionSeleccionada)) {
+        for (DTTipoRegistro tipoRegistro : sistema.listarTiposRegistro(edicionSeleccionada.getId())) {
             modelo.addElement(tipoRegistro);
         }
 
@@ -231,7 +231,7 @@ public class ConsultaEdiciones extends JInternalFrame {
     }
 
     private void cargarRegistros() {
-        List<Registro> registros = sistema.listarRegistrosEdicion(edicionSeleccionada);
+        List<DTRegistroEdicion> registros = sistema.listarRegistrosEdicion(edicionSeleccionada.getId());
 
         if (registros.isEmpty()) {
             txtRegistros.setText("No hay registros para esta edición.");
@@ -241,15 +241,15 @@ public class ConsultaEdiciones extends JInternalFrame {
         StringBuilder texto = new StringBuilder();
         texto.append("Registros:\n\n");
 
-        for (Registro registro : registros) {
+        for (DTRegistroEdicion registro : registros) {
             texto.append("Id: ")
                     .append(registro.getId())
                     .append(" - Fecha: ")
                     .append(registro.getFecha())
                     .append(" - Asistente: ")
-                    .append(registro.getAsistente().getNickname())
+                    .append(registro.getNicknameAsistente())
                     .append(" - Tipo: ")
-                    .append(registro.getTipoRegistro().getNombre())
+                    .append(registro.getNombreTipoRegistro())
                     .append(" - Costo: ")
                     .append(registro.getCosto())
                     .append(" - Patrocinado: ")
@@ -261,9 +261,9 @@ public class ConsultaEdiciones extends JInternalFrame {
     }
 
     private void cargarPatrocinios() {
-        DefaultListModel<Patrocinio> modelo = new DefaultListModel<>();
+        DefaultListModel<DTPatrocinio> modelo = new DefaultListModel<>();
 
-        for (Patrocinio patrocinio : sistema.listarPatrocinios(edicionSeleccionada)) {
+        for (DTPatrocinio patrocinio : sistema.listarPatrocinios(edicionSeleccionada.getId())) {
             modelo.addElement(patrocinio);
         }
 
@@ -271,7 +271,7 @@ public class ConsultaEdiciones extends JInternalFrame {
     }
 
     private void mostrarDetalleTipoRegistro() {
-        TipoRegistro tipoSeleccionado = listaTiposRegistro.getSelectedValue();
+        DTTipoRegistro tipoSeleccionado = listaTiposRegistro.getSelectedValue();
 
         if (tipoSeleccionado == null) {
             mostrarAdvertencia("Debe seleccionar un tipo de registro.");
@@ -279,18 +279,13 @@ public class ConsultaEdiciones extends JInternalFrame {
         }
 
         lblDetalleSeleccionado.setText("Detalle del tipo de registro:");
-        txtDetalleSeleccionado.setText(
-                "Nombre: " + tipoSeleccionado.getNombre() + "\n" +
-                        "Descripción: " + tipoSeleccionado.getDescripcion() + "\n" +
-                        "Costo: " + tipoSeleccionado.getCosto() + "\n" +
-                        "Cupo: " + tipoSeleccionado.getCupo()
-        );
+        txtDetalleSeleccionado.setText(FormatoDetalles.tipoRegistro(tipoSeleccionado));
 
         cardLayout.show(panelPrincipal, "DETALLE_SELECCIONADO");
     }
 
     private void mostrarDetallePatrocinio() {
-        Patrocinio patrocinio = listaPatrocinios.getSelectedValue();
+        DTPatrocinio patrocinio = listaPatrocinios.getSelectedValue();
 
         if (patrocinio == null) {
             mostrarAdvertencia("Debe seleccionar un patrocinio.");
@@ -298,16 +293,7 @@ public class ConsultaEdiciones extends JInternalFrame {
         }
 
         lblDetalleSeleccionado.setText("Detalle del patrocinio:");
-        txtDetalleSeleccionado.setText(
-                "Código: " + patrocinio.getCodigo() + "\n" +
-                        "Fecha de alta: " + patrocinio.getFecha() + "\n" +
-                        "Institución: " + patrocinio.getInstitucion().getNombre() + "\n" +
-                        "Edición: " + patrocinio.getEdicion().getNombre() + "\n" +
-                        "Tipo de registro: " + patrocinio.getTipoRegistro().getNombre() + "\n" +
-                        "Nivel: " + patrocinio.getNivelPatrocinio() + "\n" +
-                        "Monto aportado: " + patrocinio.getMontoAportado() + "\n" +
-                        "Registros gratuitos: " + patrocinio.getCantRegistros()
-        );
+        txtDetalleSeleccionado.setText(FormatoDetalles.patrocinio(patrocinio));
 
         cardLayout.show(panelPrincipal, "DETALLE_SELECCIONADO");
     }

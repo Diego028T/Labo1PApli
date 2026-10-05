@@ -1,8 +1,8 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
-import logica.Clases.TipoRegistro;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTTipoRegistro;
 import logica.DataTypes.DTUsuario;
 import logica.sistema01.ISistema;
 
@@ -19,9 +19,9 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
 
     private final ISistema sistema;
     private JPanel panelPrincipal;
-    private JList<Evento> listaEventos;
-    private JList<Edicion> listaEdiciones;
-    private JList<TipoRegistro> listaTiposRegistro;
+    private JList<DTEvento> listaEventos;
+    private JList<DTEdicion> listaEdiciones;
+    private JList<DTTipoRegistro> listaTiposRegistro;
     private JTextField txtCodigoPatrocinio;
     private JList<DTUsuario> listaAsistentes;
     private JButton btnRegistrar;
@@ -62,10 +62,10 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
-        List<Evento> eventos = sistema.listarEventos();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
+        List<DTEvento> eventos = sistema.listarEventos();
 
-        for (Evento evento : eventos) {
+        for (DTEvento evento : eventos) {
             modelo.addElement(evento);
         }
 
@@ -73,11 +73,11 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     }
 
     private void cargarEdiciones() {
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
-        Evento evento = listaEventos.getSelectedValue();
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
+        DTEvento evento = listaEventos.getSelectedValue();
 
         if (evento != null) {
-            for (Edicion edicion : sistema.listarEdiciones(evento)) {
+            for (DTEdicion edicion : sistema.listarEdiciones(evento.getId())) {
                 modelo.addElement(edicion);
             }
         }
@@ -87,11 +87,11 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     }
 
     private void cargarTiposRegistro() {
-        DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
-        Edicion edicion = listaEdiciones.getSelectedValue();
+        DefaultListModel<DTTipoRegistro> modelo = new DefaultListModel<>();
+        DTEdicion edicion = listaEdiciones.getSelectedValue();
 
         if (edicion != null) {
-            for (TipoRegistro tipoRegistro : sistema.listarTiposRegistro(edicion)) {
+            for (DTTipoRegistro tipoRegistro : sistema.listarTiposRegistro(edicion.getId())) {
                 modelo.addElement(tipoRegistro);
             }
         }
@@ -111,9 +111,9 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
     }
 
     private void registrarAsistente() {
-        Evento evento = listaEventos.getSelectedValue();
-        Edicion edicion = listaEdiciones.getSelectedValue();
-        TipoRegistro tipoRegistro = listaTiposRegistro.getSelectedValue();
+        DTEvento evento = listaEventos.getSelectedValue();
+        DTEdicion edicion = listaEdiciones.getSelectedValue();
+        DTTipoRegistro tipoRegistro = listaTiposRegistro.getSelectedValue();
         DTUsuario asistente = listaAsistentes.getSelectedValue();
 
         if (evento == null || edicion == null
@@ -126,8 +126,8 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
         try {
             sistema.altaRegistro(
                     asistente.nickname(),
-                    edicion,
-                    tipoRegistro,
+                    edicion.getId(),
+                    tipoRegistro.getId(),
                     txtCodigoPatrocinio.getText()
             );
 
@@ -157,4 +157,3 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
         );
     }
 }
-

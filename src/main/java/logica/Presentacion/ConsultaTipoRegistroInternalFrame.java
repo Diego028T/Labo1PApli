@@ -1,8 +1,8 @@
 package logica.Presentacion;
 
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
-import logica.Clases.TipoRegistro;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTTipoRegistro;
 import logica.sistema01.ISistema;
 
 import javax.swing.DefaultListModel;
@@ -28,9 +28,9 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
     private JPanel panelTipos;
     private JPanel panelDetalles;
 
-    private JList<Evento> listaEventos;
-    private JList<Edicion> listaEdiciones;
-    private JList<TipoRegistro> listaTiposRegistro;
+    private JList<DTEvento> listaEventos;
+    private JList<DTEdicion> listaEdiciones;
+    private JList<DTTipoRegistro> listaTiposRegistro;
 
     private JLabel lblEventoSeleccionado;
     private JLabel lblEdicionSeleccionada;
@@ -45,8 +45,8 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
     private JButton btnVolverTipos;
     private JButton btnCerrarDetalles;
 
-    private Evento eventoSeleccionado;
-    private Edicion edicionSeleccionada;
+    private DTEvento eventoSeleccionado;
+    private DTEdicion edicionSeleccionada;
 
     public ConsultaTipoRegistroInternalFrame(ISistema sistema) {
         super("Consulta de tipo de registro", true, true, true, true);
@@ -85,9 +85,9 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
 
-        for (Evento evento : sistema.listarEventos()) {
+        for (DTEvento evento : sistema.listarEventos()) {
             modelo.addElement(evento);
         }
 
@@ -102,9 +102,9 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
             return;
         }
 
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
 
-        for (Edicion edicion : sistema.listarEdiciones(eventoSeleccionado)) {
+        for (DTEdicion edicion : sistema.listarEdiciones(eventoSeleccionado.getId())) {
             modelo.addElement(edicion);
         }
 
@@ -124,11 +124,11 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
             return;
         }
 
-        DefaultListModel<TipoRegistro> modelo = new DefaultListModel<>();
-        List<TipoRegistro> tiposRegistro =
-                sistema.listarTiposRegistro(edicionSeleccionada);
+        DefaultListModel<DTTipoRegistro> modelo = new DefaultListModel<>();
+        List<DTTipoRegistro> tiposRegistro =
+                sistema.listarTiposRegistro(edicionSeleccionada.getId());
 
-        for (TipoRegistro tipo : tiposRegistro) {
+        for (DTTipoRegistro tipo : tiposRegistro) {
             modelo.addElement(tipo);
         }
 
@@ -141,7 +141,7 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
     }
 
     private void mostrarDetalle() {
-        TipoRegistro tipoSeleccionado =
+        DTTipoRegistro tipoSeleccionado =
                 listaTiposRegistro.getSelectedValue();
 
         if (tipoSeleccionado == null) {
@@ -151,12 +151,7 @@ public class ConsultaTipoRegistroInternalFrame extends JInternalFrame {
             return;
         }
 
-        txtDetalles.setText(
-                "Nombre: " + tipoSeleccionado.getNombre() + "\n" +
-                        "Descripción: " + tipoSeleccionado.getDescripcion() + "\n" +
-                        "Costo: " + tipoSeleccionado.getCosto() + "\n" +
-                        "Cupo: " + tipoSeleccionado.getCupo()
-        );
+        txtDetalles.setText(FormatoDetalles.tipoRegistro(tipoSeleccionado));
 
         cardLayout.show(panelPrincipal, "DETALLES");
     }
