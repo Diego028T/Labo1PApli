@@ -12,6 +12,7 @@ import logica.Clases.Patrocinio;
 import logica.Clases.Registro;
 import logica.Clases.TipoRegistro;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTCategoria;
 import logica.Clases.Categoria;
 import logica.Clases.NivelPatrocinio;
 import logica.Clases.Edicion;
@@ -124,6 +125,8 @@ public interface ISistema {
 
     List<Categoria> listarNombresCategorias();
 
-    void altaCategoria(String nombre);
+    List<DTCategoria> listarCategoriasJerarquicas();
+
+    void altaCategoria(String nombre, Long idPadre);
 
 }

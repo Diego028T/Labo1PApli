@@ -8,6 +8,7 @@ import logica.DataTypes.DTUsuario;
 import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.DTCategoria;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.Persistencia.*;
 
@@ -244,7 +245,12 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public void altaCategoria(String nombre) {
+    public List<DTCategoria> listarCategoriasJerarquicas() {
+        return CategoriaDAO.listarCategoriasJerarquicas();
+    }
+
+    @Override
+    public void altaCategoria(String nombre, Long idPadre) {
         String nombreLimpio = textoObligatorio(nombre, "nombre de la categoría");
         String clave = claveNormalizada(nombreLimpio);
 
@@ -254,9 +260,12 @@ public class Sistema implements ISistema {
             );
         }
 
-        Categoria cat = new Categoria(clave);
+        if (idPadre != null && CategoriaDAO.buscarPorId(idPadre) == null) {
+            throw new IllegalArgumentException("La categoría padre seleccionada no existe.");
+        }
 
-        CategoriaDAO.guardarCategoria(cat);
+        Categoria cat = new Categoria(clave);
+        CategoriaDAO.guardarCategoria(cat, idPadre);
 
     }
 

@@ -16,11 +16,19 @@ public class Categoria{
     @Column(nullable = false, length = 100)
     private String nombre;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_padre_id")
+    private Categoria padre;
+
+    @OneToMany(mappedBy = "padre")
+    private List<Categoria> hijas = new ArrayList<>();
+
     @ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
     private List<Evento> eventos = new ArrayList<>();
 
     protected Categoria() {
         this.eventos = new ArrayList<>();
+        this.hijas = new ArrayList<>();
     }
 
     public Categoria(String nombre){
@@ -29,6 +37,14 @@ public class Categoria{
 
     public String getNombre() {
         return nombre;
+    }
+
+    public Categoria getPadre() {
+        return padre;
+    }
+
+    public void setPadre(Categoria padre) {
+        this.padre = padre;
     }
     public void setNombre(String nombre) {
         this.nombre = nombre;
