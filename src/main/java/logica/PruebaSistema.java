@@ -1,14 +1,14 @@
 package logica;
 
 import logica.sistema01.ISistema;
-import logica.sistema01.Sistema;
+import logica.sistema01.Fabrica;
 import logica.DataTypes.DTFecha;
 import java.util.List;
 
 public class PruebaSistema {
 
     public static void main(String[] args) {
-        ISistema sistema = Sistema.getInstancia();
+        ISistema sistema = Fabrica.getInstancia().getISistema();
 
         System.out.println("Instituciones iniciales:");
         System.out.println(sistema.listarNombresInstituciones());

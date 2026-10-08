@@ -7,7 +7,7 @@ import logica.Clases.Categoria;
 import logica.Clases.Edicion;
 import logica.Clases.Evento;
 import logica.Clases.Institucion;
-import logica.Clases.NivelPatrocinio;
+import logica.DataTypes.NivelPatrocinio;
 import logica.Clases.Organizador;
 import logica.Clases.Patrocinio;
 import logica.Clases.Registro;
@@ -16,7 +16,6 @@ import logica.Clases.Usuario;
 import logica.DataTypes.DTFecha;
 
 import java.time.LocalDate;
-
 public final class DatosIniciales {
 
     private DatosIniciales() {

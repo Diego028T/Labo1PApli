@@ -1,8 +1,7 @@
 package logica.Presentacion;
 
-import logica.Clases.Categoria;
-import logica.Clases.Edicion;
-import logica.Clases.Evento;
+import logica.DataTypes.DTEdicion;
+import logica.DataTypes.DTEvento;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
@@ -15,12 +14,12 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
     private final CardLayout cardLayout;
     private final JPanel panelPrincipal;
 
-    private final JList<Evento> listaEventos;
+    private final JList<DTEvento> listaEventos;
     private final JTextArea txtDatosEvento;
     private final JList<String> listaCategorias;
-    private final JList<Edicion> listaEdiciones;
+    private final JList<DTEdicion> listaEdiciones;
 
-    private Evento eventoSeleccionado;
+    private DTEvento eventoSeleccionado;
 
     public ConsultaEventoInternalFrame(ISistema sistema) {
         super("Consulta de evento", true, true, true, true);
@@ -120,9 +119,9 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
     }
 
     private void cargarEventos() {
-        DefaultListModel<Evento> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEvento> modelo = new DefaultListModel<>();
 
-        for (Evento evento : sistema.listarEventos()) {
+        for (DTEvento evento : sistema.listarEventos()) {
             modelo.addElement(evento);
         }
 
@@ -164,17 +163,17 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
     private void cargarCategorias() {
         DefaultListModel<String> modelo = new DefaultListModel<>();
 
-        for (Categoria categoria : eventoSeleccionado.getCategorias()) {
-            modelo.addElement(categoria.getNombre());
+        for (String categoria : eventoSeleccionado.getCategorias()) {
+            modelo.addElement(categoria);
         }
 
         listaCategorias.setModel(modelo);
     }
 
     private void cargarEdiciones() {
-        DefaultListModel<Edicion> modelo = new DefaultListModel<>();
+        DefaultListModel<DTEdicion> modelo = new DefaultListModel<>();
 
-        for (Edicion edicion : sistema.listarEdiciones(eventoSeleccionado)) {
+        for (DTEdicion edicion : sistema.listarEdiciones(eventoSeleccionado.getId())) {
             modelo.addElement(edicion);
         }
 
@@ -185,7 +184,7 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
     }
 
     private void mostrarDetalleEdicion() {
-        Edicion edicionSeleccionada = listaEdiciones.getSelectedValue();
+        DTEdicion edicionSeleccionada = listaEdiciones.getSelectedValue();
 
         if (edicionSeleccionada == null) {
             JOptionPane.showMessageDialog(
@@ -199,7 +198,7 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
 
         JOptionPane.showMessageDialog(
                 this,
-                edicionSeleccionada.obtenerDetalles(),
+                FormatoDetalles.edicion(edicionSeleccionada),
                 "Detalle de edición",
                 JOptionPane.INFORMATION_MESSAGE
         );

@@ -1,8 +1,8 @@
 package logica.Principal;
 
 import logica.Persistencia.JPAUtil;
+import logica.sistema01.Fabrica;
 import logica.sistema01.ISistema;
-import logica.sistema01.Sistema;
 import logica.Presentacion.VentanaPrincipal;
 
 import javax.swing.SwingUtilities;
@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(JPAUtil::cerrar));
 
-        ISistema sistema = Sistema.getInstancia();
+        ISistema sistema = Fabrica.getInstancia().getISistema();
 
         SwingUtilities.invokeLater(() -> {
             VentanaPrincipal ventana = new VentanaPrincipal(sistema);
