@@ -1,0 +1,279 @@
+
+:root {
+    --colorFondo: #f4f6f8;
+    --colorEncabezado: #0f3d5e;
+    --colorAcento: #1a7a9c;
+    --colorPie: #0b2c44;
+    --colorTexto: #243040;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body.disposicionPagina {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--colorFondo);
+    color: var(--colorTexto);
+}
+
+.encabezadoSitio {
+    background-color: var(--colorEncabezado);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.barraNavegacion {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+}
+
+.marcaSitio {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
+}
+
+.marcaSitio:hover,
+.marcaSitio:focus {
+    color: #d9f3fb;
+}
+
+.interruptorMenu {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.etiquetaInterruptor {
+    display: none;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.9rem;
+}
+
+.listaMenu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.itemMenu {
+    position: relative;
+}
+
+.enlaceMenu {
+    display: block;
+    color: #e8f1f6;
+    text-decoration: none;
+    padding: 0.45rem 0.7rem;
+    border-radius: 0.35rem;
+    white-space: nowrap;
+}
+
+.enlaceMenu:hover,
+.enlaceMenu:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.enlaceActivo {
+    background-color: var(--colorAcento);
+    color: #fff;
+}
+
+.listaSubmenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 14rem;
+    background-color: #fff;
+    color: var(--colorTexto);
+    list-style: none;
+    margin: 0;
+    padding: 0.4rem 0;
+    border-radius: 0.4rem;
+    box-shadow: 0 8px 24px rgba(15, 61, 94, 0.18);
+    z-index: 20;
+}
+
+.listaSubmenu .enlaceMenu {
+    color: var(--colorTexto);
+    border-radius: 0;
+}
+
+.listaSubmenu .enlaceMenu:hover,
+.listaSubmenu .enlaceMenu:focus,
+.listaSubmenu .enlaceActivo {
+    background-color: #e8f4f8;
+    color: var(--colorEncabezado);
+}
+
+.itemConSubmenu:hover > .listaSubmenu,
+.itemConSubmenu:focus-within > .listaSubmenu {
+    display: block;
+}
+
+.contenidoPrincipal {
+    flex: 1 0 auto;
+    padding: 1.75rem 0 2.5rem;
+}
+
+.tituloPagina {
+    margin-bottom: 1.25rem;
+}
+
+.textoAyuda {
+    color: #5b6775;
+}
+
+.seccionHero {
+    background: linear-gradient(135deg, #0f3d5e, #1a7a9c);
+    color: #fff;
+    border-radius: 0.75rem;
+    padding: 2.5rem 1.75rem;
+    margin-bottom: 1.75rem;
+}
+
+.disposicionFormulario {
+    max-width: 36rem;
+    margin: 0 auto;
+}
+
+.tarjetaFormulario,
+.tarjetaContenido,
+.tarjetaEvento,
+.columnaLateral .tarjetaContenido {
+    background: #fff;
+    border: 1px solid #dfe6ec;
+    border-radius: 0.65rem;
+    box-shadow: 0 1px 3px rgba(15, 61, 94, 0.06);
+}
+
+.tarjetaFormulario {
+    padding: 1.5rem;
+}
+
+.tarjetaContenido {
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.tarjetaEvento {
+    padding: 1.25rem;
+    height: 100%;
+}
+
+.disposicionTarjetas {
+    row-gap: 1.25rem;
+}
+
+.disposicionDetalle .columnaPrincipal,
+.disposicionDetalle .columnaLateral {
+    margin-bottom: 1.25rem;
+}
+
+.disposicionListado {
+    background: #fff;
+    border: 1px solid #dfe6ec;
+    border-radius: 0.65rem;
+    overflow: hidden;
+}
+
+.tablaSitio {
+    margin-bottom: 0;
+}
+
+.bloqueAcciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.campoGrupo {
+    margin-bottom: 1rem;
+}
+
+.botonPrincipal {
+    background-color: var(--colorAcento);
+    border-color: var(--colorAcento);
+    color: #fff;
+}
+
+.botonPrincipal:hover,
+.botonPrincipal:focus {
+    background-color: #156680;
+    border-color: #156680;
+    color: #fff;
+}
+
+.piePagina {
+    flex-shrink: 0;
+    background-color: var(--colorPie);
+    color: #c5d4df;
+    padding: 1.1rem 0;
+    font-size: 0.9rem;
+}
+
+.piePagina a {
+    color: #d9f3fb;
+    text-decoration: none;
+}
+
+.piePagina a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 991.98px) {
+    .etiquetaInterruptor {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .listaMenu {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        padding-top: 0.5rem;
+    }
+
+    .interruptorMenu:checked ~ .listaMenu {
+        display: flex;
+    }
+
+    .listaSubmenu {
+        display: flex;
+        flex-direction: column;
+        position: static;
+        box-shadow: none;
+        background: transparent;
+        min-width: 0;
+        padding: 0 0 0.35rem 0.85rem;
+    }
+
+    .listaSubmenu .enlaceMenu {
+        color: #d7e6ef;
+    }
+
+    .listaSubmenu .enlaceMenu:hover,
+    .listaSubmenu .enlaceActivo {
+        background-color: rgba(255, 255, 255, 0.12);
+        color: #fff;
+    }
+}
