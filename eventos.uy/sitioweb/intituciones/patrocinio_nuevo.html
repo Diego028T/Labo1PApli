@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Nuevo patrocinio | eventos.uy</title>
+        <link rel="stylesheet" href="../bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="../estilos/estilos.css">
+    </head>
+    <body class="disposicionPagina">
+        <header class="encabezadoSitio">
+            <div class="container">
+                <nav class="barraNavegacion" id="barraNavegacion">
+                    <a class="marcaSitio" href="../index.html">eventos.uy</a>
+                    <input class="interruptorMenu" id="interruptorMenu" type="checkbox">
+                    <label class="etiquetaInterruptor" for="interruptorMenu">Menú</label>
+                    <ul class="listaMenu">
+                        <li class="itemMenu">
+                            <a class="enlaceMenu" href="../index.html">Inicio</a>
+                        </li>
+                        <li class="itemMenu itemConSubmenu">
+                            <span class="enlaceMenu" tabindex="0">Eventos</span>
+                            <ul class="listaSubmenu">
+                                <li><a class="enlaceMenu" href="../eventos/eventos.html">Listado de eventos</a></li>
+                                <li><a class="enlaceMenu" href="../eventos/evento_nuevo.html">Nuevo evento</a></li>
+                                <li><a class="enlaceMenu" href="../eventos/evento_detalle.html">Detalle de evento</a></li>
+                                <li><a class="enlaceMenu" href="../eventos/edicion_nueva.html">Nueva edición</a></li>
+                            </ul>
+                        </li>
+                        <li class="itemMenu itemConSubmenu">
+                            <span class="enlaceMenu" tabindex="0">Ediciones</span>
+                            <ul class="listaSubmenu">
+                                <li><a class="enlaceMenu" href="../ediciones/edicion_detalle.html">Detalle de edición</a></li>
+                                <li><a class="enlaceMenu" href="../ediciones/registro.html">Registro a edición</a></li>
+                                <li><a class="enlaceMenu" href="../ediciones/registro_detalle.html">Detalle de registro</a></li>
+                                <li><a class="enlaceMenu" href="../ediciones/tipo_registro_nuevo.html">Nuevo tipo de registro</a></li>
+                            </ul>
+                        </li>
+                        <li class="itemMenu itemConSubmenu">
+                            <span class="enlaceMenu" tabindex="0">Instituciones</span>
+                            <ul class="listaSubmenu">
+                                <li><a class="enlaceMenu" href="../intituciones/institucion_nueva.html">Nueva institución</a></li>
+                                <li><a class="enlaceMenu enlaceActivo" href="../intituciones/patrocinio_nuevo.html">Nuevo patrocinio</a></li>
+                            </ul>
+                        </li>
+                        <li class="itemMenu itemConSubmenu">
+                            <span class="enlaceMenu" tabindex="0">Usuarios</span>
+                            <ul class="listaSubmenu">
+                                <li><a class="enlaceMenu" href="../usuario/usuarios.html">Listado de usuarios</a></li>
+                                <li><a class="enlaceMenu" href="../usuario/perfil.html">Perfil</a></li>
+                                <li><a class="enlaceMenu" href="../usuario/editar_perfil.html">Editar perfil</a></li>
+                            </ul>
+                        </li>
+                        <li class="itemMenu itemConSubmenu">
+                            <span class="enlaceMenu" tabindex="0">Cuenta</span>
+                            <ul class="listaSubmenu">
+                                <li><a class="enlaceMenu" href="../autentificacion/login.html">Iniciar sesión</a></li>
+                                <li><a class="enlaceMenu" href="../autentificacion/registro.html">Registrarse</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+        <main class="contenidoPrincipal">
+            <div class="container">
+                <h1 class="tituloPagina">Nuevo patrocinio</h1>
+                <section class="disposicionFormulario">
+                    <form class="tarjetaFormulario" action="../ediciones/edicion_detalle.html" method="get">
+                        <div class="campoGrupo">
+                            <label class="form-label" for="campoInstitucionPatrocinio">Institución</label>
+                            <select class="form-select" id="campoInstitucionPatrocinio" name="institucion">
+                                <option>Ej intitucion</option>
+                                <option>Ej empresa</option>
+                            </select>
+                        </div>
+                        <div class="campoGrupo">
+                            <label class="form-label" for="campoEdicionPatrocinio">Edición</label>
+                            <select class="form-select" id="campoEdicionPatrocinio" name="edicion">
+                                <option>???</option>
+                            </select>
+                        </div>
+                        <div class="campoGrupo">
+                            <label class="form-label" for="campoNivelPatrocinio">Nivel</label>
+                            <select class="form-select" id="campoNivelPatrocinio" name="nivel">
+                                <option>Oro</option>
+                                <option>Plata</option>
+                                <option>Bronce</option>
+                            </select>
+                        </div>
+                        <div class="bloqueAcciones">
+                            <button class="btn botonPrincipal" type="submit">Crear patrocinio</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+        <footer class="piePagina">
+            <div class="container d-flex flex-wrap justify-content-between gap-2">
+                <span>eventos.uy — sitio de gestión de eventos</span>
+                <a href="../index.html">Volver al inicio</a>
+            </div>
+        </footer>
+    </body>
+</html>
