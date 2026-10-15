@@ -18,3 +18,7 @@ Password: eventosuy
 
 
 Clase principal: `logica.Principal.Main`.
+
+## Desarrollo web - Laboratorio 2
+
+La configuración del entorno, el despliegue en Tomcat y el resumen de la base web implementada están en [README_SERVIDORWEB.md](README_SERVIDORWEB.md).
