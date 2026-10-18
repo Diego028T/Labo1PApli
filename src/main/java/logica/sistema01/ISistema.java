@@ -1,18 +1,6 @@
 package logica.sistema01;
 
-import logica.DataTypes.DTDatosUsuario;
-import logica.DataTypes.DTEdicion;
-import logica.DataTypes.DTEvento;
-import logica.DataTypes.DTFecha;
-import logica.DataTypes.DTPatrocinio;
-import logica.DataTypes.DTRegistro;
-import logica.DataTypes.DTRegistroEdicion;
-import logica.DataTypes.DTRegistroMin;
-import logica.DataTypes.DTTipoRegistro;
-import logica.DataTypes.DTUsuario;
-import logica.DataTypes.EstadoAltaUsuario;
-import logica.DataTypes.NivelPatrocinio;
-import logica.DataTypes.DTCategoria;
+import logica.DataTypes.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +19,10 @@ public interface ISistema {
     void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace);
 
     void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias);
+
+    void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias, byte[] imagen, String tipoImagen);
+
+    DTImagen obtenerImagenEvento(Long idEvento);
 
     void altaEdicion(Long idEvento, String nicknameOrganizador, String nombre, String sigla, DTFecha fechaInicio, DTFecha fechaFin, DTFecha fechaAlta, String ciudad, String pais);
 

@@ -1,21 +1,7 @@
 package logica.sistema01;
 
 import logica.Clases.*;
-import logica.DataTypes.DTEvento;
-import logica.DataTypes.DTEdicion;
-import logica.DataTypes.DTTipoRegistro;
-import logica.DataTypes.DTPatrocinio;
-import logica.DataTypes.DTRegistroEdicion;
-import logica.DataTypes.NivelPatrocinio;
-import logica.DataTypes.DTDatosUsuario;
-import logica.DataTypes.DTRegistro;
-import logica.DataTypes.DTRegistroMin;
-import logica.DataTypes.DTUsuario;
-import logica.DataTypes.DTUsuarioAsist;
-import logica.DataTypes.DTUsuarioOrg;
-import logica.DataTypes.DTFecha;
-import logica.DataTypes.DTCategoria;
-import logica.DataTypes.EstadoAltaUsuario;
+import logica.DataTypes.*;
 import logica.Persistencia.*;
 
 import java.util.ArrayList;
@@ -25,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
+
 
 public class Sistema implements ISistema {
 
@@ -225,6 +212,11 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias) {
+        altaEvento(nombre, descripcion, sigla, fechaAlta, nombresCategorias, null, null);
+    }
+
+    @Override
     public void altaInstitucion(String nombre, String descripcion, String sitioWeb) {
         String nombreLimpio = textoObligatorio(nombre, "nombre de la institución");
         String clave = claveNormalizada(nombreLimpio);
@@ -279,13 +271,16 @@ public class Sistema implements ISistema {
 
     }
 
+
     @Override
     public void altaEvento(
             String nombre,
             String descripcion,
             String sigla,
             DTFecha fechaAlta,
-            List<String> nombresCategorias
+            List<String> nombresCategorias,
+            byte[] imagen,
+            String tipoImagen
     ) {
 
         if (nombre == null || nombre.isBlank()) {
@@ -304,12 +299,23 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Debe seleccionar al menos una categoría.");
         }
 
+        if (imagen != null) {
+            if (tipoImagen == null || !tipoImagen.startsWith("image/")) {
+                throw new IllegalArgumentException("El archivo debe ser una imagen.");
+            }
+            if (imagen.length > 5 * 1024 * 1024) {
+                throw new IllegalArgumentException("La imagen no puede superar los 5 MB.");
+            }
+        }
+
         boolean nombreRepetido = eventos.stream()
                 .anyMatch(e -> e.getNombre().equalsIgnoreCase(nombre.trim())) || EventoDAO.existeEventoPorNombre(nombre);
 
         if (nombreRepetido) {
             throw new IllegalArgumentException("Ya existe un evento con ese nombre.");
         }
+
+
 
         Evento nuevoEvento = new Evento(
                 nombre.trim(),
@@ -331,9 +337,21 @@ public class Sistema implements ISistema {
             nuevoEvento.agregarCategoria(categoria);
         }
 
+        nuevoEvento.setImagen(imagen);
+        nuevoEvento.setImagenTipo(tipoImagen);
+
         EventoDAO.guardarEvento(nuevoEvento);
 
         eventos.add(nuevoEvento);
+    }
+
+    @Override
+    public DTImagen obtenerImagenEvento(Long idEvento) {
+        Evento evento = buscarEventoPersistido(idEvento);
+        if (evento.getImagen() == null) {
+            return null;
+        }
+        return new DTImagen(evento.getImagen(), evento.getImagenTipo());
     }
 
     @Override
@@ -919,7 +937,7 @@ public class Sistema implements ISistema {
         }
         return new DTEvento(
                 evento.getId(), evento.getNombre(), evento.getDescripcion(),
-                evento.getSigla(), evento.getFechaAlta(), nombresCategorias);
+                evento.getSigla(), evento.getFechaAlta(), nombresCategorias, evento.getImagen() != null);
     }
 
     private DTEdicion convertirEdicion(Edicion edicion) {

@@ -10,6 +10,7 @@ public class DTEvento {
     private final String sigla;
     private final DTFecha fechaAlta;
     private final List<String> categorias;
+    private final boolean tieneImagen;
 
     public DTEvento(
             Long id,
@@ -17,13 +18,15 @@ public class DTEvento {
             String descripcion,
             String sigla,
             DTFecha fechaAlta,
-            List<String> categorias) {
+            List<String> categorias,
+            boolean tieneImagen) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.sigla = sigla;
         this.fechaAlta = fechaAlta;
         this.categorias = List.copyOf(categorias);
+        this.tieneImagen = tieneImagen;
     }
 
     public Long getId() {
@@ -48,6 +51,10 @@ public class DTEvento {
 
     public List<String> getCategorias() {
         return categorias;
+    }
+
+    public boolean isTieneImagen() {
+        return tieneImagen;
     }
 
     @Override
