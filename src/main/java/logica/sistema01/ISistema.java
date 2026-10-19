@@ -26,9 +26,9 @@ public interface ISistema {
 
     EstadoAltaUsuario chequearUsuario(String nickname, String correo);
 
-    void altaAsistente(String nickname, String nombre, String correo, String apellido, LocalDate fechaNacimiento, String nombreInstitucion);
+    void altaAsistente(String nickname, String nombre, String correo, String apellido, LocalDate fechaNacimiento, String nombreInstitucion, char[] contrasena, char[] confirmacionContrasena);
 
-    void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace);
+    void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace, char[] contrasena, char[] confirmacionContrasena);
 
     void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias);
 
@@ -64,7 +64,7 @@ public interface ISistema {
 
     DTDatosUsuario mostrarDatosUsuario(String nickname);
 
-    void modificarDatosUsuario(DTDatosUsuario datos);
+    void modificarDatosUsuario(DTDatosUsuario datos, char[] nuevaContrasena, char[] confirmacionNuevaContrasena);
 
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 
