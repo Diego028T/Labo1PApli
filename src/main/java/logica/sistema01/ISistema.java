@@ -65,4 +65,7 @@ public interface ISistema {
     List<DTCategoria> listarCategoriasJerarquicas();
 
     void altaCategoria(String nombre, Long idPadre);
+
+    List<DTEvento> listarEventosPorCategoria(String categoria);
+    DTEvento mostrarDatosEvento(Long idEvento);
 }

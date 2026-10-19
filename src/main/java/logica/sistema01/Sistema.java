@@ -963,4 +963,20 @@ public class Sistema implements ISistema {
         }
         return resultado;
     }
+
+    @Override
+    public List<DTEvento> listarEventosPorCategoria(String categoria) {
+        List<DTEvento> resultado = new ArrayList<>();
+        for (DTEvento evento : listarEventos()) {
+            if (evento.getCategorias().contains(categoria)) {
+                resultado.add(evento);
+            }
+        }
+        return resultado;
+    }
+
+    @Override
+    public DTEvento mostrarDatosEvento(Long idEvento) {
+        return convertirEvento(buscarEventoPersistido(idEvento));
+    }
 }
