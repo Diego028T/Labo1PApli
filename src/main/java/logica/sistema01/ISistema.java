@@ -26,7 +26,11 @@ public interface ISistema {
 
     void altaEdicion(Long idEvento, String nicknameOrganizador, String nombre, String sigla, DTFecha fechaInicio, DTFecha fechaFin, DTFecha fechaAlta, String ciudad, String pais);
 
+    // La vieja: utilizada por el administrador desde Swing.
     void altaTipoRegistro(Long idEdicion, String nombre, String descripcion, float costo, int cupo);
+
+    // La nueva: incorpora la identidad del organizador. JAVA puede distinguir aunque tengan el mismo nombre
+    void altaTipoRegistro(String nicknameOrganizador, Long idEdicion, String nombre, String descripcion, float costo, int cupo);
 
     void altaPatrocinio(Long idEdicion, String nombreInstitucion, Long idTipoRegistro, NivelPatrocinio nivelPatrocinio, float montoAportado, int cantRegistros, String codigo, DTFecha fechaAlta);
 

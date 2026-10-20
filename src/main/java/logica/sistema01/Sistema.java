@@ -786,12 +786,21 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("La descripción es obligatoria");
         }
 
-        if (costo < 0) {
-            throw new IllegalArgumentException("El costo no puede ser negativo");
+        if (!Float.isFinite(costo) || costo < 0) {
+            throw new IllegalArgumentException(
+                    "El costo debe ser un numero finito mayor o igual a cero.");
         }
 
         if (cupo <= 0) {
             throw new IllegalArgumentException("El cupo debe ser mayor que cero");
+        }
+
+        boolean nombreRepetido = tipoRegistroDAO.listarPorEdicion(edicion).stream()
+                .anyMatch(tipo -> tipo.getNombre().equalsIgnoreCase(nombre.trim()));
+
+        if (nombreRepetido) {
+            throw new IllegalArgumentException(
+                    "Ya existe un tipo de registro con ese nombre para esta edicion.");
         }
 
         TipoRegistro tipoRegistro = new TipoRegistro(
@@ -804,6 +813,30 @@ public class Sistema implements ISistema {
         edicion.agregarTipoRegistro(tipoRegistro);
 
         tipoRegistroDAO.guardarConEdicion(tipoRegistro, edicion);
+    }
+
+    @Override
+    public void altaTipoRegistro(
+            String nicknameOrganizador,
+            Long idEdicion,
+            String nombre,
+            String descripcion,
+            float costo,
+            int cupo) {
+
+        if (nicknameOrganizador == null || nicknameOrganizador.isBlank()) {
+            throw new SecurityException("Debe identificarse un organizador.");
+        }
+
+        Organizador organizador = buscarOrganizadorPersistido(nicknameOrganizador);
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+
+        if (edicion.getOrganizador() == null
+                || !edicion.getOrganizador().getId().equals(organizador.getId())) {
+            throw new SecurityException("La edicion no pertenece al organizador.");
+        }
+
+        altaTipoRegistro(idEdicion, nombre, descripcion, costo, cupo);
     }
 
     @Override

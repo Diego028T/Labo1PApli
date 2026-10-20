@@ -74,7 +74,7 @@ public class ConsultaTipoRegistroServlet extends HttpServlet {
         }
 
         request.getRequestDispatcher(
-                "/WEB-INF/vistas/consulta_tipo_registro.jsp"
+                "/WEB-INF/vistas/consultaTipoRegistro.jsp"
         ).forward(request, response);
     }
 }
