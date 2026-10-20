@@ -1,3 +1,6 @@
+presentacionweb\AltaEventoServerlet.class
+presentacionweb\ConsultaEventoServlet.class
+presentacionweb\ImagenServlet.class
 presentacionweb\InicioAplicacionListener.class
 presentacionweb\CodificacionFilter.class
 presentacionweb\ConsultaTipoRegistroServlet.class

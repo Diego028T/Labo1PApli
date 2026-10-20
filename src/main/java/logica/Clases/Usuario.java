@@ -29,6 +29,9 @@ public abstract class Usuario {
     @Column(nullable = false, unique = true, length = 120)
     private String correo;
 
+    @Column(name = "password_hash", nullable = true, length = 255)
+    private String passwordHash;
+
     protected Usuario() {
     }
 
@@ -71,4 +74,9 @@ public abstract class Usuario {
     }
 
     public abstract DTDatosUsuario getDTUsuarioDetallado();
+
+    public void establecerContrasena(char[] contrasena) {this.passwordHash = PasswordService.hash(contrasena);
+    }
+
+    public boolean verificarContrasena(char[] contrasena) {return PasswordService.verify(contrasena, passwordHash);}
 }
