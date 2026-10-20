@@ -26,6 +26,12 @@ public class Evento {
     @Column(nullable = false)
     private DTFecha fechaAlta;
 
+    @Column(name = "imagen")
+    private byte[] imagen;
+
+    @Column(name = "imagen_tipo", length = 50)
+    private String imagenTipo;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "evento_categoria",
@@ -70,6 +76,23 @@ public class Evento {
 
     public DTFecha getFechaAlta() {
         return fechaAlta;
+    }
+
+
+    public byte[] getImagen(){
+        return imagen;
+    }
+
+    public String getImagenTipo(){
+        return imagenTipo;
+    }
+
+    public void setImagenTipo(String tipoImagen){
+        this.imagenTipo = tipoImagen;
+    }
+
+    public void setImagen(byte[] imagen){
+        this.imagen = imagen;
     }
 
     public List<Categoria> getCategorias() {
@@ -149,6 +172,7 @@ public class Evento {
     public void setFechaAlta(DTFecha fechaAlta) {
         this.fechaAlta = fechaAlta;
     }
+
 
     @Override
     public String toString() {
