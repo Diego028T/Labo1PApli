@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import logica.Clases.Edicion;
 import logica.Clases.TipoRegistro;
+import org.hibernate.exception.ConstraintViolationException;
 
 import java.util.List;
 
@@ -37,9 +38,16 @@ public class tipoRegistroDAO {
                 em.getTransaction().rollback();
             }
 
-            throw e;
+            if (esNombreRepetido(e)) {
+                throw new IllegalArgumentException(
+                        "Ya existe un tipo de registro con ese nombre para esta edicion.",
+                        e);
+            }
 
-        } finally {
+            throw e;
+        }
+
+        finally {
             em.close();
         }
     }
@@ -80,4 +88,19 @@ public class tipoRegistroDAO {
             em.close();
         }
     }
+
+    private static boolean esNombreRepetido(Throwable error) {
+        for (Throwable causa = error; causa != null; causa = causa.getCause()) {
+            if (causa instanceof ConstraintViolationException violacion
+                    && "23505".equals(violacion.getSQLState())
+                    && "uq_tipo_registro_edicion_nombre"
+                    .equals(violacion.getConstraintName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
+
+
