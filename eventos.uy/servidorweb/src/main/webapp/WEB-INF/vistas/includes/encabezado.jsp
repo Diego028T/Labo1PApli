@@ -21,8 +21,9 @@
                 <li class="itemMenu itemConSubmenu">
                     <span class="enlaceMenu" tabindex="0">Ediciones</span>
                     <ul class="listaSubmenu">
+                        <li><a class="enlaceMenu" href="${raiz}/consulta-tipo-registro">Consulta de tipo de registro</a></li>
                         <li><a class="enlaceMenu" href="${raiz}/registros/nuevo">Registro a edición</a></li>
-                        <li><a class="enlaceMenu" href="${raiz}/tipos-registro/nuevo">Nuevo tipo de registro</a></li>
+                        <li><a class="enlaceMenu" href="${raiz}/alta-tipo-registro">Nuevo tipo de registro</a></li>
                     </ul>
                 </li>
                 <li class="itemMenu itemConSubmenu">

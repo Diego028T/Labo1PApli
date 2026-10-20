@@ -874,6 +874,16 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("La descripción es obligatoria");
         }
 
+        if (nombre.trim().length() > 100) {
+            throw new IllegalArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+        }
+
+        if (descripcion.trim().length() > 255) {
+            throw new IllegalArgumentException(
+                    "La descripción no puede superar los 255 caracteres.");
+        }
+
         if (!Float.isFinite(costo) || costo < 0) {
             throw new IllegalArgumentException(
                     "El costo debe ser un numero finito mayor o igual a cero.");
