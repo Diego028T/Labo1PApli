@@ -3,16 +3,12 @@ package logica.Presentacion;
 import logica.DataTypes.EstadoAltaUsuario;
 import logica.sistema01.ISistema;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.awt.Color;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import javax.swing.JPasswordField;
+import java.util.Arrays;
 
 public class AltaUsuarioInternalFrame extends JInternalFrame {
 
@@ -39,6 +35,8 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
     private JButton btnContinuar;
     private JButton btnAceptar;
     private JButton btnCancelar;
+    private JPasswordField txtContrasena;
+    private JPasswordField txtConfirmarContrasena;
 
     private final Color colorNormal;
     private final Color colorError;
@@ -153,11 +151,15 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
     }
 
     private void confirmarAlta() {
+        char[] contrasena = txtContrasena.getPassword();
+        char[] confirmacionContrasena =
+                txtConfirmarContrasena.getPassword();
+
         try {
             if (rbAsistente.isSelected()) {
-                altaAsistente();
+                altaAsistente(contrasena, confirmacionContrasena);
             } else {
-                altaOrganizador();
+                altaOrganizador(contrasena, confirmacionContrasena);
             }
 
             JOptionPane.showMessageDialog(
@@ -173,10 +175,19 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
                     "Error en el alta",
                     JOptionPane.ERROR_MESSAGE
             );
+        } finally {
+            Arrays.fill(contrasena, '\0');
+            Arrays.fill(confirmacionContrasena, '\0');
+
+            txtContrasena.setText("");
+            txtConfirmarContrasena.setText("");
         }
     }
 
-    private void altaAsistente() {
+    private void altaAsistente(
+            char[] contrasena,
+            char[] confirmacionContrasena) {
+
         String apellido = txtApellido.getText().trim();
         String fechaTexto = txtFechaNacimiento.getText().trim();
         String nombreInstitucion = txtInstitucion.getText().trim();
@@ -203,11 +214,16 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
                 txtCorreo.getText().trim(),
                 apellido,
                 fechaNacimiento,
-                nombreInstitucion
+                nombreInstitucion,
+                contrasena,
+                confirmacionContrasena
         );
     }
 
-    private void altaOrganizador() {
+    private void altaOrganizador(
+            char[] contrasena,
+            char[] confirmacionContrasena) {
+
         String descripcion = txtDescripcion.getText().trim();
         String enlace = txtEnlace.getText().trim();
 
@@ -222,7 +238,9 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
                 txtNombre.getText().trim(),
                 txtCorreo.getText().trim(),
                 descripcion,
-                enlace
+                enlace,
+                contrasena,
+                confirmacionContrasena
         );
     }
 }

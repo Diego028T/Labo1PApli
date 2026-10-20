@@ -6,15 +6,10 @@ import logica.DataTypes.DTUsuarioAsist;
 import logica.DataTypes.DTUsuarioOrg;
 import logica.sistema01.ISistema;
 
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.Arrays;
 
 public class ModificarUsuarioInternalFrame extends JInternalFrame {
 
@@ -40,6 +35,8 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
     private JLabel lblEnlace;
     private JButton btnAceptar;
     private JButton btnCancelar;
+    private JPasswordField txtNuevaContrasena;
+    private JPasswordField txtConfirmarNuevaContrasena;
 
     private DTDatosUsuario datosActuales;
 
@@ -163,11 +160,26 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
     }
 
     private void modificarUsuario() {
+        char[] nuevaContrasena =
+                txtNuevaContrasena.getPassword();
+        char[] confirmacionNuevaContrasena =
+                txtConfirmarNuevaContrasena.getPassword();
+
         try {
             if (datosActuales instanceof DTUsuarioAsist) {
-                modificarAsistente();
+                modificarAsistente(
+                        nuevaContrasena,
+                        confirmacionNuevaContrasena
+                );
             } else if (datosActuales instanceof DTUsuarioOrg) {
-                modificarOrganizador();
+                modificarOrganizador(
+                        nuevaContrasena,
+                        confirmacionNuevaContrasena
+                );
+            } else {
+                throw new IllegalArgumentException(
+                        "Primero debe buscar un usuario."
+                );
             }
 
             cargarListadoUsuarios();
@@ -186,10 +198,19 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
                     "Error al modificar usuario",
                     JOptionPane.ERROR_MESSAGE
             );
+        } finally {
+            Arrays.fill(nuevaContrasena, '\0');
+            Arrays.fill(confirmacionNuevaContrasena, '\0');
+
+            txtNuevaContrasena.setText("");
+            txtConfirmarNuevaContrasena.setText("");
         }
     }
 
-    private void modificarAsistente() {
+    private void modificarAsistente(
+            char[] nuevaContrasena,
+            char[] confirmacionNuevaContrasena) {
+
         DTUsuarioAsist datosModificados = new DTUsuarioAsist(
                 txtNickname.getText(),
                 txtNombre.getText(),
@@ -198,10 +219,17 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
                 LocalDate.parse(txtFechaNacimiento.getText())
         );
 
-        sistema.modificarDatosUsuario(datosModificados);
+        sistema.modificarDatosUsuario(
+                datosModificados,
+                nuevaContrasena,
+                confirmacionNuevaContrasena
+        );
     }
 
-    private void modificarOrganizador() {
+    private void modificarOrganizador(
+            char[] nuevaContrasena,
+            char[] confirmacionNuevaContrasena) {
+
         DTUsuarioOrg datosModificados = new DTUsuarioOrg(
                 txtNickname.getText(),
                 txtNombre.getText(),
@@ -210,7 +238,11 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
                 txtEnlace.getText()
         );
 
-        sistema.modificarDatosUsuario(datosModificados);
+        sistema.modificarDatosUsuario(
+                datosModificados,
+                nuevaContrasena,
+                confirmacionNuevaContrasena
+        );
     }
 
     private void limpiarCampos() {
@@ -221,6 +253,8 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         txtFechaNacimiento.setText("");
         txtDescripcion.setText("");
         txtEnlace.setText("");
+        txtNuevaContrasena.setText("");
+        txtConfirmarNuevaContrasena.setText("");
     }
 
     private void ocultarFormulario() {

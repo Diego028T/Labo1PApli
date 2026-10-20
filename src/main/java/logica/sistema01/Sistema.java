@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
+import java.util.Arrays;
 
 
 public class Sistema implements ISistema {
@@ -135,7 +136,11 @@ public class Sistema implements ISistema {
             String correo,
             String apellido,
             LocalDate fechaNacimiento,
-            String nombreInstitucion) {
+            String nombreInstitucion,
+            char[] contrasena,
+            char[] confirmacionContrasena) {
+
+        validarContrasenas(contrasena, confirmacionContrasena);
 
         String nicknameLimpio = textoObligatorio(nickname, "nickname");
         String nombreLimpio = textoObligatorio(nombre, "nombre");
@@ -166,6 +171,7 @@ public class Sistema implements ISistema {
                 fechaNacimiento
         );
 
+        asistente.establecerContrasena(contrasena);
         asignarInstitucion(asistente, nombreInstitucion);
 
         usuarioDAO.guardar(asistente);
@@ -179,7 +185,11 @@ public class Sistema implements ISistema {
             String nombre,
             String correo,
             String descripcion,
-            String enlace) {
+            String enlace,
+            char[] contrasena,
+            char[] confirmacionContrasena) {
+
+        validarContrasenas(contrasena, confirmacionContrasena);
 
         String nicknameLimpio = textoObligatorio(nickname, "nickname");
         String nombreLimpio = textoObligatorio(nombre, "nombre");
@@ -206,9 +216,61 @@ public class Sistema implements ISistema {
                 enlace == null ? null : enlace.trim()
         );
 
+        organizador.establecerContrasena(contrasena);
+
         usuarioDAO.guardar(organizador);
         usuariosPorNickname.put(claveNormalizada(nicknameLimpio), organizador);
         usuariosPorCorreo.put(claveNormalizada(correoLimpio), organizador);
+    }
+
+    private void validarContrasenas(
+            char[] contrasena,
+            char[] confirmacionContrasena) {
+
+        if (contrasena == null || contrasena.length == 0
+                || confirmacionContrasena == null
+                || confirmacionContrasena.length == 0) {
+            throw new IllegalArgumentException(
+                    "La contraseña y su confirmación son obligatorias."
+            );
+        }
+
+        if (!Arrays.equals(contrasena, confirmacionContrasena)) {
+            throw new IllegalArgumentException(
+                    "La contraseña y su confirmación no coinciden."
+            );
+        }
+    }
+
+    private boolean validarCambioContrasena(
+            char[] nuevaContrasena,
+            char[] confirmacionNuevaContrasena) {
+
+        boolean nuevaVacia =
+                nuevaContrasena == null || nuevaContrasena.length == 0;
+        boolean confirmacionVacia =
+                confirmacionNuevaContrasena == null
+                        || confirmacionNuevaContrasena.length == 0;
+
+        if (nuevaVacia && confirmacionVacia) {
+            return false;
+        }
+
+        if (nuevaVacia || confirmacionVacia) {
+            throw new IllegalArgumentException(
+                    "Ingrese y confirme la nueva contraseña."
+            );
+        }
+
+        if (!Arrays.equals(
+                nuevaContrasena,
+                confirmacionNuevaContrasena)) {
+            throw new IllegalArgumentException(
+                    "La contraseña y su confirmación no coinciden."
+            );
+        }
+
+        return true;
     }
 
     @Override
@@ -392,33 +454,59 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public void modificarDatosUsuario(DTDatosUsuario datos) {
+    public void modificarDatosUsuario(
+            DTDatosUsuario datos,
+            char[] nuevaContrasena,
+            char[] confirmacionNuevaContrasena) {
+
+        boolean cambiarContrasena = validarCambioContrasena(
+                nuevaContrasena,
+                confirmacionNuevaContrasena
+        );
+
+        Usuario usuario;
+
         if (datos instanceof DTUsuarioAsist datosAsistente) {
-            Usuario usuario = buscarPorNickname(datosAsistente.getNickname());
+            usuario = buscarPorNickname(datosAsistente.getNickname());
 
             if (!(usuario instanceof Asistente asistente)) {
-                throw new IllegalArgumentException("El usuario seleccionado no es un asistente.");
+                throw new IllegalArgumentException(
+                        "El usuario seleccionado no es un asistente."
+                );
             }
 
             usuario.setNombre(datosAsistente.getNombre());
             asistente.setApellido(datosAsistente.getApellido());
-            asistente.setFechaNacimiento(datosAsistente.getFechaNacimiento());
-
-            usuarioDAO.modificar(usuario);
+            asistente.setFechaNacimiento(
+                    datosAsistente.getFechaNacimiento()
+            );
 
         } else if (datos instanceof DTUsuarioOrg datosOrganizador) {
-            Usuario usuario = buscarPorNickname(datosOrganizador.getNickname());
+            usuario = buscarPorNickname(datosOrganizador.getNickname());
 
             if (!(usuario instanceof Organizador organizador)) {
-                throw new IllegalArgumentException("El usuario seleccionado no es un organizador.");
+                throw new IllegalArgumentException(
+                        "El usuario seleccionado no es un organizador."
+                );
             }
 
             usuario.setNombre(datosOrganizador.getNombre());
-            organizador.setDescripcion(datosOrganizador.getDescripcion());
+            organizador.setDescripcion(
+                    datosOrganizador.getDescripcion()
+            );
             organizador.setEnlace(datosOrganizador.getEnlace());
 
-            usuarioDAO.modificar(usuario);
+        } else {
+            throw new IllegalArgumentException(
+                    "El tipo de datos de usuario no es válido."
+            );
         }
+
+        if (cambiarContrasena) {
+            usuario.establecerContrasena(nuevaContrasena);
+        }
+
+        usuarioDAO.modificar(usuario);
     }
 
     @Override
