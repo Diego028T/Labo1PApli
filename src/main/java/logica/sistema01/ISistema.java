@@ -16,13 +16,19 @@ public interface ISistema {
 
     void altaAsistente(String nickname, String nombre, String correo, String apellido, LocalDate fechaNacimiento, String nombreInstitucion, char[] contrasena, char[] confirmacionContrasena);
 
+    void altaAsistente(String nickname, String nombre, String correo, String apellido, LocalDate fechaNacimiento, String nombreInstitucion, char[] contrasena, char[] confirmacionContrasena, byte[] imagen, String tipoImagen);
+
     void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace, char[] contrasena, char[] confirmacionContrasena);
+
+    void altaOrganizador(String nickname, String nombre, String correo, String descripcion, String enlace, char[] contrasena, char[] confirmacionContrasena, byte[] imagen, String tipoImagen);
 
     void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias);
 
     void altaEvento(String nombre, String descripcion, String sigla, DTFecha fechaAlta, List<String> nombresCategorias, byte[] imagen, String tipoImagen);
 
     DTImagen obtenerImagenEvento(Long idEvento);
+
+    DTImagen obtenerImagenUsuario(String nickname);
 
     void altaEdicion(Long idEvento, String nicknameOrganizador, String nombre, String sigla, DTFecha fechaInicio, DTFecha fechaFin, DTFecha fechaAlta, String ciudad, String pais);
 
@@ -63,6 +69,8 @@ public interface ISistema {
     DTDatosUsuario mostrarDatosUsuario(String nickname);
 
     void modificarDatosUsuario(DTDatosUsuario datos, char[] nuevaContrasena, char[] confirmacionNuevaContrasena);
+
+    void modificarDatosUsuario(DTDatosUsuario datos, char[] nuevaContrasena, char[] confirmacionNuevaContrasena, byte[] nuevaImagen, String tipoImagen);
 
     List<DTRegistroMin> listarRegistrosAsistente(String nickname);
 

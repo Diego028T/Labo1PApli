@@ -32,6 +32,12 @@ public abstract class Usuario {
     @Column(name = "password_hash", nullable = true, length = 255)
     private String passwordHash;
 
+    @Column(name = "imagen")
+    private byte[] imagen;
+
+    @Column(name = "imagen_tipo", length = 50)
+    private String imagenTipo;
+
     protected Usuario() {
     }
 
@@ -57,6 +63,14 @@ public abstract class Usuario {
         return correo;
     }
 
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public String getImagenTipo() {
+        return imagenTipo;
+    }
+
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
@@ -67,6 +81,14 @@ public abstract class Usuario {
 
     public void setCorreo(String correo) {
         this.correo = correo;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
+
+    public void setImagenTipo(String imagenTipo) {
+        this.imagenTipo = imagenTipo;
     }
 
     public DTUsuario getDTUsuario() {

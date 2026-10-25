@@ -184,7 +184,28 @@ public class Sistema implements ISistema {
             char[] contrasena,
             char[] confirmacionContrasena) {
 
+        altaAsistente(
+                nickname, nombre, correo, apellido, fechaNacimiento,
+                nombreInstitucion, contrasena, confirmacionContrasena,
+                null, null
+        );
+    }
+
+    @Override
+    public void altaAsistente(
+            String nickname,
+            String nombre,
+            String correo,
+            String apellido,
+            LocalDate fechaNacimiento,
+            String nombreInstitucion,
+            char[] contrasena,
+            char[] confirmacionContrasena,
+            byte[] imagen,
+            String tipoImagen) {
+
         validarContrasenas(contrasena, confirmacionContrasena);
+        validarImagen(imagen, tipoImagen);
 
         String nicknameLimpio = textoObligatorio(nickname, "nickname");
         String nombreLimpio = textoObligatorio(nombre, "nombre");
@@ -198,13 +219,18 @@ public class Sistema implements ISistema {
         }
 
         if (fechaNacimiento == null) {
-            throw new IllegalArgumentException("La fecha de nacimiento es obligatoria.");
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento es obligatoria."
+            );
         }
 
-        EstadoAltaUsuario estado = chequearUsuario(nicknameLimpio, correoLimpio);
+        EstadoAltaUsuario estado =
+                chequearUsuario(nicknameLimpio, correoLimpio);
 
         if (estado != EstadoAltaUsuario.OK) {
-            throw new IllegalArgumentException("El nickname o correo ya están en uso.");
+            throw new IllegalArgumentException(
+                    "El nickname o correo ya están en uso."
+            );
         }
 
         Asistente asistente = new Asistente(
@@ -216,11 +242,15 @@ public class Sistema implements ISistema {
         );
 
         asistente.establecerContrasena(contrasena);
+        asistente.setImagen(imagen);
+        asistente.setImagenTipo(imagen == null ? null : tipoImagen);
         asignarInstitucion(asistente, nombreInstitucion);
 
         usuarioDAO.guardar(asistente);
-        usuariosPorNickname.put(claveNormalizada(nicknameLimpio), asistente);
-        usuariosPorCorreo.put(claveNormalizada(correoLimpio), asistente);
+        usuariosPorNickname.put(
+                claveNormalizada(nicknameLimpio), asistente);
+        usuariosPorCorreo.put(
+                claveNormalizada(correoLimpio), asistente);
     }
 
     @Override
@@ -233,12 +263,32 @@ public class Sistema implements ISistema {
             char[] contrasena,
             char[] confirmacionContrasena) {
 
+        altaOrganizador(
+                nickname, nombre, correo, descripcion, enlace,
+                contrasena, confirmacionContrasena, null, null
+        );
+    }
+
+    @Override
+    public void altaOrganizador(
+            String nickname,
+            String nombre,
+            String correo,
+            String descripcion,
+            String enlace,
+            char[] contrasena,
+            char[] confirmacionContrasena,
+            byte[] imagen,
+            String tipoImagen) {
+
         validarContrasenas(contrasena, confirmacionContrasena);
+        validarImagen(imagen, tipoImagen);
 
         String nicknameLimpio = textoObligatorio(nickname, "nickname");
         String nombreLimpio = textoObligatorio(nombre, "nombre");
         String correoLimpio = textoObligatorio(correo, "correo");
-        String descripcionLimpia = textoObligatorio(descripcion, "descripción");
+        String descripcionLimpia =
+                textoObligatorio(descripcion, "descripción");
 
         if (!correoValido(correoLimpio)) {
             throw new IllegalArgumentException(
@@ -246,10 +296,13 @@ public class Sistema implements ISistema {
             );
         }
 
-        EstadoAltaUsuario estado = chequearUsuario(nicknameLimpio, correoLimpio);
+        EstadoAltaUsuario estado =
+                chequearUsuario(nicknameLimpio, correoLimpio);
 
         if (estado != EstadoAltaUsuario.OK) {
-            throw new IllegalArgumentException("El nickname o correo ya están en uso.");
+            throw new IllegalArgumentException(
+                    "El nickname o correo ya están en uso."
+            );
         }
 
         Organizador organizador = new Organizador(
@@ -261,10 +314,14 @@ public class Sistema implements ISistema {
         );
 
         organizador.establecerContrasena(contrasena);
+        organizador.setImagen(imagen);
+        organizador.setImagenTipo(imagen == null ? null : tipoImagen);
 
         usuarioDAO.guardar(organizador);
-        usuariosPorNickname.put(claveNormalizada(nicknameLimpio), organizador);
-        usuariosPorCorreo.put(claveNormalizada(correoLimpio), organizador);
+        usuariosPorNickname.put(
+                claveNormalizada(nicknameLimpio), organizador);
+        usuariosPorCorreo.put(
+                claveNormalizada(correoLimpio), organizador);
     }
 
     private void validarContrasenas(
@@ -315,6 +372,22 @@ public class Sistema implements ISistema {
         }
 
         return true;
+    }
+
+    private void validarImagen(byte[] imagen, String tipoImagen) {
+        if (imagen == null) {
+            return;
+        }
+
+        if (tipoImagen == null || !tipoImagen.startsWith("image/")) {
+            throw new IllegalArgumentException("El archivo debe ser una imagen.");
+        }
+
+        if (imagen.length > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException(
+                    "La imagen no puede superar los 5 MB."
+            );
+        }
     }
 
     @Override
@@ -461,6 +534,20 @@ public class Sistema implements ISistema {
     }
 
     @Override
+    public DTImagen obtenerImagenUsuario(String nickname) {
+        Usuario usuario = buscarPorNickname(nickname);
+
+        if (usuario.getImagen() == null) {
+            return null;
+        }
+
+        return new DTImagen(
+                usuario.getImagen(),
+                usuario.getImagenTipo()
+        );
+    }
+
+    @Override
     public List<String> listarNombresInstituciones() {
         return institucionDAO.listarNombres();
     }
@@ -502,6 +589,25 @@ public class Sistema implements ISistema {
             DTDatosUsuario datos,
             char[] nuevaContrasena,
             char[] confirmacionNuevaContrasena) {
+
+        modificarDatosUsuario(
+                datos,
+                nuevaContrasena,
+                confirmacionNuevaContrasena,
+                null,
+                null
+        );
+    }
+
+    @Override
+    public void modificarDatosUsuario(
+            DTDatosUsuario datos,
+            char[] nuevaContrasena,
+            char[] confirmacionNuevaContrasena,
+            byte[] nuevaImagen,
+            String tipoImagen) {
+
+        validarImagen(nuevaImagen, tipoImagen);
 
         boolean cambiarContrasena = validarCambioContrasena(
                 nuevaContrasena,
@@ -548,6 +654,11 @@ public class Sistema implements ISistema {
 
         if (cambiarContrasena) {
             usuario.establecerContrasena(nuevaContrasena);
+        }
+
+        if (nuevaImagen != null) {
+            usuario.setImagen(nuevaImagen);
+            usuario.setImagenTipo(tipoImagen);
         }
 
         usuarioDAO.modificar(usuario);
