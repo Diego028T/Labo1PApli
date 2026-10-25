@@ -535,11 +535,25 @@ public class Sistema implements ISistema {
 
     @Override
     public DTImagen obtenerImagenUsuario(String nickname) {
-        Usuario usuario = buscarPorNickname(nickname);
-
-        if (usuario.getImagen() == null) {
+        if (nickname == null || nickname.isBlank()) {
             return null;
         }
+
+        String clave = claveNormalizada(nickname);
+        Usuario usuario = usuariosPorNickname.get(clave);
+
+        if (usuario == null) {
+            usuario = usuarioDAO.buscarPorNickname(nickname.trim());
+        }
+
+        if (usuario == null || usuario.getImagen() == null) {
+            return null;
+        }
+
+        usuariosPorNickname.put(
+                claveNormalizada(usuario.getNickname()), usuario);
+        usuariosPorCorreo.put(
+                claveNormalizada(usuario.getCorreo()), usuario);
 
         return new DTImagen(
                 usuario.getImagen(),
