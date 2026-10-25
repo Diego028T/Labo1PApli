@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Locale;
 
 
 public class Sistema implements ISistema {
@@ -99,6 +100,49 @@ public class Sistema implements ISistema {
         }
 
         return EstadoAltaUsuario.OK;
+    }
+
+    @Override
+    public DTUsuarioAutenticado autenticar(
+            String identificador,
+            char[] contrasena) {
+
+        if (identificador == null || identificador.isBlank()
+                || contrasena == null || contrasena.length == 0) {
+            return null;
+        }
+
+        String identificadorNormalizado =
+                identificador.trim().toLowerCase(Locale.ROOT);
+
+        List<Usuario> coincidencias =
+                usuarioDAO.buscarPorIdentificador(identificadorNormalizado);
+
+        if (coincidencias.size() != 1) {
+            return null;
+        }
+
+        Usuario usuario = coincidencias.get(0);
+
+        if (!usuario.verificarContrasena(contrasena)) {
+            return null;
+        }
+
+        RolUsuario rol;
+
+        if (usuario instanceof Asistente) {
+            rol = RolUsuario.ASISTENTE;
+        } else if (usuario instanceof Organizador) {
+            rol = RolUsuario.ORGANIZADOR;
+        } else {
+            return null;
+        }
+
+        return new DTUsuarioAutenticado(
+                usuario.getNickname(),
+                usuario.getNombre(),
+                rol
+        );
     }
 
     private Institucion buscarInstitucion(String nombreInstitucion) {

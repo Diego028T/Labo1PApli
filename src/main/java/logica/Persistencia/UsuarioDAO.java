@@ -48,6 +48,23 @@ public class UsuarioDAO {
         }
     }
 
+    public List<Usuario> buscarPorIdentificador(String identificador) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+
+        try {
+            return em.createQuery(
+                            "SELECT u FROM Usuario u "
+                                    + "WHERE LOWER(u.nickname) = :identificador "
+                                    + "OR LOWER(u.correo) = :identificador",
+                            Usuario.class
+                    )
+                    .setParameter("identificador", identificador)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     public boolean existeNickname(String nickname) {
         return buscarPorNickname(nickname) != null;
     }
