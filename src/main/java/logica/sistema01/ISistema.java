@@ -54,6 +54,8 @@ public interface ISistema {
 
     List<String> listarNombresCategorias();
 
+    DTUsuarioAutenticado autenticar(String identificador, char[] contrasena);
+
     Set<DTUsuario> listarUsuarios();
 
     Set<DTUsuario> listarAsistentes();
