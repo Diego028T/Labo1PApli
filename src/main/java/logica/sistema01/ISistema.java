@@ -10,6 +10,10 @@ public interface ISistema {
 
     void altaInstitucion(String nombre, String descripcion, String sitioWeb);
 
+    void altaInstitucion(String nombre, String descripcion, String sitioWeb, byte[] imagen, String tipoImagen);
+
+    DTImagen obtenerImagenInstitucion(String nombre);
+
     List<String> listarNombresInstituciones();
 
     EstadoAltaUsuario chequearUsuario(String nickname, String correo);
