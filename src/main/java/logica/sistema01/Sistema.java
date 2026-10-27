@@ -396,9 +396,12 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public void altaInstitucion(String nombre, String descripcion, String sitioWeb) {
+    public void altaInstitucion(String nombre, String descripcion, String sitioWeb,
+                                byte[] imagen, String tipoImagen) {
+
         String nombreLimpio = textoObligatorio(nombre, "nombre de la institución");
         String clave = claveNormalizada(nombreLimpio);
+        validarImagen(imagen, tipoImagen);
 
         if (instituciones.containsKey(clave) || institucionDAO.existeNombre(nombreLimpio)) {
             throw new IllegalArgumentException(
@@ -412,8 +415,24 @@ public class Sistema implements ISistema {
                 sitioWeb
         );
 
+        nuevaInstitucion.setImagen(imagen);
+        nuevaInstitucion.setImagenTipo(imagen == null ? null : tipoImagen);
+
         institucionDAO.guardar(nuevaInstitucion);
         instituciones.put(clave, nuevaInstitucion);
+    }
+
+    @Override
+    public void altaInstitucion(String nombre, String descripcion, String sitioWeb) {
+        altaInstitucion(nombre, descripcion, sitioWeb, null, null);
+    }
+
+    @Override
+    public DTImagen obtenerImagenInstitucion(String nombre) {
+        if (nombre == null || nombre.isBlank()) return null;
+        Institucion institucion = institucionDAO.buscarPorNombre(nombre);
+        if (institucion == null || institucion.getImagen() == null) return null;
+        return new DTImagen(institucion.getImagen(), institucion.getImagenTipo());
     }
 
     @Override

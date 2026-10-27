@@ -24,6 +24,12 @@ public class Institucion {
     @Column(length = 200)
     private String sitioWeb;
 
+    @Column(name = "imagen")
+    private byte[] imagen;
+
+    @Column(name = "imagen_tipo", length = 50)
+    private String imagenTipo;
+
     protected Institucion() {
     }
 
@@ -60,4 +66,12 @@ public class Institucion {
     public void setSitioWeb(String sitioWeb) {
         this.sitioWeb = sitioWeb;
     }
+
+    public byte[] getImagen() { return imagen; }
+
+    public void setImagen(byte[] imagen) { this.imagen = imagen; }
+
+    public String getImagenTipo() { return imagenTipo; }
+
+    public void setImagenTipo(String imagenTipo) { this.imagenTipo = imagenTipo; }
 }
