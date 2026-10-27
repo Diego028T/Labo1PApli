@@ -13,6 +13,7 @@ import java.util.Set;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Locale;
+import java.net.URI;
 
 
 public class Sistema implements ISistema {
@@ -400,6 +401,38 @@ public class Sistema implements ISistema {
                                 byte[] imagen, String tipoImagen) {
 
         String nombreLimpio = textoObligatorio(nombre, "nombre de la institución");
+        String descripcionLimpia = textoObligatorio(descripcion, "descripción");
+        String sitioWebLimpio = textoObligatorio(sitioWeb, "sitio web");
+
+        if (nombreLimpio.length() > 100) {
+            throw new IllegalArgumentException(
+                    "El nombre no puede superar los 100 caracteres.");
+        }
+
+        if (descripcionLimpia.length() > 500) {
+            throw new IllegalArgumentException(
+                    "La descripción no puede superar los 500 caracteres.");
+        }
+
+        if (sitioWebLimpio.length() > 200) {
+            throw new IllegalArgumentException(
+                    "El sitio web no puede superar los 200 caracteres.");
+        }
+
+        URI direccion;
+        try {
+            direccion = URI.create(sitioWebLimpio);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(
+                    "Ingresá una dirección web válida.", e);
+        }
+
+        if (direccion.getHost() == null
+                || !("http".equalsIgnoreCase(direccion.getScheme())
+                || "https".equalsIgnoreCase(direccion.getScheme()))) {
+            throw new IllegalArgumentException(
+                    "El sitio web debe ser una dirección con http:// o https://.");
+        }
         String clave = claveNormalizada(nombreLimpio);
         validarImagen(imagen, tipoImagen);
 
@@ -411,8 +444,8 @@ public class Sistema implements ISistema {
 
         Institucion nuevaInstitucion = new Institucion(
                 nombreLimpio,
-                descripcion,
-                sitioWeb
+                descripcionLimpia,
+                sitioWebLimpio
         );
 
         nuevaInstitucion.setImagen(imagen);
