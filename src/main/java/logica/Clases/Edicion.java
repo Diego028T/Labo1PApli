@@ -2,6 +2,7 @@ package logica.Clases;
 
 import jakarta.persistence.*;
 import logica.DataTypes.DTFecha;
+import logica.DataTypes.EstadoEdicion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,10 @@ public class Edicion {
     @JoinColumn(name = "evento_id", nullable = false)
     private Evento evento;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
+    private EstadoEdicion estado;
+
     @OneToMany(mappedBy = "edicion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TipoRegistro> tiposRegistro;
 
@@ -68,6 +73,7 @@ public class Edicion {
         this.ciudad = ciudad;
         this.pais = pais;
         this.organizador = organizador;
+        this.estado = EstadoEdicion.INGRESADA;
         this.tiposRegistro = new ArrayList<>();
     }
 
@@ -176,6 +182,14 @@ public class Edicion {
 
     public void setEvento(Evento evento) {
         this.evento = evento;
+    }
+
+    public EstadoEdicion getEstado() {
+        return this.estado;
+    }
+
+    public void setEstado(EstadoEdicion estado) {
+        this.estado = estado;
     }
 
     public List<TipoRegistro> getTiposRegistro() {

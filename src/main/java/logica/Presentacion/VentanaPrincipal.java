@@ -66,10 +66,13 @@ public class VentanaPrincipal extends JFrame {
         JMenu Ediciones = new JMenu("Ediciones");
         JMenuItem nuevaEdicion = new JMenuItem("Alta edicion");
         JMenuItem consultarEdicion = new JMenuItem("Consultar edicion");
+        JMenuItem modificarEstadoEdicion = new JMenuItem("Modificar estado edicion");
         nuevaEdicion.addActionListener(e -> mostrarAltaEdicion());
         consultarEdicion.addActionListener(e -> mostrarEdiciones());
+        modificarEstadoEdicion.addActionListener(e -> ModificarEstadoEdicionInternalFrame());
         Ediciones.add(nuevaEdicion);
         Ediciones.add(consultarEdicion);
+        Ediciones.add(modificarEstadoEdicion);
 
         JMenu Patrocinios = new JMenu("Patrocinios");
         JMenuItem altaPatrocinio = new JMenuItem("Alta patrocinio");
@@ -220,5 +223,12 @@ public class VentanaPrincipal extends JFrame {
 
         escritorio.add(consulta);
         consulta.setVisible(true);
+    }
+
+    private void ModificarEstadoEdicionInternalFrame(){
+        ModificarEstadoEdicionInternalFrame modificarEstadoEdicion = new ModificarEstadoEdicionInternalFrame(sistema);
+
+        escritorio.add(modificarEstadoEdicion);
+        modificarEstadoEdicion.setVisible(true);
     }
 }

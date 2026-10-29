@@ -86,4 +86,8 @@ public interface ISistema {
 
     List<DTEvento> listarEventosPorCategoria(String categoria);
     DTEvento mostrarDatosEvento(Long idEvento);
+
+    void modificarEstadoEdicion(Long idEdicion, EstadoEdicion nuevoEstado);
+
+    List<DTEdicion> listarEdicionesIngresadas(Long idEvento);
 }

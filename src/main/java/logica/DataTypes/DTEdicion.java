@@ -12,6 +12,7 @@ public class DTEdicion {
     private final String pais;
     private final String nicknameOrganizador;
     private final String nombreOrganizador;
+    private final EstadoEdicion estado;
 
     public DTEdicion(
             Long id,
@@ -23,7 +24,8 @@ public class DTEdicion {
             String ciudad,
             String pais,
             String nicknameOrganizador,
-            String nombreOrganizador) {
+            String nombreOrganizador,
+            EstadoEdicion estado) {
         this.id = id;
         this.nombre = nombre;
         this.sigla = sigla;
@@ -34,6 +36,7 @@ public class DTEdicion {
         this.pais = pais;
         this.nicknameOrganizador = nicknameOrganizador;
         this.nombreOrganizador = nombreOrganizador;
+        this.estado = estado;
     }
 
     public Long getId() {
@@ -74,6 +77,10 @@ public class DTEdicion {
 
     public String getNombreOrganizador() {
         return nombreOrganizador;
+    }
+
+    public EstadoEdicion getEstado() {
+        return estado;
     }
 
     @Override

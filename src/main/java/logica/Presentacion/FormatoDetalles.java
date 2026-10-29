@@ -17,7 +17,8 @@ public final class FormatoDetalles {
                 + "\nFecha de alta: " + datos.getFechaAlta()
                 + "\nCiudad: " + datos.getCiudad()
                 + "\nPais: " + datos.getPais()
-                + "\nOrganizador: " + datos.getNombreOrganizador();
+                + "\nOrganizador: " + datos.getNombreOrganizador()
+                + "\nEstado: " + datos.getEstado();
     }
 
     public static String tipoRegistro(DTTipoRegistro datos) {

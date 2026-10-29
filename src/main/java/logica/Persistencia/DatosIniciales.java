@@ -7,6 +7,7 @@ import logica.Clases.Categoria;
 import logica.Clases.Edicion;
 import logica.Clases.Evento;
 import logica.Clases.Institucion;
+import logica.DataTypes.EstadoEdicion;
 import logica.DataTypes.NivelPatrocinio;
 import logica.Clases.Organizador;
 import logica.Clases.Patrocinio;
@@ -25,6 +26,9 @@ public final class DatosIniciales {
         EntityManager em = entityManagerFactory.createEntityManager();
 
         try {
+
+            completarEstadoEdiciones(em);
+
             if (yaCargados(em)) {
                 return;
             }
@@ -520,5 +524,14 @@ public final class DatosIniciales {
         }
 
         return registro;
+    }
+
+
+    private static void completarEstadoEdiciones(EntityManager em) {
+        em.getTransaction().begin();
+        em.createQuery("UPDATE Edicion e SET e.estado = :estado WHERE e.estado IS NULL")
+                .setParameter("estado", EstadoEdicion.INGRESADA)
+                .executeUpdate();
+        em.getTransaction().commit();
     }
 }

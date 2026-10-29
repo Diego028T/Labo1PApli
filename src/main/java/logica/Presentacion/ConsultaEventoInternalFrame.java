@@ -2,6 +2,7 @@ package logica.Presentacion;
 
 import logica.DataTypes.DTEdicion;
 import logica.DataTypes.DTEvento;
+import logica.DataTypes.DTImagen;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
@@ -18,6 +19,7 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
     private final JTextArea txtDatosEvento;
     private final JList<String> listaCategorias;
     private final JList<DTEdicion> listaEdiciones;
+    private final JLabel lblImagen = new JLabel();
 
     private DTEvento eventoSeleccionado;
 
@@ -77,12 +79,14 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
         txtDatosEvento.setLineWrap(true);
         txtDatosEvento.setWrapStyleWord(true);
 
+
+
         JPanel panelDatos = new JPanel(new BorderLayout());
         panelDatos.setBorder(
                 BorderFactory.createTitledBorder("Datos del evento")
         );
         panelDatos.add(new JScrollPane(txtDatosEvento), BorderLayout.CENTER);
-
+        panelDatos.add(lblImagen, BorderLayout.EAST);
         JPanel panelCategorias = new JPanel(new BorderLayout());
         panelCategorias.setBorder(
                 BorderFactory.createTitledBorder("Categorías")
@@ -158,6 +162,14 @@ public class ConsultaEventoInternalFrame extends JInternalFrame {
                         "Descripción: " + eventoSeleccionado.getDescripcion() + "\n" +
                         "Fecha de alta: " + eventoSeleccionado.getFechaAlta()
         );
+        lblImagen.setIcon(null);
+        if (eventoSeleccionado.isTieneImagen()) {
+            DTImagen imagen = sistema.obtenerImagenEvento(eventoSeleccionado.getId());
+            Image escalada = new ImageIcon(imagen.getImagen())
+                    .getImage()
+                    .getScaledInstance(150, -1, Image.SCALE_SMOOTH);
+            lblImagen.setIcon(new ImageIcon(escalada));
+        }
     }
 
     private void cargarCategorias() {
