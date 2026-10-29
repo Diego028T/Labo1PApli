@@ -90,7 +90,8 @@ public class Asistente extends Usuario {
                 getNombre(),
                 getCorreo(),
                 apellido,
-                fechaNacimiento
+                fechaNacimiento,
+                institucion != null
         );
     }
 
