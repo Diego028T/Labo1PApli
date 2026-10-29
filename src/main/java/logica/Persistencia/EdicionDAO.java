@@ -123,4 +123,20 @@ public class EdicionDAO {
             em.close();
         }
     }
+
+    public static void modificarEdicion(Edicion edicion) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(edicion);
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

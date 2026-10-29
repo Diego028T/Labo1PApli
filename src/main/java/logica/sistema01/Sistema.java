@@ -1299,7 +1299,9 @@ public class Sistema implements ISistema {
                 edicion.getFechaInicio(), edicion.getFechaFin(), edicion.getFechaAlta(),
                 edicion.getCiudad(), edicion.getPais(),
                 organizador == null ? null : organizador.getNickname(),
-                organizador == null ? "Sin asignar" : organizador.getNombre());
+                organizador == null ? "Sin asignar" : organizador.getNombre(),
+                edicion.getEstado()
+        );
     }
 
     @Override
@@ -1329,6 +1331,32 @@ public class Sistema implements ISistema {
 
     @Override
     public DTEvento mostrarDatosEvento(Long idEvento) {
+
         return convertirEvento(buscarEventoPersistido(idEvento));
+    }
+
+    @Override
+    public void modificarEstadoEdicion(Long idEdicion, EstadoEdicion nuevoEstado) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        if (edicion.getEstado() != EstadoEdicion.INGRESADA) {
+            throw new IllegalArgumentException("Solo se puede aceptar o rechazar una edición Ingresada.");
+        }
+        if (nuevoEstado != EstadoEdicion.APROBADA && nuevoEstado != EstadoEdicion.RECHAZADA) {
+            throw new IllegalArgumentException("El nuevo estado debe ser Aceptada o Rechazada.");
+        }
+        edicion.setEstado(nuevoEstado);
+        EdicionDAO.modificarEdicion(edicion);
+    }
+
+    @Override
+    public List<DTEdicion> listarEdicionesIngresadas(Long idEvento) {
+        buscarEventoPersistido(idEvento);
+        List<DTEdicion> resultado = new ArrayList<>();
+        for (Edicion edicion : EdicionDAO.listarPorEvento(idEvento)) {
+            if (edicion.getEstado() == EstadoEdicion.INGRESADA) {
+                resultado.add(convertirEdicion(edicion));
+            }
+        }
+        return resultado;
     }
 }
