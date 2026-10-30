@@ -4,6 +4,10 @@ import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +26,10 @@ public class AltaEvento extends JInternalFrame {
     private JLabel textoSigla;
     private JLabel textoFecha;
     private JLabel textoCategoria;
+    private JButton btnImagen;
+    private JLabel lblImagen;
+    private byte[] imagenBytes;
+    private String tipoImagen;
     private final ISistema sistema;
 
     public AltaEvento(ISistema sistema) {
@@ -38,6 +46,7 @@ public class AltaEvento extends JInternalFrame {
 
         btnConfirmar.addActionListener(e -> confirmarAlta());
         btnCancelar.addActionListener(e -> dispose());
+        btnImagen.addActionListener(e -> elegirImagen());
 
         setContentPane(PrincipalEvento);
         pack();
@@ -74,7 +83,9 @@ public class AltaEvento extends JInternalFrame {
                     campoDescripcion.getText().trim(),
                     campoSiglas.getText().trim(),
                     convertirAFecha(campoFecha),
-                    nombresCategorias
+                    nombresCategorias,
+                    imagenBytes,
+                    tipoImagen
             );
 
             JOptionPane.showMessageDialog(
@@ -107,5 +118,26 @@ public class AltaEvento extends JInternalFrame {
                 calendario.get(Calendar.MONTH) + 1,
                 calendario.get(Calendar.DAY_OF_MONTH)
         );
+    }
+
+    private void elegirImagen() {
+        JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(new FileNameExtensionFilter("Imágenes", "png", "jpg", "jpeg", "gif"));
+
+        if (selector.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        Path archivo = selector.getSelectedFile().toPath();
+        try {
+            imagenBytes = Files.readAllBytes(archivo);
+            tipoImagen = Files.probeContentType(archivo);
+            lblImagen.setText(archivo.getFileName().toString());
+        } catch (IOException ex) {
+            imagenBytes = null;
+            tipoImagen = null;
+            lblImagen.setText("Sin imagen (opcional)");
+            JOptionPane.showMessageDialog(this, "No se pudo leer la imagen.",
+                    "Alta de Evento", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

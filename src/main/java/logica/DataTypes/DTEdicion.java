@@ -13,6 +13,7 @@ public class DTEdicion {
     private final String nicknameOrganizador;
     private final String nombreOrganizador;
     private final EstadoEdicion estado;
+    private final boolean tieneImagen;
 
     public DTEdicion(
             Long id,
@@ -25,7 +26,8 @@ public class DTEdicion {
             String pais,
             String nicknameOrganizador,
             String nombreOrganizador,
-            EstadoEdicion estado) {
+            EstadoEdicion estado,
+            boolean tieneImagen) {
         this.id = id;
         this.nombre = nombre;
         this.sigla = sigla;
@@ -37,6 +39,7 @@ public class DTEdicion {
         this.nicknameOrganizador = nicknameOrganizador;
         this.nombreOrganizador = nombreOrganizador;
         this.estado = estado;
+        this.tieneImagen = tieneImagen;
     }
 
     public Long getId() {
@@ -81,6 +84,10 @@ public class DTEdicion {
 
     public EstadoEdicion getEstado() {
         return estado;
+    }
+
+    public boolean isTieneImagen() {
+        return tieneImagen;
     }
 
     @Override

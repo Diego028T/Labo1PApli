@@ -90,4 +90,12 @@ public interface ISistema {
     void modificarEstadoEdicion(Long idEdicion, EstadoEdicion nuevoEstado);
 
     List<DTEdicion> listarEdicionesIngresadas(Long idEvento);
+
+    void altaEdicion(Long idEvento, String nicknameOrganizador, String nombre, String sigla,
+                     DTFecha fechaInicio, DTFecha fechaFin, DTFecha fechaAlta,
+                     String ciudad, String pais, byte[] imagen, String tipoImagen);
+
+    DTImagen obtenerImagenEdicion(Long idEdicion);
+
+    List<DTEdicion> listarEdicionesAceptadas(Long idEvento);
 }

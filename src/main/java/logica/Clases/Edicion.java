@@ -40,6 +40,12 @@ public class Edicion {
     @Column(nullable = false, length = 50)
     private String pais;
 
+    @Column(name = "imagen")
+    private byte[] imagen;
+
+    @Column(name = "imagen_tipo", length = 50)
+    private String imagenTipo;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "evento_id", nullable = false)
     private Evento evento;
@@ -243,8 +249,24 @@ public class Edicion {
         }
     }
 
+    public byte[] getImagen(){
+        return this.imagen;
+    }
+
     @Override
     public String toString() {
         return nombre;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
+
+    public void setImagenTipo(String tipoImagen) {
+        this.imagenTipo = tipoImagen;
+    }
+
+    public String getImagenTipo() {
+        return this.imagenTipo;
     }
 }

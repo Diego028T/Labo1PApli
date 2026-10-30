@@ -6,7 +6,11 @@ import logica.DataTypes.DTFecha;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +32,9 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
     private JTextField txtPais;
     private DTEvento eventoSeleccionado;
     private DTUsuario organizadorSeleccionado;
+    private final JLabel lblImagen = new JLabel("Sin imagen (opcional)");
+    private byte[] imagenBytes;
+    private String tipoImagen;
 
     public AltaEdicionInternalFrame(ISistema sistema){
         super("Alta de edición de evento", true, true, true, true);
@@ -87,7 +94,7 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         txtCiudad = new JTextField();
         txtPais = new JTextField();
 
-        JPanel datos = new JPanel(new GridLayout(7, 2, 10, 10));
+        JPanel datos = new JPanel(new GridLayout(8, 2, 10, 10));
 
         datos.add(new JLabel("Nombre edición:"));
         datos.add(txtNombreEdicion);
@@ -109,6 +116,11 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
 
         datos.add(new JLabel("País:"));
         datos.add(txtPais);
+
+        JButton btnImagen = new JButton("Elegir imagen…");
+        btnImagen.addActionListener(e -> elegirImagen());
+        datos.add(btnImagen);
+        datos.add(lblImagen);
 
         JButton btnAceptar = new JButton("Aceptar");
         JButton btnCancelar = new JButton("Cancelar");
@@ -198,8 +210,11 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         try {
             sistema.altaEdicion(
                     eventoSeleccionado.getId(), organizadorSeleccionado.nickname(), nombreEdicion,
-                    siglaEdicion, fechaInicio, fechaFin, fechaAlta, ciudad, pais);
+                    siglaEdicion, fechaInicio, fechaFin, fechaAlta, ciudad, pais, imagenBytes, tipoImagen);
             JOptionPane.showMessageDialog(this, "Edición dada de alta correctamente.");
+            imagenBytes = null;
+            tipoImagen = null;
+            lblImagen.setText("Sin imagen (opcional)");
             dispose();
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Error en el alta de edición",
@@ -283,4 +298,24 @@ public class AltaEdicionInternalFrame extends JInternalFrame {
         eventosListados.add(panelSur, BorderLayout.SOUTH);
     }
 
+    private void elegirImagen() {
+        JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(new FileNameExtensionFilter("Imágenes", "png", "jpg", "jpeg", "gif"));
+
+        if (selector.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+        Path archivo = selector.getSelectedFile().toPath();
+        try {
+            imagenBytes = Files.readAllBytes(archivo);
+            tipoImagen = Files.probeContentType(archivo);
+            lblImagen.setText(archivo.getFileName().toString());
+        } catch (IOException ex) {
+            imagenBytes = null;
+            tipoImagen = null;
+            lblImagen.setText("Sin imagen (opcional)");
+            JOptionPane.showMessageDialog(this, "No se pudo leer la imagen.",
+                    "Alta de Evento", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
