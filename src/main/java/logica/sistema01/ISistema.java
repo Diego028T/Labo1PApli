@@ -50,6 +50,8 @@ public interface ISistema {
 
     List<DTEdicion> listarEdiciones(Long idEvento);
 
+    List<DTEdicion> listarEdicionesAprobadas(Long idEvento);
+
     List<DTEdicion> listarEdicionesOrganizador(String nickname);
 
     DTEdicion mostrarDatosEdicion(Long idEdicion);

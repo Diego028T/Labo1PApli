@@ -780,6 +780,11 @@ public class Sistema implements ISistema {
             String codigoPatrocinio
     ) {
         Edicion edicion = buscarEdicionPersistida(idEdicion);
+        if (edicion.getEstado() != EstadoEdicion.APROBADA) {
+            throw new IllegalArgumentException(
+                    "Solo es posible registrarse en una edición aceptada.");
+        }
+
         TipoRegistro tipoRegistro = buscarTipoRegistroPersistido(idTipoRegistro, idEdicion);
 
         if (edicion == null) {
@@ -972,6 +977,19 @@ public class Sistema implements ISistema {
         for (Edicion edicion : EdicionDAO.listarPorEvento(idEvento)) {
             resultado.add(convertirEdicion(edicion));
         }
+        return resultado;
+    }
+
+    @Override
+    public List<DTEdicion> listarEdicionesAprobadas(Long idEvento) {
+        List<DTEdicion> resultado = new ArrayList<>();
+
+        for (DTEdicion edicion : listarEdiciones(idEvento)) {
+            if (edicion.getEstado() == EstadoEdicion.APROBADA) {
+                resultado.add(edicion);
+            }
+        }
+
         return resultado;
     }
 
