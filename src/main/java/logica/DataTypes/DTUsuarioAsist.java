@@ -9,6 +9,7 @@ public class DTUsuarioAsist implements DTDatosUsuario {
     private String correo;
     private String apellido;
     private LocalDate fechaNacimiento;
+    private boolean tieneInstitucion;
 
     public DTUsuarioAsist(
             String nickname,
@@ -22,6 +23,12 @@ public class DTUsuarioAsist implements DTDatosUsuario {
         this.correo = correo;
         this.apellido = apellido;
         this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public DTUsuarioAsist(String nickname, String nombre, String correo,
+                          String apellido, LocalDate fechaNacimiento, boolean tieneInstitucion) {
+        this(nickname, nombre, correo, apellido, fechaNacimiento);
+        this.tieneInstitucion = tieneInstitucion;
     }
 
     public String getNickname() {
@@ -43,4 +50,6 @@ public class DTUsuarioAsist implements DTDatosUsuario {
     public LocalDate getFechaNacimiento() {
         return fechaNacimiento;
     }
+
+    public boolean isTieneInstitucion() { return tieneInstitucion; }
 }
