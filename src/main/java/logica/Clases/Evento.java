@@ -153,7 +153,7 @@ public class Evento {
         try {
             ediciones.add(edicion);
         } catch (org.hibernate.LazyInitializationException e) {
-            // Colección no inicializada fuera de sesión JPA activa
+
         }
     }
 

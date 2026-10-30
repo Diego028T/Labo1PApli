@@ -1,24 +1,10 @@
 package logica.Presentacion;
 
-import logica.DataTypes.DTEdicion;
-import logica.DataTypes.DTEvento;
-import logica.DataTypes.DTPatrocinio;
-import logica.DataTypes.DTRegistroEdicion;
-import logica.DataTypes.DTTipoRegistro;
+import logica.DataTypes.*;
 import logica.sistema01.ISistema;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
-import java.awt.CardLayout;
-import java.awt.Component;
+import javax.swing.*;
+import java.awt.*;
 import java.util.List;
 
 public class ConsultaEdiciones extends JInternalFrame {
@@ -40,6 +26,7 @@ public class ConsultaEdiciones extends JInternalFrame {
     private JLabel lblEventoSeleccionado;
     private JLabel lblEdicionSeleccionada;
     private JLabel lblDetalleSeleccionado;
+    private JLabel lblImagenEdicion;
     private JTextArea txtDetalleEdicion;
     private JTextArea txtRegistros;
     private JTextArea txtDetalleSeleccionado;
@@ -77,6 +64,7 @@ public class ConsultaEdiciones extends JInternalFrame {
         panelPrincipal.add(panelEdiciones, "EDICIONES");
         panelPrincipal.add(panelDetalleEdicion, "DETALLE_EDICION");
         panelPrincipal.add(panelDetalleSeleccionado, "DETALLE_SELECCIONADO");
+
 
         txtDetalleEdicion.setEditable(false);
         txtRegistros.setEditable(false);
@@ -213,6 +201,14 @@ public class ConsultaEdiciones extends JInternalFrame {
                 "Edición seleccionada: " + edicionSeleccionada.getNombre()
         );
         txtDetalleEdicion.setText(FormatoDetalles.edicion(edicionSeleccionada));
+        lblImagenEdicion.setIcon(null);
+        if (edicionSeleccionada.isTieneImagen()) {
+            DTImagen imagen = sistema.obtenerImagenEdicion(edicionSeleccionada.getId());
+            Image escalada = new ImageIcon(imagen.getImagen())
+                    .getImage()
+                    .getScaledInstance(150, -1, Image.SCALE_SMOOTH);
+            lblImagenEdicion.setIcon(new ImageIcon(escalada));
+        }
         cargarTiposRegistro();
         cargarRegistros();
         cargarPatrocinios();

@@ -376,6 +376,7 @@ public class Sistema implements ISistema {
     }
 
     private void validarImagen(byte[] imagen, String tipoImagen) {
+
         if (imagen == null) {
             return;
         }
@@ -530,14 +531,7 @@ public class Sistema implements ISistema {
             throw new IllegalArgumentException("Debe seleccionar al menos una categoría.");
         }
 
-        if (imagen != null) {
-            if (tipoImagen == null || !tipoImagen.startsWith("image/")) {
-                throw new IllegalArgumentException("El archivo debe ser una imagen.");
-            }
-            if (imagen.length > 5 * 1024 * 1024) {
-                throw new IllegalArgumentException("La imagen no puede superar los 5 MB.");
-            }
-        }
+        validarImagen(imagen, tipoImagen);
 
         boolean nombreRepetido = eventos.stream()
                 .anyMatch(e -> e.getNombre().equalsIgnoreCase(nombre.trim())) || EventoDAO.existeEventoPorNombre(nombre);
@@ -583,6 +577,15 @@ public class Sistema implements ISistema {
             return null;
         }
         return new DTImagen(evento.getImagen(), evento.getImagenTipo());
+    }
+
+    @Override
+    public DTImagen obtenerImagenEdicion(Long idEdicion) {
+        Edicion edicion = buscarEdicionPersistida(idEdicion);
+        if (edicion.getImagen() == null) {
+            return null;
+        }
+        return new DTImagen(edicion.getImagen(), edicion.getImagenTipo());
     }
 
     @Override
@@ -899,6 +902,26 @@ public class Sistema implements ISistema {
             String ciudad,
             String pais
     ) {
+        altaEdicion(idEvento, nicknameOrganizador, nombre, sigla,
+                fechaInicio, fechaFin, fechaAlta, ciudad, pais, null, null);
+    }
+
+    @Override
+    public void altaEdicion(
+            Long idEvento,
+            String nicknameOrganizador,
+            String nombre,
+            String sigla,
+            DTFecha fechaInicio,
+            DTFecha fechaFin,
+            DTFecha fechaAlta,
+            String ciudad,
+            String pais,
+            byte[] imagen,
+            String tipoImagen
+    ) {
+        validarImagen(imagen, tipoImagen);
+
         Evento evento = buscarEventoPersistido(idEvento);
         Organizador organizador = buscarOrganizadorPersistido(nicknameOrganizador);
 
@@ -957,6 +980,8 @@ public class Sistema implements ISistema {
         );
 
         evento.agregarEdicion(nuevaEdicion);
+        nuevaEdicion.setImagen(imagen);
+        nuevaEdicion.setImagenTipo(tipoImagen);
         EdicionDAO.guardarEdicion(nuevaEdicion);
     }
 
@@ -981,16 +1006,22 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<DTEdicion> listarEdicionesAprobadas(Long idEvento) {
+    public List<DTEdicion> listarEdicionesAceptadas(Long idEvento) {
+        buscarEventoPersistido(idEvento);
         List<DTEdicion> resultado = new ArrayList<>();
 
-        for (DTEdicion edicion : listarEdiciones(idEvento)) {
+        for (Edicion edicion : EdicionDAO.listarPorEvento(idEvento)) {
             if (edicion.getEstado() == EstadoEdicion.APROBADA) {
-                resultado.add(edicion);
+                resultado.add(convertirEdicion(edicion));
             }
         }
 
         return resultado;
+    }
+
+    @Override
+    public List<DTEdicion> listarEdicionesAprobadas(Long idEvento) {
+        return listarEdicionesAceptadas(idEvento);
     }
 
     @Override
@@ -1318,7 +1349,8 @@ public class Sistema implements ISistema {
                 edicion.getCiudad(), edicion.getPais(),
                 organizador == null ? null : organizador.getNickname(),
                 organizador == null ? "Sin asignar" : organizador.getNombre(),
-                edicion.getEstado()
+                edicion.getEstado(),
+                edicion.getImagen() != null
         );
     }
 
@@ -1377,4 +1409,5 @@ public class Sistema implements ISistema {
         }
         return resultado;
     }
+
 }
