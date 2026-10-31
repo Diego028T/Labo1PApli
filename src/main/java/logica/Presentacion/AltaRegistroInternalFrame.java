@@ -77,7 +77,7 @@ public class AltaRegistroInternalFrame extends JInternalFrame {
         DTEvento evento = listaEventos.getSelectedValue();
 
         if (evento != null) {
-            for (DTEdicion edicion : sistema.listarEdiciones(evento.getId())) {
+            for (DTEdicion edicion : sistema.listarEdicionesAprobadas(evento.getId())) {
                 modelo.addElement(edicion);
             }
         }
