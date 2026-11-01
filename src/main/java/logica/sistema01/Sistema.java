@@ -700,11 +700,23 @@ public class Sistema implements ISistema {
                 );
             }
 
+            LocalDate fechaNacimiento = datosAsistente.getFechaNacimiento();
+
+            if (fechaNacimiento == null) {
+                throw new IllegalArgumentException(
+                        "La fecha de nacimiento es obligatoria."
+                );
+            }
+
+            if (fechaNacimiento.isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException(
+                        "La fecha de nacimiento no puede ser futura."
+                );
+            }
+
             usuario.setNombre(datosAsistente.getNombre());
             asistente.setApellido(datosAsistente.getApellido());
-            asistente.setFechaNacimiento(
-                    datosAsistente.getFechaNacimiento()
-            );
+            asistente.setFechaNacimiento(fechaNacimiento);
 
         } else if (datos instanceof DTUsuarioOrg datosOrganizador) {
             usuario = buscarPorNickname(datosOrganizador.getNickname());
