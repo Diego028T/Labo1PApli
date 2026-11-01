@@ -225,6 +225,12 @@ public class Sistema implements ISistema {
             );
         }
 
+        if (fechaNacimiento.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento no puede ser futura."
+            );
+        }
+
         EstadoAltaUsuario estado =
                 chequearUsuario(nicknameLimpio, correoLimpio);
 
