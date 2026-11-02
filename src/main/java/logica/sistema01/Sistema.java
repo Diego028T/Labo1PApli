@@ -1038,11 +1038,6 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<DTEdicion> listarEdicionesAprobadas(Long idEvento) {
-        return listarEdicionesAceptadas(idEvento);
-    }
-
-    @Override
     public List<DTTipoRegistro> listarTiposRegistro(Long idEdicion) {
         Edicion edicion = buscarEdicionPersistida(idEdicion);
         List<DTTipoRegistro> resultado = new ArrayList<>();
