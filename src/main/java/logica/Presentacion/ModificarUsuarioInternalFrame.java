@@ -7,6 +7,10 @@ import logica.DataTypes.DTUsuarioOrg;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.Set;
 import java.util.Arrays;
@@ -37,6 +41,11 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
     private JButton btnCancelar;
     private JPasswordField txtNuevaContrasena;
     private JPasswordField txtConfirmarNuevaContrasena;
+    private JButton btnImagen;
+    private JLabel lblImagen;
+
+    private byte[] imagenBytes;
+    private String tipoImagen;
 
     private DTDatosUsuario datosActuales;
 
@@ -62,6 +71,7 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         btnBuscar.addActionListener(e -> buscarUsuario());
         btnAceptar.addActionListener(e -> modificarUsuario());
         btnCancelar.addActionListener(e -> ocultarFormulario());
+        btnImagen.addActionListener(e -> elegirImagen());
     }
 
     private void cargarListadoUsuarios() {
@@ -222,7 +232,9 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         sistema.modificarDatosUsuario(
                 datosModificados,
                 nuevaContrasena,
-                confirmacionNuevaContrasena
+                confirmacionNuevaContrasena,
+                imagenBytes,
+                tipoImagen
         );
     }
 
@@ -241,7 +253,9 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         sistema.modificarDatosUsuario(
                 datosModificados,
                 nuevaContrasena,
-                confirmacionNuevaContrasena
+                confirmacionNuevaContrasena,
+                imagenBytes,
+                tipoImagen
         );
     }
 
@@ -255,6 +269,9 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         txtEnlace.setText("");
         txtNuevaContrasena.setText("");
         txtConfirmarNuevaContrasena.setText("");
+        imagenBytes = null;
+        tipoImagen = null;
+        lblImagen.setText("Sin imagen nueva");
     }
 
     private void ocultarFormulario() {
@@ -266,5 +283,37 @@ public class ModificarUsuarioInternalFrame extends JInternalFrame {
         panelPrincipal.revalidate();
         panelPrincipal.repaint();
         pack();
+    }
+
+    private void elegirImagen() {
+        JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(
+                new FileNameExtensionFilter(
+                        "Imágenes", "png", "jpg", "jpeg", "gif"
+                )
+        );
+
+        if (selector.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        Path archivo = selector.getSelectedFile().toPath();
+
+        try {
+            imagenBytes = Files.readAllBytes(archivo);
+            tipoImagen = Files.probeContentType(archivo);
+            lblImagen.setText(archivo.getFileName().toString());
+        } catch (IOException ex) {
+            imagenBytes = null;
+            tipoImagen = null;
+            lblImagen.setText("Sin imagen nueva");
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo leer la imagen.",
+                    "Modificar usuario",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }

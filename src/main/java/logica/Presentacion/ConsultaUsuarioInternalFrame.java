@@ -2,6 +2,7 @@ package logica.Presentacion;
 
 import logica.DataTypes.DTEdicion;
 import logica.DataTypes.DTDatosUsuario;
+import logica.DataTypes.DTImagen;
 import logica.DataTypes.DTRegistro;
 import logica.DataTypes.DTRegistroMin;
 import logica.DataTypes.DTUsuario;
@@ -10,6 +11,7 @@ import logica.DataTypes.DTUsuarioOrg;
 import logica.sistema01.ISistema;
 
 import javax.swing.*;
+import java.awt.Image;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +36,7 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
     private JPanel panelSeleccionado;
     private JLabel txtSeleccionado;
     private JButton btnVolverEspecifico;
+    private JLabel lblImagen;
     private String nicknameSeleccionado;
 
     public ConsultaUsuarioInternalFrame(ISistema sistema) {
@@ -124,7 +127,21 @@ public class ConsultaUsuarioInternalFrame extends JInternalFrame {
 
     private void cargarEspecifico() {
         try {
+            lblImagen.setIcon(null);
+            lblImagen.setText("Sin imagen");
+
             DTDatosUsuario datos = sistema.mostrarDatosUsuario(nicknameSeleccionado);
+            DTImagen imagenUsuario =
+                    sistema.obtenerImagenUsuario(nicknameSeleccionado);
+
+            if (imagenUsuario != null) {
+                Image imagenEscalada = new ImageIcon(imagenUsuario.getImagen())
+                        .getImage()
+                        .getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                lblImagen.setText("");
+                lblImagen.setIcon(new ImageIcon(imagenEscalada));
+            }
+
             DefaultListModel<Object> modeloLista = new DefaultListModel<>();
 
             if (datos instanceof DTUsuarioAsist asistente) {

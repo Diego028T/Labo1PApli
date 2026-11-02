@@ -9,6 +9,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import javax.swing.JPasswordField;
 import java.util.Arrays;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class AltaUsuarioInternalFrame extends JInternalFrame {
 
@@ -41,6 +45,12 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
     private final Color colorNormal;
     private final Color colorError;
 
+    private JButton btnImagen;
+    private JLabel lblImagen;
+
+    private byte[] imagenBytes;
+    private String tipoImagen;
+
     public AltaUsuarioInternalFrame(ISistema sistema) {
         super("Alta de usuario", true, true, true, true);
 
@@ -67,6 +77,7 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
         btnAceptar.setVisible(false);
         btnCancelar.setVisible(false);
 
+        btnImagen.addActionListener(e -> elegirImagen());
         btnContinuar.addActionListener(e -> continuar());
         btnAceptar.addActionListener(e -> confirmarAlta());
         btnCancelar.addActionListener(e -> dispose());
@@ -216,7 +227,9 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
                 fechaNacimiento,
                 nombreInstitucion,
                 contrasena,
-                confirmacionContrasena
+                confirmacionContrasena,
+                imagenBytes,
+                tipoImagen
         );
     }
 
@@ -240,7 +253,42 @@ public class AltaUsuarioInternalFrame extends JInternalFrame {
                 descripcion,
                 enlace,
                 contrasena,
-                confirmacionContrasena
+                confirmacionContrasena,
+                imagenBytes,
+                tipoImagen
         );
+    }
+
+    private void elegirImagen() {
+        JFileChooser selector = new JFileChooser();
+        selector.setFileFilter(
+                new FileNameExtensionFilter(
+                        "Imágenes", "png", "jpg", "jpeg", "gif"
+                )
+        );
+
+        if (selector.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        Path archivo = selector.getSelectedFile().toPath();
+
+        try {
+            imagenBytes = Files.readAllBytes(archivo);
+            tipoImagen = Files.probeContentType(archivo);
+
+            lblImagen.setText(archivo.getFileName().toString());
+        } catch (IOException ex) {
+            imagenBytes = null;
+            tipoImagen = null;
+            lblImagen.setText("Sin imagen (opcional)");
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "No se pudo leer la imagen.",
+                    "Alta de usuario",
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
     }
 }
