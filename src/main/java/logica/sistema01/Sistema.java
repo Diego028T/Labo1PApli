@@ -1356,10 +1356,17 @@ public class Sistema implements ISistema {
 
     private DTEdicion convertirEdicion(Edicion edicion) {
         Organizador organizador = edicion.getOrganizador();
+
         return new DTEdicion(
-                edicion.getId(), edicion.getNombre(), edicion.getSigla(),
-                edicion.getFechaInicio(), edicion.getFechaFin(), edicion.getFechaAlta(),
-                edicion.getCiudad(), edicion.getPais(),
+                edicion.getId(),
+                edicion.getEvento().getId(),
+                edicion.getNombre(),
+                edicion.getSigla(),
+                edicion.getFechaInicio(),
+                edicion.getFechaFin(),
+                edicion.getFechaAlta(),
+                edicion.getCiudad(),
+                edicion.getPais(),
                 organizador == null ? null : organizador.getNickname(),
                 organizador == null ? "Sin asignar" : organizador.getNombre(),
                 edicion.getEstado(),

@@ -3,6 +3,7 @@ package logica.DataTypes;
 public class DTEdicion {
 
     private final Long id;
+    private final Long idEvento;
     private final String nombre;
     private final String sigla;
     private final DTFecha fechaInicio;
@@ -17,6 +18,7 @@ public class DTEdicion {
 
     public DTEdicion(
             Long id,
+            Long idEvento,
             String nombre,
             String sigla,
             DTFecha fechaInicio,
@@ -28,7 +30,9 @@ public class DTEdicion {
             String nombreOrganizador,
             EstadoEdicion estado,
             boolean tieneImagen) {
+
         this.id = id;
+        this.idEvento = idEvento;
         this.nombre = nombre;
         this.sigla = sigla;
         this.fechaInicio = fechaInicio;
@@ -45,6 +49,8 @@ public class DTEdicion {
     public Long getId() {
         return id;
     }
+
+    public Long getIdEvento() { return idEvento; }
 
     public String getNombre() {
         return nombre;
