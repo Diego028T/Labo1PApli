@@ -7,6 +7,10 @@ public record DTUsuario(String nickname, String nombre) {
     public String toString() {
         return nombre + " (" + nickname + ")";
     }
+
+    public Object getNickname() {
+        return this.nickname;
+    }
 }
 
 /*package logica.DataTypes;
