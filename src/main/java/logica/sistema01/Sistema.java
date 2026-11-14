@@ -1024,7 +1024,7 @@ public class Sistema implements ISistema {
     }
 
     @Override
-    public List<DTEdicion> listarEdicionesAceptadas(Long idEvento) {
+    public List<DTEdicion> listarEdicionesAceptadas(Long idEvento) { //filtro para quedarme con las ediciones aceptadas
         buscarEventoPersistido(idEvento);
         List<DTEdicion> resultado = new ArrayList<>();
 
